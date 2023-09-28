@@ -1,0 +1,17 @@
+:root {
+    --inverted-rgb: 0, 0, 0;
+    &.dark {
+        --inverted-rgb: 255, 255, 255;
+    }
+}
+
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+    filter: saturate(0) contrast(0);
+}
+
+.page-leave-active,
+.page-enter-active {
+    transition: all 0.3s ease-in-out;
+}
