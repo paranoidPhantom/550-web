@@ -1,9 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	devtools: { enabled: false },
+	devtools: { enabled: true },
 	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon'],
 	app: {
-		pageTransition: { name: 'page', mode: 'out-in' }
+		pageTransition: { name: 'page', mode: 'out-in' },
+		layoutTransition: { name: 'page', mode: 'out-in' }
 	},
 	routeRules: {
 		"/docs": {
@@ -23,8 +24,8 @@ export default defineNuxtConfig({
 		"assets/global.scss"
 	],
 	colorMode: {
-	  preference: 'light', // default value of $colorMode.preference
-	  fallback: 'light', // fallback value if not system preference found
-	  storageKey: 'nuxt-color-mode'
+		preference: 'light', // default value of $colorMode.preference
+		fallback: 'light', // fallback value if not system preference found
+		storageKey: 'nuxt-color-mode'
 	}
 })
