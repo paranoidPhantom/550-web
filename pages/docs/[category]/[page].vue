@@ -1,10 +1,13 @@
 <script setup lang="ts">
 definePageMeta({
     layout: "docs",
-    middleware: async (from, to) => {
-        const { data } = await useAsyncData('middleware_validation', () => queryContent("docs", to.params.category as string, to.params.page as string).findOne())
-        if (!data.value) { return abortNavigation() }
-    }
+    login_message: "Для доступа к документации необходимо авторизоваться",
+    middleware: [
+        "auth",
+        async (to, from) => {
+            const { data } = await useAsyncData('middleware_validation', () => queryContent("docs", to.params.category as string, to.params.page as string).findOne())
+            if (!data.value) { return abortNavigation() }
+        }]
 })
 </script>
 
