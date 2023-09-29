@@ -3,7 +3,12 @@
 </script>
 
 <template>
-    <slot />
+    <div class="__user">
+        <ClientStructureHeader />
+        <main>
+            <slot />
+        </main>
+    </div>
 </template>
 
 <style scoped lang="scss">
