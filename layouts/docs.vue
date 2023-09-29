@@ -2,11 +2,13 @@
 </script>
 
 <template>
-    <DocsStructureHeader />
-    <main>
-        <DocsStructureSidebar />
-        <slot />
-    </main>
+    <div class="__docs">
+        <DocsStructureHeader />
+        <main>
+            <DocsStructureSidebar />
+            <slot />
+        </main>
+    </div>
 </template>
 
 <style scoped lang="scss">
