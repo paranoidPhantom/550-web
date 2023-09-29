@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/content": "^2.8.4",
+    "@nuxt/content": "^2.8.5",
     "@nuxt/devtools": "^0.8.5",
     "@nuxt/ui": "^2.8.1",
     "nuxt": "^3.7.4",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@iconify-json/line-md": "^1.1.29",
-    "@iconify/json": "^2.2.120",
+    "@iconify/json": "^2.2.121",
     "@supabase/supabase-js": "^2.36.0"
   }
 }
