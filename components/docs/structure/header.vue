@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import GlobalColorModeSwitch from "../../global/ColorModeSwitch.vue"
+import GlobalColorModeSwitch from "/components/global/ColorModeSwitch.vue"
+import GlobalAccountInfo from "@/components/global/AccountInfo.vue"
 
 </script>
 
 <template>
     <header>
-        <div class="title">
+        <div class="title" @click="navigateTo(`/docs/base/intro`)">
             <Icon name="fluent:content-settings-16-regular"/>
             <h1>Документация</h1>
         </div>
         
-        <GlobalColorModeSwitch />
+        <div class="edge">
+            <GlobalColorModeSwitch />
+            <GlobalAccountInfo />
+        </div>
     </header>
     <div class="header-placeholder" />
 </template>
@@ -31,12 +35,18 @@ header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
         svg {
             width: 1.5rem;
         }
         svg, h1 {
             font-size: 1.2rem;
         }
+    }
+    .edge {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 }
 
