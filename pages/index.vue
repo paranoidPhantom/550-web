@@ -7,7 +7,6 @@ definePageMeta({
 
 <template>
     <NuxtLink to="/docs/base/intro">Go to docs</NuxtLink>
-    <ClientStructureHeader />
 </template>
 
 <style scoped lang="scss">
