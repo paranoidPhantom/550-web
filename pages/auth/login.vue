@@ -5,6 +5,7 @@ definePageMeta({
     name: "Авторизация",
     layout: "admin",
     middleware: async () => {
+        if (process.server) return
         const { auth } = useSupabase()
         const { data: { user }, error } = await auth.getUser()
         if (user) { return navigateTo("/auth/logout") }
