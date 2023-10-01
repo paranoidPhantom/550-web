@@ -11,6 +11,8 @@ definePageMeta({
     }
 })
 
+const toast = useToast()
+
 const { auth } = useSupabase()
 
 const waitingForRes = ref(false)
@@ -39,7 +41,12 @@ async function submit(event: FormSubmitEvent<any>) {
         password: state.value.password
     })
     if (!error) {
-        console.log(callback)
+        toast.add({
+            id: 'auth_event',
+            title: 'Вы успешно вошли',
+            icon: 'i-heroicons-check-circle',
+            timeout: 3000
+        })
         navigateTo(callback ? callback as RouteLocationRaw : "/admin")
         return
     }

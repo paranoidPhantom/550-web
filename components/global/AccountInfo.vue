@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { DropdownItem } from '@nuxt/ui/dist/runtime/types';
 
+const toast = useToast()
+
 const { auth } = useSupabase()
 const { data: { session: sessionInitial }, error } = await auth.getSession()
 const session = ref(sessionInitial)
@@ -9,20 +11,25 @@ const items = computed(() => {
     let value: {
         [key: string]: any
     }[][] = [
-        [
-            {
-                label: session.value ? 'Вы автраизованы:' : "Вы не авторизованы",
-                slot: 'account',
-                disabled: true
-            }
-        ],
-    ]
+            [
+                {
+                    label: session.value ? 'Вы автраизованы:' : "Вы не авторизованы",
+                    slot: 'account',
+                    disabled: true
+                }
+            ],
+        ]
     if (session.value) {
         value.push([
             {
                 label: 'Документация',
                 icon: 'i-heroicons-book-open',
                 route: "/docs/base/intro"
+            },
+            {
+                label: 'Панель управления',
+                icon: 'i-heroicons-adjustments-horizontal-solid',
+                route: "/admin"
             }
         ])
     }
@@ -31,6 +38,12 @@ const items = computed(() => {
         icon: 'i-heroicons-arrow-left-on-rectangle',
         click: async () => {
             await auth.signOut()
+            toast.add({
+                id: 'auth_event',
+                title: 'Вы вышли',
+                icon: 'i-heroicons-check-circle',
+                timeout: 3000
+            })
             navigateTo("/auth/login")
         }
     } : {
@@ -61,19 +74,21 @@ const avatarAlt = computed(() => {
         }
     }
 })
+
 </script>
 
 <template>
     <ClientOnly>
         <UDropdown :items="(items as DropdownItem[][])" :ui="{ item: { disabled: 'cursor-text select-text' } }"
             :popper="{ placement: 'bottom-start' }">
-            <UAvatar :icon="session ? '': 'i-heroicons-user'" :alt="avatarAlt" />
+            <UAvatar :icon="session ? '' : 'i-heroicons-user'" :alt="avatarAlt" />
             <template #account="{ item }">
                 <div class="text-left">
                     <p>
                         {{ item.label }}
                     </p>
-                    <p class="w-44 text-xs text-ellipsis overflow-hidden whitespace-nowrap font-medium  text-gray-900 dark:text-white">
+                    <p
+                        class="w-44 text-xs text-ellipsis overflow-hidden whitespace-nowrap font-medium  text-gray-900 dark:text-white">
                         {{ session?.user.email }}
                     </p>
                 </div>

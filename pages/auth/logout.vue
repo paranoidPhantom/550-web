@@ -4,11 +4,19 @@ definePageMeta({
     layout: "admin"
 })
 
+const toast = useToast()
+
 const { auth } = useSupabase()
 
 const logOut = async () => {
     await auth.signOut()
     navigateTo("/auth/login")
+    toast.add({
+        id: 'auth_event',
+        title: 'Вы вышли',
+        icon: 'i-heroicons-check-circle',
+        timeout: 3000
+    })
 }
 </script>
 

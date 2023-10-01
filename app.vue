@@ -17,4 +17,5 @@ watchEffect(() => {
     <NuxtLayout>
         <NuxtPage />
     </NuxtLayout>
+    <UNotifications />
 </template>
