@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@iconify-json/line-md": "^1.1.29",
-    "@iconify/json": "^2.2.121",
-    "@supabase/supabase-js": "^2.36.0"
+    "@iconify/json": "^2.2.122",
+    "@supabase/supabase-js": "^2.37.0"
   }
 }
