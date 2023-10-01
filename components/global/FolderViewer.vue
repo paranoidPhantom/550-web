@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { componentNames } from '#build/components';
 import { computedAsync } from '@vueuse/core'
 interface props {
     bucket: string,
