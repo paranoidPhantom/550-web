@@ -3,7 +3,7 @@
 
 <template>
     <div class="__admin">
-        <AdminStructureHeader />
+        <MinimalHeader title="Панель управления" icon="game-icons:settings-knobs"/>
         <main>
             <slot />
         </main>

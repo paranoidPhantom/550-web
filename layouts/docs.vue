@@ -3,7 +3,7 @@
 
 <template>
     <div class="__docs">
-        <DocsStructureHeader />
+        <MinimalHeader title="Документация" icon="file-icons:readthedocs"/>
         <main>
             <DocsStructureSidebar />
             <slot />

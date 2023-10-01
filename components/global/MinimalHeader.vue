@@ -2,13 +2,18 @@
 import GlobalColorModeSwitch from "/components/global/ColorModeSwitch.vue"
 import GlobalAccountInfo from "@/components/global/AccountInfo.vue"
 
+defineProps<{
+    title: string,
+    icon: string
+}>()
+
 </script>
 
 <template>
     <header>
         <div class="title" @click="navigateTo(`/docs/base/intro`)">
-            <Icon name="fluent:content-settings-16-regular"/>
-            <h1>Документация</h1>
+            <Icon :name="icon"/>
+            <h1>{{ title }}</h1>
         </div>
         
         <div class="edge">
