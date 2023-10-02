@@ -6,10 +6,12 @@ interface props {
 }
 const { bucket, root: rootPath } = defineProps<props>()
 const { storage } = useSupabase()
+const loading = ref(false)
 
-const pathComponents = ref(["nested"])
+const pathComponents = ref([])
 
 const subpath = computed(() => {
+    loading.value = true
     return pathComponents.value.join("/")
 })
 
@@ -48,7 +50,8 @@ const currentFiles = computed(() => {
             resultEntity.id = fsEntity.id
         }
         result.push(resultEntity)
-    }
+    }    
+    loading.value = false
     return result
 })
 
@@ -61,17 +64,15 @@ function downloadURI(uri: string, name: string) {
     document.body.removeChild(link);
 }
 
+const { express_server_url, express_server_port } = useAppConfig()
+
 const accessFile = (subpath: string, file: string | undefined, download: boolean) => {
     const path = `${rootPath}/${subpath}/${file}`
-    const { data: { publicUrl } } = storage
-        .from(bucket)
-        .getPublicUrl(path, {
-            download: download,
-        })
+    const publicUrl = `http://${express_server_url}:${express_server_port}/${bucket}/${rootPath}/${subpath}/${file}`
     if (!download) {
         window.open(publicUrl)
     } else {
-        downloadURI(publicUrl, specialDecode(file as string))
+        downloadURI(publicUrl, file as string)
     }
 }
 
@@ -84,16 +85,6 @@ const getReadableFileSizeString = (fileSizeInBytes: number) => {
     } while (fileSizeInBytes > 1024);
 
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
-}
-
-const INPUT = ref("")
-
-const specialEncode = (initialString: string) => {
-    return encodeURIComponent(initialString).replaceAll("%", "'")
-}
-
-const specialDecode = (encodedString: string) => {
-    return decodeURIComponent(encodedString.replaceAll("'", "%"))
 }
 </script>
 
@@ -113,7 +104,7 @@ const specialDecode = (encodedString: string) => {
         </div>
         <hr>
         <div class="body">
-            <div class="loading" v-if="currentFiles === null">
+            <div class="loading" v-if="currentFiles === null || loading">
                 <Icon name="svg-spinners:blocks-shuffle-3" />
             </div>
             <div class="empty" v-else-if="Array.isArray(currentFiles) && currentFiles.length === 0">
@@ -126,7 +117,7 @@ const specialDecode = (encodedString: string) => {
 
                     <div class="main-data">
                         <Icon :name="entity.isFile ? 'codicon:file-pdf' : 'codicon:folder'" />
-                        <p>{{ specialDecode(entity.name) }}</p>
+                        <p>{{ entity.name }}</p>
                     </div>
                     <div class="actions" v-if="entity.isFile">
                         <p class="size">{{ getReadableFileSizeString(entity.size || 0) }}</p>
