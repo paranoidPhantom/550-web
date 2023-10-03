@@ -3,5 +3,7 @@ export default defineAppConfig({
     ui: {
         primary: 'sky',
         gray: 'neutral'
-    }
+    },
+    express_server_url: "localhost",
+    express_server_port: 3000
 });
