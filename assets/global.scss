@@ -9,6 +9,11 @@
     }
 }
 
+@font-face {
+    font-family: CascadiaCode;
+    src: url(/CascadiaCode-ExtraLight.otf);
+}
+
 .page-enter-from,
 .page-leave-to {
     opacity: 0;
