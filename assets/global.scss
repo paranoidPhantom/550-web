@@ -1,7 +1,11 @@
 :root {
     --inverted-rgb: 0, 0, 0;
+    --normal-rgb: 255, 255, 255;
+    --is-dark: 0;
     &.dark {
         --inverted-rgb: 255, 255, 255;
+        --normal-rgb: 18, 18, 18;
+        --is-dark: 1;
     }
 }
 
