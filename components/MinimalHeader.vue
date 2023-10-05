@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import GlobalColorModeSwitch from "/components/global/ColorModeSwitch.vue"
-import GlobalAccountInfo from "@/components/global/AccountInfo.vue"
 
 defineProps<{
     title: string,
@@ -17,8 +15,8 @@ defineProps<{
         </div>
         
         <div class="edge">
-            <GlobalColorModeSwitch />
-            <GlobalAccountInfo />
+            <ColorModeSwitch />
+            <AccountInfo />
         </div>
     </header>
     <div class="header-placeholder" />

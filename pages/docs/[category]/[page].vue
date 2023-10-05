@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import GlobalMarkdownForamatter from '~/components/global/MarkdownForamatter.vue';
 definePageMeta({
     layout: "docs",
     login_message: "Для доступа к документации необходимо авторизоваться",
@@ -14,9 +13,9 @@ definePageMeta({
 
 <template>
     <section id="docs-content-container">
-        <GlobalMarkdownForamatter>
+        <MarkdownForamatter>
             <ContentDoc />
-        </GlobalMarkdownForamatter>
+        </MarkdownForamatter>
     </section>
 </template>
 

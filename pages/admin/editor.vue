@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import GlobalMarkdownForamatter from '~/components/global/MarkdownForamatter.vue';
 import { computedAsync } from '@vueuse/core'
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime"
 
@@ -22,7 +21,7 @@ const preview = computedAsync(async () => {
 		<UTextarea class="input" placeholder="Введите Markdown разметку..." v-model="input" />
 		<div class="line"></div>
 		<div class="preview">
-			<GlobalMarkdownForamatter>
+			<MarkdownForamatter>
 				<ContentRendererMarkdown v-if="preview" :value="preview" />
 				<div class="no-preview" style="opacity: 0.8;" v-if="input === ''">
 					<h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -33,7 +32,7 @@ const preview = computedAsync(async () => {
 					<li>Чтобы добавить элемент списка напишите: <blockquote>- [Элемент списка]</blockquote>
 					</li>
 				</div>
-			</GlobalMarkdownForamatter>
+			</MarkdownForamatter>
 		</div>
 	</div>
 </template>

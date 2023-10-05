@@ -5,13 +5,12 @@ definePageMeta({
     middleware: "auth",
     login_message: "Для доступа к панели управления необходимо авторизоваться"
 })
-import GlobalFolderViewer from '@/components/global/FolderViewer.vue';
 
 </script>
 
 <template>
     <main>
-        <GlobalFolderViewer bucket="docs" root="test" />
+        <FolderViewer bucket="docs" root="test" />
     </main>
 </template>
 
