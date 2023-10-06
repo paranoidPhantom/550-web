@@ -4,6 +4,6 @@ export default defineAppConfig({
         primary: 'sky',
         gray: 'neutral'
     },
-    express_server_url: "localhost",
-    express_server_port: 3000
+    express_server_port: 3000,
+    service_domain: "localhost"
 });
