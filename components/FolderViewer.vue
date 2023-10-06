@@ -6,7 +6,10 @@ interface props {
 }
 const { bucket, root: rootPath } = defineProps<props>()
 const { storage } = useSupabase()
+const { express_server_port, service_domain } = useAppConfig()
 const loading = ref(false)
+
+const express_server = `http://${service_domain}:${express_server_port}/`
 
 const pathComponents = ref([])
 
@@ -17,21 +20,14 @@ const subpath = computed(() => {
 
 const rawFileData = computedAsync(async () => {
     const path = `${rootPath}/${subpath.value}`
-    const { data, error } = await storage
-        .from(bucket)
-        .list(path, {
-            limit: 100,
-            offset: 0,
-            sortBy: { column: 'name', order: 'asc' },
-        });
-    return data
+    const { data } = await useFetch(`${express_server}api/list_files/${bucket}/${path}`)
+    return data.value
 }, null)
 
 interface fsEntity {
     name: string;
     isFile?: boolean;
     size?: number;
-    id?: string;
 }
 
 const currentFiles = computed(() => {
@@ -44,35 +40,25 @@ const currentFiles = computed(() => {
         }
         const fsEntity = raw[index];
         resultEntity.name = fsEntity.name
-        resultEntity.isFile = fsEntity.id !== null
+        resultEntity.isFile = fsEntity.file
         if (resultEntity.isFile) {
-            resultEntity.size = fsEntity.metadata.contentLength
-            resultEntity.id = fsEntity.id
+            resultEntity.size = fsEntity.size
         }
         result.push(resultEntity)
-    }    
+    }
     loading.value = false
     return result
 })
 
-function downloadURI(uri: string, name: string) {
-    var link = document.createElement("a");
-    link.download = name;
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
 
-const { express_server_url, express_server_port } = useAppConfig()
 
 const accessFile = (subpath: string, file: string | undefined, download: boolean) => {
     const path = `${rootPath}/${subpath}/${file}`
-    const publicUrl = `http://${express_server_url}:${express_server_port}/${bucket}/${rootPath}/${subpath}/${file}`
-    if (!download) {
-        window.open(publicUrl)
+    const publicUrl = `${express_server}${download ? "download/" : ""}${bucket}/${path}`
+    if (download) {
+        window.location = publicUrl
     } else {
-        downloadURI(publicUrl, file as string)
+        window.open(publicUrl)
     }
 }
 
