@@ -35,7 +35,7 @@ const checks = [
 ];
 
 const executeChecks = async () => {
-    console.log("_")
+    checkResults.value = []
     fetching.value = true
     for (let index = 0; index < checks.length; index++) {
         const check = checks[index];
