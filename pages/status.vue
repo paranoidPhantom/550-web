@@ -31,6 +31,11 @@ const checksPassed = ref(0);
 
 const checks = [
     {
+        name: "File storage",
+        port: 3000,
+        test_route: "/status",
+    },
+    {
         name: "Supabase API (HTTP)",
         port: 8000,
         test_route: "/",
@@ -40,11 +45,6 @@ const checks = [
         port: 8443,
         test_route: "/",
         https: true,
-    },
-    {
-        name: "File storage",
-        port: 3000,
-        test_route: "/status",
     },
 ];
 
