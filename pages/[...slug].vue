@@ -25,10 +25,11 @@ const {
 
 let current_url = slug;
 if (Array.isArray(current_url)) {
-    current_url.join("/");
+    current_url = current_url.join("/");
 }
 
 current_url = `/${current_url}`
+
 
 const routeData = ref()
 const routeContent = ref()
@@ -58,7 +59,15 @@ const content = supabase
         "postgres_changes",
         { event: "*", schema: "public", table: "content", filter: `route=eq.${current_url}` },
         (payload) => {
-            updateFromData(payload.new)
+            switch (payload.eventType) {
+                case "UPDATE":
+                    updateFromData(payload.new)
+                    break;
+                case "DELETE":
+                    window.location.reload()
+                default:
+                    break;
+            }
         }
     )
     .subscribe();
