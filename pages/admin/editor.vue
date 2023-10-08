@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
-
+import type { PostgrestError } from "@supabase/supabase-js";
 
 definePageMeta({
-    name: "Редактор контента",
+    name: "Редактор",
     layout: "admin",
     // middleware: "auth"
 });
@@ -22,9 +22,29 @@ const preview = computedAsync(async () => {
     return tree;
 }, null);
 
+const handleDBError = (error: PostgrestError | null) => {
+    if (!error) { return }
+    let errorDescription = `${error.message}`
+    switch (parseInt(error.code)) {
+        case 23505:
+            errorDescription = "Страница с этим путём или названием уже существует!"
+            break;
+    }
+    toast.add({
+        id: `postgrest_error_${error.code}`,
+        title: `Ошибка ${error.code}`,
+        description: errorDescription,
+        icon: "i-heroicons-x-circle-20-solid",
+        color: "red",
+        timeout: 10000,
+    });
+}
+
+
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
 const { data, error } = await supabase.from(tableName).select();
+handleDBError(error)
 content_pages.value = data as page[];
 
 interface page {
@@ -109,14 +129,14 @@ const content_routes_list = computed(() => {
 const firstLoadComplete = ref(false);
 
 watchEffect(async () => {
-    if (current_route.value) {
+    if (current_route.value) {  
         const request_href = current_route.value.href;
         const { data, error } = await supabase
             .from(tableName)
             .select()
             .eq("route", request_href)
             .single();
-
+        if (error) { handleDBError(error); return }
         const loadedVal = (data as unknown as page).content;
         input.value =
             editing_route_cookie.value === request_href
@@ -125,6 +145,8 @@ watchEffect(async () => {
         editing_route_cookie.value = request_href;
         initialInput.value = data ? loadedVal : "";
         firstLoadComplete.value = true;
+        input.value = input.value.toString()
+        initialInput.value = initialInput.value.toString()
     }
 });
 
@@ -160,7 +182,7 @@ const confirmPublishChanges = async () => {
         .from(tableName)
         .update({ content: input.value })
         .eq("route", current_route.value.href);
-
+    if (error) { handleDBError(error); return }
     editing_value_cookie.value = undefined;
     initialInput.value = input.value;
     toast.add({
@@ -190,8 +212,9 @@ const createPage = async () => {
     const { error } = await supabase.from(tableName).insert({
         route: pageCreateFields.route,
         name: pageCreateFields.name,
-        content: `> Новая страница с названием '${pageCreateFields.name}' и путём '${pageCreateFields.route}' :sunglasses:`,
+        content: `::editorWelcome\n---\nparams: ${JSON.stringify(pageCreateFields)}\n---\n::`,
     });
+    if (error) { handleDBError(error); return }
     current_route.value = {
         href: pageCreateFields.route,
         name: pageCreateFields.name
@@ -207,6 +230,7 @@ const updatePageField = async (field: string, value: any) => {
         .from(tableName)
         .update(setVal)
         .eq("route", current_route.value.href);
+    if (error) { handleDBError(error); return }
     settingsFields[field as keyof typeof settingsFieldsDefaults] = "";
     slideoverOpen.value = false;
 };
@@ -239,6 +263,7 @@ const confirmDeletePage = async () => {
         .from(tableName)
         .delete()
         .eq("route", current_route.value.href);
+    if (error) { handleDBError(error); return }
 
     current_route.value = content_routes_list.value[0]
 };
@@ -345,7 +370,7 @@ defineShortcuts({
         <div class="input">
             <div class="options">
                 <UButton
-                    :disabled="!firstLoadComplete"
+                    :disabled="input !== initialInput || !firstLoadComplete"
                     @click="pageCreateOpen = true"
                     class="add-page"
                     color="white"
@@ -365,6 +390,7 @@ defineShortcuts({
                     :disabled="!firstLoadComplete"
                     ><Icon name="clarity:cog-solid"
                 /></UButton>
+                <UButton :to="current_route.href" target="_blank" color="white"><Icon name="ic:baseline-remove-red-eye"/></UButton>
                 <Icon
                     name="svg-spinners:ring-resize"
                     class="load-spinner"
@@ -493,6 +519,7 @@ defineShortcuts({
         gap: 0.5rem;
         min-width: calc(50% - 2rem);
         max-height: 100%;
+        font-family: "CascadiaCode";
 
         .options {
             display: flex;
