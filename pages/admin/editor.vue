@@ -2,7 +2,6 @@
 import { computedAsync } from "@vueuse/core";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 
-const { metaSymbol } = useShortcuts();
 
 definePageMeta({
     name: "Редактор",
@@ -12,6 +11,8 @@ definePageMeta({
 
 const supabase = useSupabase();
 const toast = useToast();
+
+const tableName = "content";
 
 const input = ref("");
 const initialInput = ref(input.value);
@@ -23,7 +24,7 @@ const preview = computedAsync(async () => {
 
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
-const { data, error } = await supabase.from("content").select();
+const { data, error } = await supabase.from(tableName).select();
 content_pages.value = data as page[];
 
 interface page {
@@ -40,17 +41,41 @@ const contentRealtime = supabase
         {
             event: "*",
             schema: "public",
-            table: "content",
+            table: tableName,
         },
         (payload) => {
-            content_pages.value.forEach((page: page, index: number) => {
-                if (page.route === (payload.new as page).route) {
-                    content_pages.value[index] = payload.new as unknown as page;
+            switch (payload.eventType) {
+                case "INSERT": {
+                    content_pages.value.push(payload.new as page);
+                    break;
                 }
-            });
+                case "UPDATE": {
+                    content_pages.value.forEach((page: page, index: number) => {
+                        if (page.route === (payload.new as page).route) {
+                            content_pages.value[index] = payload.new as page;
+                        }
+                    });
+                    break;
+                }
+                case "DELETE": {
+                    content_pages.value.forEach((page: page, index: number) => {
+                        if (page.route === (payload.old as page).route) {
+                            content_pages.value = content_pages.value
+                                .slice(0, index)
+                                .concat(content_pages.value.slice(index + 1));
+                        }
+                    });
+                    break;
+                }
+                default:
+                    break;
+            }
         }
     )
     .subscribe();
+
+const editing_route_cookie = useCookie("editing_route");
+const editing_value_cookie = useCookie("editing_value");
 
 const current_route = ref();
 const content_routes_list = computed(() => {
@@ -58,30 +83,55 @@ const content_routes_list = computed(() => {
         label: string;
         href: string;
     }[] = [];
-    content_pages.value.forEach((page: page) => {
-        result.push({
+    let lastHref = current_route.value ? current_route.value.href : undefined;
+    if (!lastHref) {
+        if (editing_route_cookie.value) {
+            lastHref = editing_route_cookie.value;
+        }
+    }
+    content_pages.value.forEach((page: page, index: number) => {
+        const option_object = {
             label: page.name,
             href: page.route,
-        });
+        };
+        result.push(option_object);
+        if (lastHref && lastHref === page.route) {
+            current_route.value = option_object;
+        } else if (!current_route.value && index === content_pages.value.length - 1) {
+            current_route.value = option_object;
+        }
     });
-    current_route.value = result[0];
+
     return result;
 });
 // Done with content_pages
+
+const firstLoadComplete = ref(false);
 
 watchEffect(async () => {
     if (current_route.value) {
         const request_href = current_route.value.href;
         const { data, error } = await supabase
-            .from("content")
-            .select(request_href)
+            .from(tableName)
+            .select()
+            .eq("route", request_href)
             .single();
-        input.value = (data as unknown as page).content;
-        initialInput.value = input.value;
+
+        const loadedVal = (data as unknown as page).content;
+        input.value =
+            editing_route_cookie.value === request_href
+                ? editing_value_cookie.value || loadedVal
+                : loadedVal;
+        editing_route_cookie.value = request_href;
+        initialInput.value = data ? loadedVal : "";
+        firstLoadComplete.value = true;
     }
 });
 
 const publishChanges = () => {
+    if (input.value === initialInput.value) {
+        return;
+    }
     toast.add({
         id: "publish_confirmation",
         title: "Подтвердите действие",
@@ -100,16 +150,21 @@ const publishChanges = () => {
 };
 
 const confirmPublishChanges = async () => {
+    if (input.value === initialInput.value) {
+        return;
+    }
     if (!current_route.value) {
         return;
     }
     const { error } = await supabase
-        .from("content")
+        .from(tableName)
         .update({ content: input.value })
         .eq("route", current_route.value.href);
+
+    editing_value_cookie.value = undefined;
     initialInput.value = input.value;
     toast.add({
-        id: "publish_complete",
+        id: `publish_complete_${input.value}`,
         title: "Публикация успешна!",
         icon: "i-heroicons-check-badge-20-solid",
         color: "green",
@@ -117,33 +172,39 @@ const confirmPublishChanges = async () => {
     });
 };
 
-defineShortcuts({
-    ctrl_s: {
-        usingInput: true,
-        handler: publishChanges,
-    },
-    ctrl_shift_s: {
-        usingInput: true,
-        handler: confirmPublishChanges,
-    },
-});
-
 const slideoverOpen = ref(false);
 const settingsFieldsDefaults = {
     name: "",
+    route: "",
 };
 
 const pageCreateOpen = ref(false);
 
-const pageCreateFields = settingsFieldsDefaults
+const pageCreateFields = reactive(settingsFieldsDefaults);
 
 const settingsFields = reactive(settingsFieldsDefaults);
+
+const createPage = async () => {
+    if (pageCreateFields.name === "" || pageCreateFields.route === "") { return }
+        pageCreateOpen.value = false;
+    const { error } = await supabase.from(tableName).insert({
+        route: pageCreateFields.route,
+        name: pageCreateFields.name,
+        content: `> Новая страница с названием '${pageCreateFields.name}' и путём '${pageCreateFields.route}' :sunglasses:`,
+    });
+    current_route.value = {
+        href: pageCreateFields.route,
+        name: pageCreateFields.name
+    }
+    pageCreateFields.name = "";
+    pageCreateFields.route = "";
+};
 
 const updatePageField = async (field: string, value: any) => {
     let setVal: { [key: string]: any } = {};
     setVal[field] = value;
     const { error } = await supabase
-        .from("content")
+        .from(tableName)
         .update(setVal)
         .eq("route", current_route.value.href);
     settingsFields[field as keyof typeof settingsFieldsDefaults] = "";
@@ -170,7 +231,40 @@ const deletePage = () => {
     });
 };
 
-const confirmDeletePage = async () => {};
+const confirmDeletePage = async () => {
+    if (!current_route.value) {
+        return;
+    }
+    const { error } = await supabase
+        .from(tableName)
+        .delete()
+        .eq("route", current_route.value.href);
+
+    current_route.value = content_routes_list.value[0]
+};
+
+watchEffect(() => {
+    if (input.value === "") {
+        return;
+    }
+    editing_value_cookie.value = input.value;
+});
+
+defineShortcuts({
+    ctrl_s: {
+        usingInput: true,
+        handler: publishChanges,
+    },
+    ctrl_shift_s: {
+        usingInput: true,
+        handler: confirmPublishChanges,
+    },
+    enter: {
+        usingInput: true,
+        whenever: [pageCreateOpen],
+        handler: createPage,
+    },
+});
 </script>
 
 <template>
@@ -181,28 +275,52 @@ const confirmDeletePage = async () => {};
                     <h1>Новая страница</h1>
                 </div>
                 <div class="body">
-                    <h1>Техническое название страницы</h1>
-                    <UInput
-                        v-model="settingsFields.name"
-                    />
+                    <UFormGroup
+                        label="Путь к странице"
+                        name="route"
+                        help="Нельзя менять после создания"
+                    >
+                        <UInput v-model="pageCreateFields.route" />
+                    </UFormGroup>
+                    <UFormGroup
+                        label="Название страницы"
+                        name="name"
+                        help="Не используется публично"
+                    >
+                        <UInput v-model="pageCreateFields.name" />
+                    </UFormGroup>
                     <UButton
-                        label="Обновить"
+                        label="Создать"
                         variant="soft"
                         :disabled="
-                            settingsFields.name === ''
+                            pageCreateFields.name === '' ||
+                            pageCreateFields.route === ''
                         "
-                        @click="updatePageField('name', settingsFields.name)"
+                        @click="createPage"
                     />
                 </div>
             </div>
         </UModal>
         <USlideover v-model="slideoverOpen">
             <div class="__editor-slideover">
-                <h1>Техническое название страницы</h1>
-                <UInput
-                    :placeholder="current_route.label"
-                    v-model="settingsFields.name"
-                />
+                <UFormGroup
+                    label="Путь к странице"
+                    name="route"
+                    help="Нельзя менять после создания"
+                >
+                    <UInput v-model="current_route.href" :disabled="true" />
+                </UFormGroup>
+                <hr />
+                <UFormGroup
+                    label="Название страницы"
+                    name="name"
+                    help="Не используется публично"
+                >
+                    <UInput
+                        :placeholder="current_route.label"
+                        v-model="settingsFields.name"
+                    />
+                </UFormGroup>
                 <UButton
                     label="Обновить"
                     variant="soft"
@@ -227,6 +345,7 @@ const confirmDeletePage = async () => {};
         <div class="input">
             <div class="options">
                 <UButton
+                    :disabled="!firstLoadComplete"
                     @click="pageCreateOpen = true"
                     class="add-page"
                     color="white"
@@ -237,17 +356,23 @@ const confirmDeletePage = async () => {};
                     v-model="current_route"
                     :options="content_routes_list"
                     class="select-route"
-                    :disabled="input !== initialInput"
+                    :disabled="input !== initialInput || !firstLoadComplete"
                 />
                 <UButton
                     @click="slideoverOpen = !slideoverOpen"
                     class="edit-page"
                     color="white"
+                    :disabled="!firstLoadComplete"
                     ><Icon name="clarity:cog-solid"
                 /></UButton>
+                <Icon
+                    name="svg-spinners:ring-resize"
+                    class="load-spinner"
+                    v-if="!firstLoadComplete"
+                />
             </div>
             <UTextarea
-                :disabled="!current_route"
+                :disabled="!firstLoadComplete"
                 class="area"
                 :placeholder="
                     current_route
@@ -371,9 +496,16 @@ const confirmDeletePage = async () => {};
 
         .options {
             display: flex;
+            align-items: center;
             gap: 0.5rem;
             .select-route {
                 min-width: 12rem;
+            }
+            > * {
+                height: 100%;
+            }
+            .load-spinner {
+                width: 1.2rem;
             }
         }
 
