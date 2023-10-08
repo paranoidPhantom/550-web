@@ -35,7 +35,7 @@
             margin: 1rem 0;
             width: fit-content;
         }
-
+        font-family: "Oswald", sans-serif;
         li {
             list-style: disc;
             margin-left: 2rem;

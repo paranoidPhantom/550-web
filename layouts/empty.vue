@@ -7,4 +7,8 @@
     </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style>
+.__empty {
+    font-family: "CascadiaCode", sans-serif;
+}
+</style>

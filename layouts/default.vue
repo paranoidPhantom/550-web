@@ -11,6 +11,8 @@
     </div>
 </template>
 
-<style scoped lang="scss">
-
+<style>
+.__user {
+    font-family: "Oswald", sans-serif;
+}
 </style>

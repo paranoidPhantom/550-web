@@ -11,5 +11,7 @@
 </template>
 
 <style scoped lang="scss">
-
+.__admin {
+    font-family: "CascadiaCode", sans-serif;
+}
 </style>

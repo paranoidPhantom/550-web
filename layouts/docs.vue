@@ -12,6 +12,9 @@
 </template>
 
 <style scoped lang="scss">
+.__docs {
+    font-family: "CascadiaCode", sans-serif;
+}
 main {
     display: flex;
     justify-content: space-between;
