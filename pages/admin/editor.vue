@@ -4,7 +4,7 @@ import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 
 
 definePageMeta({
-    name: "Редактор",
+    name: "Редактор контента",
     layout: "admin",
     // middleware: "auth"
 });
