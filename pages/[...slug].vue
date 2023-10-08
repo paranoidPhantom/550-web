@@ -46,7 +46,8 @@ const updateFromData = (data: any) => {
 const supabase = useSupabase();
 const { data, error } = await supabase
     .from("content")
-    .select(current_url)
+    .select()
+    .eq("route", current_url)
     .single();
 
 updateFromData(data)
