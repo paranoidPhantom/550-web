@@ -4,10 +4,10 @@
 <template>
     <div class="__docs">
         <MinimalHeader title="Документация" icon="file-icons:readthedocs"/>
-        <main>
+        <div class="__page">
             <DocsStructureSidebar />
             <slot />
-        </main>
+        </div>
     </div>
 </template>
 
@@ -15,7 +15,7 @@
 .__docs {
     font-family: "CascadiaCode", sans-serif;
 }
-main {
+.__page {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
