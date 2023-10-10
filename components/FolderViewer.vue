@@ -5,9 +5,9 @@ interface props {
     root: string
 }
 const { bucket, root: rootPath } = defineProps<props>()
-const { storage } = useSupabase()
 const { express_server_port, service_domain } = useAppConfig()
 const loading = ref(false)
+
 
 const express_server = `http://${service_domain}:${express_server_port}/`
 
