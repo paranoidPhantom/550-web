@@ -6,7 +6,8 @@ import type { PostgrestError } from "@supabase/supabase-js";
 definePageMeta({
     name: "Редактор",
     layout: "admin",
-    // middleware: "auth"
+    middleware: "auth",
+    login_message: "Для доступа к редактору контента необходимо авторизоваться"
 });
 
 const supabase = useSupabase();
