@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useAutocomplete } from "@/composables/useAutocomplete";
+import { useAutocomplete } from "@/utils/useAutocomplete";
 import type {
     completion,
     completionField,
     runnerFields,
-} from "@/composables/useAutocomplete";
-import { WatchSource } from "nuxt/dist/app/compat/capi";
+} from "@/utils/useAutocomplete";
 
 const properties = defineProps<{
     input: string;
@@ -159,3 +158,4 @@ const fireModalInput = () => {
     }
 }
 </style>
+~/utils/useAutocomplete~/utils/useAutocomplete
