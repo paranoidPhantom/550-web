@@ -15,10 +15,8 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 RUN apt-get update
 RUN apt-get install nodejs -y
 
-RUN . ~/.bashrc
-
 # Install deps
-RUN npm install
+RUN npm ci
 
 COPY . .
 
