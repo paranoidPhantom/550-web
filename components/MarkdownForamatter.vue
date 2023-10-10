@@ -41,6 +41,10 @@
             margin-left: 2rem;
         }
 
+        ol > li {
+            list-style-type: decimal;
+        }
+
         >pre {
             overflow: hidden;
             border-radius: 0.5rem;
@@ -49,10 +53,6 @@
             >code {
                 >.line {
                     padding: 0 0.5rem;
-
-                    &.highlight {
-                        filter: drop-shadow(0 0 0.2rem rgba(var(--inverted-rgb), 0.5));
-                    }
                 }
             }
         }
