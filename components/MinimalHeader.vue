@@ -2,14 +2,15 @@
 
 defineProps<{
     title: string,
-    icon: string
+    icon: string,
+    home: string
 }>()
 
 </script>
 
 <template>
     <header>
-        <div class="title" @click="navigateTo(`/docs/base/intro`)">
+        <div class="title" @click="navigateTo(home)">
             <Icon :name="icon"/>
             <h1>{{ title }}</h1>
         </div>
