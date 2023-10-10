@@ -14,8 +14,8 @@ const toast = useToast();
 
 const tableName = "content";
 
-const input = ref("");
-const initialInput = ref(input.value);
+const input = ref();
+const initialInput = ref("");
 const preview = computedAsync(async () => {
     let initialText = input.value;
     const tree = await parseMarkdown(initialText);
@@ -85,6 +85,7 @@ const contentRealtime = supabase
                                 .concat(content_pages.value.slice(index + 1));
                         }
                     });
+                    current_route.value = content_pages.value[0]
                     break;
                 }
                 default:
@@ -126,10 +127,11 @@ const content_routes_list = computed(() => {
 });
 // Done with content_pages
 
+
 const firstLoadComplete = ref(false);
 
 watchEffect(async () => {
-    if (current_route.value) {  
+    if (current_route.value) {
         const request_href = current_route.value.href;
         const { data, error } = await supabase
             .from(tableName)
@@ -144,7 +146,7 @@ watchEffect(async () => {
                 : loadedVal;
         editing_route_cookie.value = request_href;
         initialInput.value = data ? loadedVal : "";
-        firstLoadComplete.value = true;
+        if (!firstLoadComplete.value) firstLoadComplete.value = true;
         input.value = input.value.toString()
         initialInput.value = initialInput.value.toString()
     }
@@ -268,10 +270,29 @@ const confirmDeletePage = async () => {
     current_route.value = content_routes_list.value[0]
 };
 
+
+const currentInput = useState("editor_input_global", () => "")
+
+const editor = ref()
+const textArea: Ref<HTMLTextAreaElement | undefined> = ref()
+const selectionIndex = ref(0)
+
+const updateSI = () => {
+    selectionIndex.value = textArea.value ? textArea.value.selectionEnd : 0
+}
+
 watchEffect(() => {
-    if (input.value === "") {
+    if (currentInput.value) {
+        input.value = currentInput.value
+        updateSI()
+    }
+})
+
+watchEffect(() => {
+    if (input.value === undefined) {
         return;
     }
+    updateSI()
     editing_value_cookie.value = input.value;
 });
 
@@ -290,10 +311,24 @@ defineShortcuts({
         handler: createPage,
     },
 });
+
+onMounted(() => {
+    const root = editor.value
+    const textAreaSelection = root.querySelector("textarea")
+    textArea.value = textAreaSelection
+    //
+    textArea.value?.addEventListener("keyup", updateSI),
+    textArea.value?.addEventListener("click", updateSI)
+})
+
+onUnmounted(() => {
+    textArea.value?.removeEventListener("keyup", updateSI),
+    textArea.value?.removeEventListener("click", updateSI)
+})
 </script>
 
 <template>
-    <div class="__editor">
+    <div class="__editor" ref="editor">
         <UModal v-model="pageCreateOpen" :transition="false">
             <div class="__editor-page-create">
                 <div class="header">
@@ -390,7 +425,10 @@ defineShortcuts({
                     :disabled="!firstLoadComplete"
                     ><Icon name="clarity:cog-solid"
                 /></UButton>
-                <UButton :to="current_route.href" target="_blank" color="white"><Icon name="ic:baseline-remove-red-eye"/></UButton>
+                <UButton :to="current_route.href" target="_blank" color="white"
+                    ><Icon name="ic:baseline-remove-red-eye"
+                /></UButton>
+                <AdminUtilityEditorAutocomplete :input="input" :index="selectionIndex" />
                 <Icon
                     name="svg-spinners:ring-resize"
                     class="load-spinner"
@@ -407,29 +445,34 @@ defineShortcuts({
                 "
                 v-model="input"
             />
-            <div class="unsaved" v-if="input !== initialInput">
-                <div class="side">
-                    <Icon name="material-symbols:edit-rounded" />
-                    <p>Вы внесли изменения</p>
+            <Transition name="unsaved">
+                <div
+                    class="unsaved"
+                    v-if="input !== initialInput && firstLoadComplete"
+                >
+                    <div class="side">
+                        <Icon name="material-symbols:edit-rounded" />
+                        <p>Вы внесли изменения</p>
+                    </div>
+                    <div class="side">
+                        <UTooltip>
+                            <template #text> Отменить действия </template>
+                            <UButton
+                                @click="input = initialInput"
+                                icon="i-heroicons-trash-20-solid"
+                                color="white"
+                            />
+                        </UTooltip>
+                        <UTooltip :shortcuts="['CTRL', 'S']">
+                            <template #text> Опубликовать </template>
+                            <UButton
+                                @click="publishChanges"
+                                icon="i-heroicons-check-circle-20-solid"
+                                color="red"
+                        /></UTooltip>
+                    </div>
                 </div>
-                <div class="side">
-                    <UTooltip>
-                        <template #text> Отменить действия </template>
-                        <UButton
-                            @click="input = initialInput"
-                            icon="i-heroicons-trash-20-solid"
-                            color="white"
-                        />
-                    </UTooltip>
-                    <UTooltip :shortcuts="['CTRL', 'S']">
-                        <template #text> Опубликовать </template>
-                        <UButton
-                            @click="publishChanges"
-                            icon="i-heroicons-check-circle-20-solid"
-                            color="red"
-                    /></UTooltip>
-                </div>
-            </div>
+            </Transition>
         </div>
         <div class="line"></div>
         <div class="preview">
@@ -439,20 +482,7 @@ defineShortcuts({
                     class="no-preview"
                     style="opacity: 0.8"
                     v-if="input === ''"
-                >
-                    <h3 style="display: flex; align-items: center; gap: 0.5rem">
-                        <Icon name="line-md:question-circle" /> Начните писать в
-                        поле и увидите изменения в этом окне
-                    </h3>
-                    <li>
-                        Чтобы добавить заголовок напишите:
-                        <blockquote># [Заголовок]</blockquote>
-                    </li>
-                    <li>
-                        Чтобы добавить элемент списка напишите:
-                        <blockquote>- [Элемент списка]</blockquote>
-                    </li>
-                </div>
+                ></div>
             </MarkdownForamatter>
         </div>
     </div>
@@ -508,7 +538,7 @@ defineShortcuts({
     justify-content: space-between;
     height: calc(100vh - 3rem);
 
-    .line {
+    > .line {
         background-color: rgba(var(--inverted-rgb), 0.2);
         width: 1px;
     }
@@ -516,7 +546,6 @@ defineShortcuts({
     .input {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
         min-width: calc(50% - 2rem);
         max-height: 100%;
         font-family: "CascadiaCode";
@@ -525,6 +554,7 @@ defineShortcuts({
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            padding-bottom: 0.5rem;
             .select-route {
                 min-width: 12rem;
             }
@@ -540,10 +570,21 @@ defineShortcuts({
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 3rem;
+            transition: all 0.5s;
+            padding-top: 0.5rem;
+            overflow: hidden;
             .side {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
+            }
+            &.unsaved-enter-from,
+            &.unsaved-leave-to {
+                height: 0;
+                padding-top: 0;
+                opacity: 0;
+                translate: 0 1rem;
             }
         }
 
