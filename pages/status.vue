@@ -32,7 +32,7 @@ const checksPassed = ref(0);
 const checks = [
     {
         name: "File storage",
-        port: 3000,
+        port: 3001,
         test_route: "/status",
     },
     {
