@@ -3,7 +3,8 @@ import { computedAsync } from "@vueuse/core";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 definePageMeta({
     middleware: async (to, from) => {
-        const supabase = useSupabase();
+        const { public: { supabase_init_params } } = useRuntimeConfig()
+        const supabase = useSupabase(supabase_init_params as any);
         const { data, error } = await supabase
             .from("content")
             .select()
@@ -44,7 +45,8 @@ const updateFromData = (data: any) => {
     routeContent.value = routeData.value.content
 }
 
-const supabase = useSupabase();
+const { public: { supabase_init_params } } = useRuntimeConfig()
+const supabase = useSupabase(supabase_init_params as any);
 const { data, error } = await supabase
     .from("content")
     .select()

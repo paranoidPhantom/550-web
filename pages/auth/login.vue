@@ -6,7 +6,8 @@ definePageMeta({
     layout: "admin",
     middleware: async () => {
         if (process.server) return
-        const { auth } = useSupabase()
+    const { public: { supabase_init_params } } = useRuntimeConfig()
+        const { auth } = useSupabase(supabase_init_params as any)
         const { data: { user }, error } = await auth.getUser()
         if (user) { return navigateTo("/auth/logout") }
     }
@@ -14,7 +15,8 @@ definePageMeta({
 
 const toast = useToast()
 
-const { auth } = useSupabase()
+const { public: { supabase_init_params } } = useRuntimeConfig()
+const { auth } = useSupabase(supabase_init_params as any)
 
 const waitingForRes = ref(false)
 const { query: { callback, message } } = useRoute()

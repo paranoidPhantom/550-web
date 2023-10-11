@@ -6,7 +6,8 @@ definePageMeta({
 
 const toast = useToast()
 
-const { auth } = useSupabase()
+const { public: { supabase_init_params } } = useRuntimeConfig()
+const { auth } = useSupabase(supabase_init_params as any)
 
 const logOut = async () => {
     await auth.signOut()
