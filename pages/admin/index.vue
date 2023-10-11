@@ -10,7 +10,7 @@ definePageMeta({
 
 <template>
     <main>
-        <FolderViewer bucket="docs" root="test" />
+        <FolderViewer bucket="images" root="" />
     </main>
 </template>
 

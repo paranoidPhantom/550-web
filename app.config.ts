@@ -5,5 +5,5 @@ export default defineAppConfig({
         gray: 'neutral'
     },
     express_server_port: 3001,
-    service_domain: "portaltest.ort.spb.ru"
+    service_domain: "localhost"
 });

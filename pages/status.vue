@@ -6,7 +6,7 @@ definePageMeta({
     layout: "empty",
 });
 
-const { service_domain } = useAppConfig();
+const { service_domain, express_server_port } = useAppConfig();
 
 const fetching = ref(true);
 const counterClass = computed(() => {
@@ -32,7 +32,7 @@ const checksPassed = ref(0);
 const checks = [
     {
         name: "File storage",
-        port: 3001,
+        port: express_server_port,
         test_route: "/status",
     },
     {
