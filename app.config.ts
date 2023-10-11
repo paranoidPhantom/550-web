@@ -5,5 +5,4 @@ export default defineAppConfig({
         gray: 'neutral'
     },
     express_server_port: 3001,
-    service_domain: "localhost"
 });

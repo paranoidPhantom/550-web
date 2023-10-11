@@ -5,7 +5,9 @@ interface props {
     root: string;
 }
 const { bucket, root: rootPath } = defineProps<props>();
-const { express_server_port, service_domain } = useAppConfig();
+const { express_server_port } = useAppConfig();
+
+const { public: { service_domain } } = useRuntimeConfig();
 const loading = ref(false);
 
 const express_server = `http://${service_domain}:${express_server_port}/`;

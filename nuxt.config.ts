@@ -30,5 +30,10 @@ export default defineNuxtConfig({
 	},
 	supabase: {
 		redirect: false
+	},
+	runtimeConfig: {
+		public: {
+			service_domain: process.env.SUPABASE_URL?.split(":8000")[0].split("://")[1]
+		}
 	}
 })

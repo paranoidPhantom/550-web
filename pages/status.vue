@@ -6,7 +6,8 @@ definePageMeta({
     layout: "empty",
 });
 
-const { service_domain, express_server_port } = useAppConfig();
+const { express_server_port } = useAppConfig();
+const { public: { service_domain } } = useRuntimeConfig();
 
 const fetching = ref(true);
 const counterClass = computed(() => {
