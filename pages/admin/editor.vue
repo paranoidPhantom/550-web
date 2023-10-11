@@ -10,8 +10,8 @@ definePageMeta({
     login_message: "Для доступа к редактору контента необходимо авторизоваться"
 });
 
-const { public: { supabase_init_params } } = useRuntimeConfig()
-const supabase = useSupabase(supabase_init_params as any);
+
+const supabase = useSupabaseClient();
 const toast = useToast();
 
 const tableName = "content";

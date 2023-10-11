@@ -3,8 +3,7 @@ import { DropdownItem } from '@nuxt/ui/dist/runtime/types';
 
 const toast = useToast()
 
-const { public: { supabase_init_params } } = useRuntimeConfig()
-const { auth } = useSupabase(supabase_init_params as any)
+const { auth } = useSupabaseClient()
 const { data: { session: sessionInitial }, error } = await auth.getSession()
 const session = ref(sessionInitial)
 
