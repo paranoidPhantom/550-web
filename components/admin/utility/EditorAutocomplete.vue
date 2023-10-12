@@ -7,7 +7,7 @@ import type {
 } from "@/utils/useAutocomplete";
 
 const properties = defineProps<{
-    input: string;
+    input: string | undefined;
     index: number;
 }>();
 
