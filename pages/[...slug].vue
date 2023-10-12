@@ -74,7 +74,7 @@ const content = supabase
 </script>
 
 <template>
-    <main>
+    <div class="__content">
         <Head v-if="routeContentTree">
             <Title>{{ routeContentTree.data.title }}</Title>
             <Meta name="description" :content="routeContentTree.data.description" />
@@ -85,5 +85,17 @@ const content = supabase
                 :value="routeContentTree"
             />
         </MarkdownForamatter>
-    </main>
+    </div>
 </template>
+
+<style lang="scss">
+.__content {
+    padding: 0 10%;
+}
+
+@media (max-width: 800px) {
+    .__content {
+        padding: 0 1rem;
+    }
+}
+</style>
