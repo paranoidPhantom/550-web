@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core";
+import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
 interface props {
     bucket: string;
     root: string;
@@ -7,12 +7,24 @@ interface props {
 const { bucket, root: rootPath } = defineProps<props>();
 const { express_server_port } = useAppConfig();
 
-const { public: { service_domain } } = useRuntimeConfig();
+const toast = useToast();
+
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
 const loading = ref(false);
 
 const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const pathComponents = ref([]);
+
+const { auth } = useSupabaseClient();
+
+const {
+    data: { session },
+} = await auth.getSession();
+
+const user = useSupabaseUser();
 
 const subpath = computed(() => {
     loading.value = true;
@@ -22,7 +34,7 @@ const subpath = computed(() => {
 const rawFileData = computedAsync(async () => {
     const path = `${rootPath}${subpath.value}`;
     const { data } = await useFetch(
-        `${express_server}api/list_files/${bucket}/${path}`
+        encodeURI(`${express_server}api/list_files/${bucket}/${path}`)
     );
     return data.value;
 }, null);
@@ -60,7 +72,7 @@ const accessFile = (
     file: string | undefined,
     download: boolean
 ) => {
-    const path = `${rootPath}${subpath}/${file}`;
+    const path = `${rootPath}${subpath}${subpath ? "/" : ""}${file}`;
     const publicUrl = `${express_server}${
         download ? "download/" : ""
     }${bucket}/${path}`;
@@ -101,32 +113,113 @@ const handleFileUpload = (event: any) => {
     handledragAndDrop(event);
     uploadOverlay.value = false;
     const dataTransfer = event.dataTransfer;
-    const files: FileList = dataTransfer.files;
-    const path = `${bucket}/${rootPath}${
-        subpath.value
-    }`;
+    const files: FileList = dataTransfer
+        ? dataTransfer.files
+        : event.target.files;
+    const path = `${bucket}/${rootPath}${subpath.value}`;
     let formData = new FormData();
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
         formData.append("file", file, encodeURI(file.name));
     }
-    console.log(formData.values)
+    if (!session?.access_token) return;
     const { error } = useFetch(`${express_server}upload`, {
         method: "post",
         query: { folder: path },
         body: formData,
+        headers: {
+            access_token: session.access_token,
+        },
     });
-    pathComponents.value.push(undefined as never)
+    pathComponents.value.push(undefined as never);
     setTimeout(() => {
-        pathComponents.value.pop()
-    }, 100);
+        pathComponents.value.pop();
+    }, 50);
 };
 
 const uploadOverlay = ref(false);
+const factualInput = ref();
+
+const newFolderModal = reactive({
+    enabled: false,
+    name: "",
+});
+
+const createFolder = () => {
+    if (!session?.access_token) return;
+    const { error } = useFetch(`${express_server}newdir`, {
+        method: "post",
+        query: { folder: `${bucket}/${newFolderModal.name}` },
+        headers: {
+            access_token: session.access_token,
+        },
+    });
+    newFolderModal.enabled = false;
+    newFolderModal.name = "";
+    pathComponents.value.push(undefined as never);
+    setTimeout(() => {
+        pathComponents.value.pop();
+    }, 50);
+};
+
+const confirmationForDeleteEntity = (
+    subpath: string,
+    file: string,
+    isFolder: boolean
+) => {
+    if (isFolder) {
+        setTimeout(() => {
+            pathComponents.value.pop();
+        }, 0);
+    }
+    toast.add({
+        id: `delete_entity_${file}_confirmation`,
+        title: "Подтвердите действие",
+        description: `${isFolder ? "Папка" : "Файл"} '${file}' будет ${
+            isFolder ? "удалена" : "удалён"
+        }`,
+        icon: "i-heroicons-exclamation-triangle-20-solid",
+        color: "red",
+        timeout: 0,
+        actions: [
+            {
+                label: "Удалить",
+                color: "red",
+                click: () => {
+                    deleteEntity(subpath, file);
+                },
+            },
+        ],
+    });
+};
+
+const deleteEntity = (subpath: string, file: string) => {
+    const path = `${bucket}/${rootPath}${subpath}${subpath ? "/" : ""}${file}`;
+    if (!session?.access_token) return;
+    const { error } = useFetch(`${express_server}remove`, {
+        method: "post",
+        query: { entity: path },
+        headers: {
+            access_token: session.access_token,
+        },
+    });
+    const original = JSON.parse(JSON.stringify(pathComponents.value));
+    setTimeout(() => {
+        pathComponents.value = original;
+    }, 0);
+};
 </script>
 
 <template>
-    <div class="root">
+    <div class="root" :class="{ 'no-user': !user }">
+        <UModal v-model="newFolderModal.enabled">
+            <div class="new-folder-container">
+                <UFormGroup label="Назавние папки">
+                    <UInput v-model="newFolderModal.name" />
+                </UFormGroup>
+                <UButton @click="createFolder" variant="soft">Создать</UButton>
+            </div>
+        </UModal>
         <div class="path">
             <div class="node" @click="pathComponents = []">
                 <Icon name="codicon:root-folder" />
@@ -149,7 +242,7 @@ const uploadOverlay = ref(false);
             class="body"
             @dragenter="enterdragAndDrop"
             @dragleave="exitdragAndDrop"
-            @dragover="handledragAndDrop"
+            @dragover="enterdragAndDrop"
             @drop="handleFileUpload"
         >
             <Transition name="dnd-overlay" v-if="uploadOverlay">
@@ -210,6 +303,44 @@ const uploadOverlay = ref(false);
                             <Icon name="codicon:eye" />
                         </UButton>
                     </div>
+                    <div class="actions">
+                        <UButton
+                            @click="
+                                confirmationForDeleteEntity(
+                                    subpath,
+                                    entity.name,
+                                    !entity.isFile as boolean
+                                )
+                            "
+                            variant="ghost"
+                        >
+                            <Icon name="codicon:trash" />
+                        </UButton>
+                    </div>
+                </div>
+            </div>
+            <div class="footer" v-if="user">
+                <hr />
+                <div class="options">
+                    <UButton
+                        color="white"
+                        @click="newFolderModal.enabled = true"
+                    >
+                        <Icon name="codicon:add" />
+                        Создать папку
+                    </UButton>
+                    <div class="upload-btn">
+                        <UButton color="white" @click="factualInput.click()">
+                            <Icon name="codicon:cloud-upload" />
+                            Загрузить
+                        </UButton>
+                        <input
+                            type="file"
+                            multiple
+                            @change="handleFileUpload"
+                            ref="factualInput"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -218,11 +349,19 @@ const uploadOverlay = ref(false);
 
 <style scoped lang="scss">
 .root {
+    position: relative;
     max-width: 25rem;
-
+    --files-frame-height: 15rem;
+    --footer-height: 4rem;
     background-color: rgba(var(--inverted-rgb), 0.05);
     outline: 1px solid rgba(var(--inverted-rgb), 0.2);
 
+    &.no-user {
+        --footer-height: 0;
+        .files {
+            max-height: var(--files-frame-height);
+        }
+    }
     border-radius: 0.5rem;
 
     hr {
@@ -251,7 +390,7 @@ const uploadOverlay = ref(false);
     }
 
     .body {
-        height: 10rem;
+        height: var(--files-frame-height);
         position: relative;
 
         .drag-n-drop-overlay {
@@ -264,12 +403,15 @@ const uploadOverlay = ref(false);
             align-items: center;
             gap: 0.75rem;
             font-size: 2rem;
-            transition: all 0.3s;
+            transition: all 1s;
             pointer-events: none;
+            z-index: 2;
         }
         .files {
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
+            height: calc(100% - var(--footer-height));
 
             .entity {
                 display: flex;
@@ -283,7 +425,7 @@ const uploadOverlay = ref(false);
                     display: flex;
                     align-items: center;
                     gap: 0.5rem;
-                    max-width: calc(100% - 10rem);
+                    max-width: calc(100% - 12rem);
                     p {
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -317,9 +459,14 @@ const uploadOverlay = ref(false);
                 }
             }
         }
-
+        .upload-btn {
+            input {
+                display: none;
+            }
+        }
         .loading,
         .empty {
+            max-height: calc(100% - var(--footer-height));
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -334,6 +481,37 @@ const uploadOverlay = ref(false);
             }
         }
     }
+    .footer {
+        position: absolute;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        bottom: 0;
+        height: var(--footer-height);
+        .options {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0 0.5rem;
+            height: calc(100% - 0.5rem);
+            button {
+                height: 100%;
+            }
+        }
+    }
+}
+
+.new-folder-container {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dnd-overlay-enter-active,
+.dnd-overlay-leave-active {
+    transition: all 1s;
 }
 
 .dnd-overlay-enter-from,
