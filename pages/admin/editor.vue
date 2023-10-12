@@ -2,6 +2,7 @@
 import { computedAsync } from "@vueuse/core";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 import type { PostgrestError } from "@supabase/supabase-js";
+import nuxtStorage from 'nuxt-storage';
 
 definePageMeta({
     name: "Редактор",
@@ -98,7 +99,6 @@ const contentRealtime = supabase
     .subscribe();
 
 const editing_route_cookie = useCookie("editing_route");
-const editing_value_cookie = useCookie("editing_value");
 
 const current_route = ref();
 const content_routes_list = computed(() => {
@@ -142,9 +142,10 @@ watchEffect(async () => {
             .single();
         if (error) { handleDBError(error); return }
         const loadedVal = (data as unknown as page).content;
+        const editing_value_cookie = nuxtStorage.localStorage.getData('editing_value_cookie')
         input.value =
             editing_route_cookie.value === request_href
-                ? editing_value_cookie.value || loadedVal
+                ? editing_value_cookie || loadedVal
                 : loadedVal;
         editing_route_cookie.value = request_href;
         initialInput.value = data ? loadedVal : "";
@@ -187,7 +188,7 @@ const confirmPublishChanges = async () => {
         .update({ content: input.value })
         .eq("route", current_route.value.href);
     if (error) { handleDBError(error); return }
-    editing_value_cookie.value = undefined;
+    nuxtStorage.sessionStorage.removeItem('editing_value_cookie');
     initialInput.value = input.value;
     toast.add({
         id: `publish_complete_${input.value}`,
@@ -273,7 +274,7 @@ const confirmDeletePage = async () => {
 };
 
 
-const currentInput = useState("editor_input_global", () => "")
+const currentInput = useState("editor_input_global", () => undefined)
 
 const editor = ref()
 const textArea: Ref<HTMLTextAreaElement | undefined> = ref()
@@ -294,8 +295,8 @@ watchEffect(() => {
     if (input.value === undefined) {
         return;
     }
+    nuxtStorage.localStorage.setData('editing_value_cookie', input.value, 24, 'h');
     updateSI()
-    editing_value_cookie.value = input.value;
 });
 
 defineShortcuts({
