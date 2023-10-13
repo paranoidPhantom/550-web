@@ -18,6 +18,9 @@ export default defineNuxtConfig({
 				'vue',
 				'ts'
 			]
+		},
+		markdown: {
+			anchorLinks: false
 		}
 	},
 	css: [
