@@ -3,25 +3,7 @@ const suffix = ref(true);
 const suffixSymbol = "|";
 const binaryLines: Ref<string[]> = ref([]);
 
-const fallingBinary = computed(() => {
-    return binaryLines.value.join("<br>");
-});
-
 onMounted(() => {
-    setTimeout(() => {
-        setInterval(() => {
-            let stringGenerated = ``;
-            for (let index = 0; index < 300; index++) {
-                stringGenerated = `${stringGenerated}${Math.round(
-                    Math.random()
-                )}`;
-            }
-            binaryLines.value.unshift(stringGenerated);
-            if (binaryLines.value.length > 25) {
-                binaryLines.value.pop();
-            }
-        }, 50);
-    }, 4000);
     setInterval(() => {
         suffix.value = !suffix.value;
     }, 800);

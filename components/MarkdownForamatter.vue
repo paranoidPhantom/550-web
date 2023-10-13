@@ -53,7 +53,7 @@
             outline: 1px solid rgba(var(--inverted-rgb), 0.2);
             th, td {
                 padding: 0.2rem 1rem;
-                border: 1px solid rgba(var(--inverted-rgb), 0.2);
+                outline: 1px solid rgba(var(--inverted-rgb), 0.2);
                 text-align: center;
             }
         }

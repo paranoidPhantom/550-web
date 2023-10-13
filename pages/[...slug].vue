@@ -33,6 +33,7 @@ current_url = `/${current_url}`
 
 const routeData = ref()
 const routeContent = ref()
+const pageLoaded = ref(false)
 
 const routeContentTree = computedAsync(async () => {
     const ast = await parseMarkdown(routeContent.value)
@@ -42,6 +43,8 @@ const routeContentTree = computedAsync(async () => {
 const updateFromData = (data: any) => {
     routeData.value = data
     routeContent.value = routeData.value.content
+    if (process.server) return
+    pageLoaded.value = true
 }
 
 const supabase = useSupabaseClient();
@@ -64,6 +67,7 @@ const content = supabase
                     updateFromData(payload.new)
                     break;
                 case "DELETE":
+                    if (!window) return
                     window.location.reload()
                 default:
                     break;
@@ -75,6 +79,7 @@ const content = supabase
 
 <template>
     <div class="__content">
+        <Icon name="svg-spinners:ring-resize" v-if="!pageLoaded" class="page-await"/>
         <Head v-if="routeContentTree">
             <Title>{{ routeContentTree.data.title }}</Title>
             <Meta name="description" :content="routeContentTree.data.description" />
@@ -91,6 +96,13 @@ const content = supabase
 <style lang="scss">
 .__content {
     padding: 0 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .page-await {
+        font-size: 2rem;
+        margin-top: calc(50vh - 5rem);
+    }
 }
 
 @media (max-width: 800px) {

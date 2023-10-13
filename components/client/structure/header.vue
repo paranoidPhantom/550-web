@@ -28,11 +28,17 @@ buttons.forEach((button, index) => {
 });
 
 const mobileHeaderOpen = ref(false);
+
+
+const currentRoute = computed(() => {
+    const { path } = useRoute()
+    return path
+})
 </script>
 
 <template>
     <header :style="{ '--scrolled': mobileHeaderOpen ? 1 : scrolled }">
-        <div class="left">
+        <div class="left" @click="navigateTo('/')">
             <h1 class="logo-placeholder-text">Школа №550</h1>
         </div>
         <div class="center">
@@ -56,6 +62,7 @@ const mobileHeaderOpen = ref(false);
                                 class="dropdown-link"
                                 color="white"
                                 variant="ghost"
+                                :class="{ current: currentRoute === subbutton.href }"
                                 :to="subbutton.href"
                                 :label="subbutton.text"
                             />
@@ -119,6 +126,12 @@ const mobileHeaderOpen = ref(false);
     </Transition>
 </template>
 
+<style>
+header .header-link .dropdown .current {
+    background-color:  rgba(var(--color-primary-DEFAULT) / 0.2);
+}
+</style>
+
 <style scoped lang="scss">
 header {
     display: flex;
@@ -136,6 +149,10 @@ header {
         font-weight: 700;
         font-size: 20px;
         color: rgb(var(--color-primary-DEFAULT));
+    }
+
+    .left {
+        cursor: pointer;
     }
     .header-link {
         position: relative;

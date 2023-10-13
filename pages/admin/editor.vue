@@ -340,6 +340,7 @@ onUnmounted(() => {
                 <div class="body">
                     <UFormGroup
                         label="Путь к странице"
+                        hint="Должен начинаться на '/'"
                         name="route"
                         help="Нельзя менять после создания"
                     >
@@ -357,7 +358,8 @@ onUnmounted(() => {
                         variant="soft"
                         :disabled="
                             pageCreateFields.name === '' ||
-                            pageCreateFields.route === ''
+                            pageCreateFields.route === '' ||
+                            !pageCreateFields.route.startsWith('/')
                         "
                         @click="createPage"
                     />
