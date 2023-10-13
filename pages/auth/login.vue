@@ -62,7 +62,7 @@ async function submit(event: FormSubmitEvent<any>) {
 </script>
 
 <template>
-    <div class="__login">
+    <section class="__login">
         <UForm :validate="validate" :state="state" @submit="submit">
             <div class="illustration">
                 <Icon name="ic:twotone-lock-person" />
@@ -81,7 +81,7 @@ async function submit(event: FormSubmitEvent<any>) {
                 {{ !waitingForRes ? "Войти" : "" }}
             </UButton>
         </UForm>
-    </div>
+    </section>
 </template>
 
 <style lang="scss">

@@ -22,8 +22,8 @@ const logOut = async () => {
 </script>
 
 <template>
-    <main>
-        <section id="logout">
+    <section class="__logout">
+        <div id="logout">
             <h1>Вы авторизованы!</h1>
             <hr style="border-color: rgba(var(--inverted-rgb), 0.1); width: 90%;">
             <div class="illustration">
@@ -35,12 +35,12 @@ const logOut = async () => {
                 <Icon name="line-md:arrow-left" />
             </div>
             <UButton @click="$router.go(-1)" variant="soft">Назад</UButton>
-        </section>
-    </main>
+        </div>
+    </section>
 </template>
 
 <style scoped lang="scss">
-main {
+.__logout {
     display: flex;
     justify-content: center;
 }
