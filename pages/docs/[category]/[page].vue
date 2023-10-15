@@ -16,6 +16,7 @@ definePageMeta({
         <MarkdownForamatter>
             <ContentDoc />
         </MarkdownForamatter>
+        <br>
     </section>
 </template>
 

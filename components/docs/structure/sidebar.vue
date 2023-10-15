@@ -22,6 +22,18 @@ const Categories: Categories = {
             {
                 name: "Введение",
                 route: "intro"
+            },
+            {
+                name: "Makrdown",
+                route: "md"
+            },
+            {
+                name: "Файловая система",
+                route: "fs"
+            },
+            {
+                name: "Статус компонентов",
+                route: "status"
             }
         ]
     },
