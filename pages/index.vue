@@ -14,6 +14,7 @@ const visImpairment = useState("vis_impairment_enabled", () => false)
         </section>
         <UButton @click="visImpairment = !visImpairment">test</UButton>
         <ClientUtilityVisImpairment />
+        <UButton @click="feedbackForm = true">Открыть форму</UButton>
         <br>
         <br>
         <br>
