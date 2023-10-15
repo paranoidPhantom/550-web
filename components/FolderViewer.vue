@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
-interface props {
+export interface props {
     bucket: string;
     root: string;
 }
@@ -16,7 +16,7 @@ const loading = ref(false);
 
 const express_server = `http://${service_domain}:${express_server_port}/`;
 
-const pathComponents = ref([]);
+const pathComponents: Ref<string[]> = ref([]);
 
 const { auth } = useSupabaseClient();
 
@@ -26,13 +26,37 @@ const {
 
 const user = useSupabaseUser();
 
+const pending = ref(false);
+const pendingText: Ref<string> = ref("");
+const recompute = ref(true);
+
+const recomputeSubpath = (status?: Ref<string>, label?: string) => {
+    recompute.value = false;
+    if (status) {
+        pending.value = true;
+        pendingText.value = label || "";
+        const stopWatch = watchEffect(() => {
+            if (status.value === "success") {
+                stopWatch();
+                recompute.value = true;
+                pending.value = false;
+            }
+        });
+    } else {
+        setTimeout(() => {
+            recompute.value = true;
+        }, 100);
+    }
+};
+
 const subpath = computed(() => {
+    if (!recompute.value) return;
     loading.value = true;
     return pathComponents.value.join("/");
 });
 
 const rawFileData = computedAsync(async () => {
-    const path = `${rootPath}${subpath.value}`;
+    const path = `${rootPath}/${subpath.value}`;
     const { data } = await useFetch(
         encodeURI(`${express_server}api/list_files/${bucket}/${path}`)
     );
@@ -43,6 +67,7 @@ interface fsEntity {
     name: string;
     isFile?: boolean;
     size?: number;
+    id?: number;
 }
 
 const currentFiles = computed(() => {
@@ -72,12 +97,12 @@ const accessFile = (
     file: string | undefined,
     download: boolean
 ) => {
-    const path = `${rootPath}${subpath}${subpath ? "/" : ""}${file}`;
+    const path = `${rootPath}/${subpath}${subpath ? "/" : ""}${file}`;
     const publicUrl = `${express_server}${
         download ? "download/" : ""
     }${bucket}/${path}`;
     if (download) {
-        window.location = publicUrl;
+        window.location = publicUrl as unknown as typeof window.location;
     } else {
         window.open(publicUrl);
     }
@@ -116,14 +141,14 @@ const handleFileUpload = (event: any) => {
     const files: FileList = dataTransfer
         ? dataTransfer.files
         : event.target.files;
-    const path = `${bucket}/${rootPath}${subpath.value}`;
+    const path = `${bucket}/${rootPath}/${subpath.value}`;
     let formData = new FormData();
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
         formData.append("file", file, encodeURI(file.name));
     }
     if (!session?.access_token) return;
-    const { error } = useFetch(`${express_server}upload`, {
+    const { status, error } = useFetch(`${express_server}upload`, {
         method: "post",
         query: { folder: path },
         body: formData,
@@ -131,10 +156,7 @@ const handleFileUpload = (event: any) => {
             access_token: session.access_token,
         },
     });
-    pathComponents.value.push(undefined as never);
-    setTimeout(() => {
-        pathComponents.value.pop();
-    }, 50);
+    recomputeSubpath(status, "Загружаем");
 };
 
 const uploadOverlay = ref(false);
@@ -147,66 +169,45 @@ const newFolderModal = reactive({
 
 const createFolder = () => {
     if (!session?.access_token) return;
-    const { error } = useFetch(`${express_server}newdir`, {
+    const { status, error } = useFetch(`${express_server}newdir`, {
         method: "post",
-        query: { folder: `${bucket}/${newFolderModal.name}` },
+        query: {
+            folder: `${bucket}/${rootPath}/${subpath.value}/${newFolderModal.name}`,
+        },
         headers: {
             access_token: session.access_token,
         },
     });
     newFolderModal.enabled = false;
     newFolderModal.name = "";
-    pathComponents.value.push(undefined as never);
-    setTimeout(() => {
-        pathComponents.value.pop();
-    }, 50);
+    recomputeSubpath(status, "Создаём папку");
 };
 
 const confirmationForDeleteEntity = (
-    subpath: string,
-    file: string,
-    isFolder: boolean
+    event: Event
 ) => {
-    if (isFolder) {
-        setTimeout(() => {
-            pathComponents.value.pop();
-        }, 0);
-    }
+    event.stopPropagation();
     toast.add({
-        id: `delete_entity_${file}_confirmation`,
-        title: "Подтвердите действие",
-        description: `${isFolder ? "Папка" : "Файл"} '${file}' будет ${
-            isFolder ? "удалена" : "удалён"
-        }`,
+        id: `delete_entity_confirmation`,
+        title: "Чтобы удалить элемент кликнете дважды",
         icon: "i-heroicons-exclamation-triangle-20-solid",
-        color: "red",
-        timeout: 0,
-        actions: [
-            {
-                label: "Удалить",
-                color: "red",
-                click: () => {
-                    deleteEntity(subpath, file);
-                },
-            },
-        ],
+        color: "yellow",
+        timeout: 3000
     });
 };
 
 const deleteEntity = (subpath: string, file: string) => {
-    const path = `${bucket}/${rootPath}${subpath}${subpath ? "/" : ""}${file}`;
+    toast.remove("delete_entity_confirmation")
+    const path = `${bucket}/${rootPath}/${subpath}/${file}`;
     if (!session?.access_token) return;
-    const { error } = useFetch(`${express_server}remove`, {
+    const { status, error } = useFetch(`${express_server}remove`, {
         method: "post",
         query: { entity: path },
         headers: {
             access_token: session.access_token,
         },
     });
-    const original = JSON.parse(JSON.stringify(pathComponents.value));
-    setTimeout(() => {
-        pathComponents.value = original;
-    }, 0);
+    recomputeSubpath(status, "Удаляем");
 };
 </script>
 
@@ -236,6 +237,10 @@ const deleteEntity = (subpath: string, file: string) => {
                     <p>{{ node }}</p>
                 </div>
             </template>
+            <div v-if="pending" style="margin-left: auto; gap: 1rem; display: flex; align-items: center;">
+                <p>{{ pendingText }}</p>
+                <Icon name="svg-spinners:ring-resize" />
+            </div>
         </div>
         <hr />
         <div
@@ -286,32 +291,46 @@ const deleteEntity = (subpath: string, file: string) => {
                         />
                         <p>{{ entity.name }}</p>
                     </div>
-                    <div class="actions" v-if="entity.isFile">
-                        <p class="size">
-                            {{ getReadableFileSizeString(entity.size || 0) }}
-                        </p>
-                        <UButton
-                            @click="accessFile(subpath, entity.name, true)"
-                            variant="ghost"
-                        >
-                            <Icon name="codicon:cloud-download" />
-                        </UButton>
-                        <UButton
-                            @click="accessFile(subpath, entity.name, false)"
-                            variant="ghost"
-                        >
-                            <Icon name="codicon:eye" />
-                        </UButton>
-                    </div>
                     <div class="actions">
+                        <template v-if="entity.isFile">
+                            <p class="size">
+                                {{
+                                    getReadableFileSizeString(entity.size || 0)
+                                }}
+                            </p>
+                            <UButton
+                                @click="
+                                    accessFile(
+                                        subpath as string,
+                                        entity.name,
+                                        true
+                                    )
+                                "
+                                variant="ghost"
+                            >
+                                <Icon name="codicon:cloud-download" />
+                            </UButton>
+                            <UButton
+                                @click="
+                                    accessFile(
+                                        subpath as string,
+                                        entity.name,
+                                        false
+                                    )
+                                "
+                                variant="ghost"
+                            >
+                                <Icon name="codicon:eye" />
+                            </UButton>
+                        </template>
                         <UButton
-                            @click="
+                            v-if="user"
+                            @click="(event) => {
                                 confirmationForDeleteEntity(
-                                    subpath,
-                                    entity.name,
-                                    !entity.isFile as boolean
-                                )
+                                    event
+                                )}
                             "
+                            @dblclick="deleteEntity(subpath as string, entity.name)"
                             variant="ghost"
                         >
                             <Icon name="codicon:trash" />
