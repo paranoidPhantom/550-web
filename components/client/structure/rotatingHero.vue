@@ -1,12 +1,47 @@
 <script setup lang="ts">
 const suffix = ref(true);
 const suffixSymbol = "|";
-const binaryLines: Ref<string[]> = ref([]);
+
+const originalText = "Информационных технологий";
+const loadEffect = ref("");
+const actualText = ref(originalText);
+const symbols = "qwertyuiopasdfghjklzxcvbnmйцукенгшщзфывапролдячсмить";
+
+const generateEffect = () => {
+    let count = 0;
+    let delta = 0.1
+    const interval = setInterval(() => {
+        if (count > originalText.length) {
+            delta = -delta
+            count = originalText.length
+        }
+        if (count < 0) {
+            count = 0
+            delta = 0.1
+        }
+        let result = "";
+        let load = "";
+        for (let index = 0; index < originalText.length; index++) {
+            const letter = originalText[index];
+            if (index <= count) {
+                result = `${result}${letter}`;
+            } else {
+                load = `${load}${
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                }`;
+            }
+        }
+        actualText.value = result;
+        loadEffect.value = load;
+        count += delta;
+    }, 10);
+};
 
 onMounted(() => {
     setInterval(() => {
         suffix.value = !suffix.value;
     }, 800);
+    generateEffect();
 });
 </script>
 
@@ -47,13 +82,17 @@ onMounted(() => {
                 </div>
                 <div class="top">
                     <h1>
-                        Информационных технологий{{
-                            suffix ? suffixSymbol : ""
-                        }}
+                        <span style="background-color: lime; text-decoration: underline solid 1px lime;">{{
+                            actualText
+                        }}</span
+                        ><span style="background-color: red">{{
+                            loadEffect
+                        }}</span
+                        >{{ suffix ? suffixSymbol : "" }}
                     </h1>
                 </div>
                 <div class="bottom">
-                    <h1>Мечты.{{ suffix ? suffixSymbol : "" }}</h1>
+                    <h1>Мечты{{ suffix ? suffixSymbol : "" }}</h1>
                 </div>
             </div>
         </div>
@@ -187,10 +226,6 @@ onMounted(() => {
     overflow-x: hidden;
     user-select: none;
 
-    &:hover {
-        
-    }
-
     h1 {
         font-family: CascadiaCode, sans-serif;
         font-weight: 200;
@@ -275,13 +310,14 @@ onMounted(() => {
 
             > h1 {
                 animation: text-transparency 16s ease-in-out infinite 4s;
-                background: -webkit-linear-gradient(
-                    45deg,
-                    rgb(12, 241, 39),
-                    rgb(21, 212, 4)
-                );
+                background: rgb(var(--inverted-rgb));
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
+
+                span {
+                    -webkit-background-clip: inherit;
+                    -webkit-text-fill-color: transparent;
+                }
             }
         }
 
