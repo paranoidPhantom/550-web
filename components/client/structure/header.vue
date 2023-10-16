@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const scrolled = ref(0);
 const feedbackForm = useState("feedback_form_enabled", () => false);
-const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
+const clamp = (val: number, min: number, max: number) =>
+    Math.min(Math.max(val, min), max);
 onMounted(() => {
     document?.addEventListener("scroll", () => {
         scrolled.value = clamp(window.scrollY / 64, 0, 1);
@@ -15,11 +16,11 @@ const buttons = [
             [
                 {
                     text: "Основные",
-                    href: "/info/primary"
-                }
+                    href: "/info/primary",
+                },
             ],
-        ]
-    }
+        ],
+    },
 ];
 
 const buttonStates: Ref<boolean[]> = ref([]);
@@ -38,7 +39,12 @@ const currentRoute = computed(() => {
 </script>
 
 <template>
-    <header :style="{ '--scrolled': mobileHeaderOpen ? 1 : scrolled, backdropFilter: feedbackForm ? 'none' : 'unset' }">
+    <header
+        :style="{
+            '--scrolled': mobileHeaderOpen ? 1 : scrolled,
+            backdropFilter: feedbackForm ? 'none' : 'unset',
+        }"
+    >
         <div class="left" @click="navigateTo('/')">
             <h1 class="logo-placeholder-text">Школа №550</h1>
         </div>
@@ -63,7 +69,9 @@ const currentRoute = computed(() => {
                                 class="dropdown-link"
                                 color="white"
                                 variant="ghost"
-                                :class="{ current: currentRoute === subbutton.href }"
+                                :class="{
+                                    current: currentRoute === subbutton.href,
+                                }"
                                 :to="subbutton.href"
                                 :label="subbutton.text"
                             />
