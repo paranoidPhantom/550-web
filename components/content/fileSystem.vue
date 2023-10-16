@@ -22,7 +22,7 @@ defineShortcuts({
         </USlideover>
         <UButton color="white" @click="open = true">
             <Icon name="line-md:clipboard-list-twotone"/>
-            Посмотреть файлы
+            Посмотреть документы
         </UButton>
     </div>
 </template>
