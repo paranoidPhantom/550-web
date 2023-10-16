@@ -36,6 +36,21 @@ const currentRoute = computed(() => {
     const { path } = useRoute()
     return path
 })
+    const { path } = useRoute();
+    mobileHeaderOpen.value = false;
+    return path;
+});
+
+const socialLinks = [
+    {
+        icon: "i-mdi-vk",
+        link: "https://vk.com/school_550_spb"
+    },
+    {
+        icon: "i-mdi-telegram",
+        link: "https://t.me/school550_spb"
+    }
+]
 </script>
 
 <template>
@@ -130,6 +145,12 @@ const currentRoute = computed(() => {
             </div>
             <div class="global">
                 <ColorModeSwitch />
+                <div class="social">
+                    <UButton v-for="link in socialLinks" :to="link.link" variant="link"
+                    target="_blank"
+                        ><Icon :name="link.icon" style="font-size: 1.5rem"
+                    /></UButton>
+                </div>
             </div>
         </div>
     </Transition>
