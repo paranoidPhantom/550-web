@@ -11,6 +11,7 @@ const visImpairment = useState("vis_impairment_enabled", () => false)
     <div class="__home">
         <section class="hero">
             <ClientStructureRotatingHero />
+            <UButton size="lg" variant="outline"></UButton>
         </section>
         <UButton @click="visImpairment = !visImpairment">test</UButton>
         <ClientUtilityVisImpairment />
