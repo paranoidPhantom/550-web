@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const scrolled = ref(0);
+const feedbackForm = useState("feedback_form_enabled", () => false);
 const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
 onMounted(() => {
     document?.addEventListener("scroll", () => {
@@ -37,7 +38,7 @@ const currentRoute = computed(() => {
 </script>
 
 <template>
-    <header :style="{ '--scrolled': mobileHeaderOpen ? 1 : scrolled }">
+    <header :style="{ '--scrolled': mobileHeaderOpen ? 1 : scrolled, backdropFilter: feedbackForm ? 'none' : 'unset' }">
         <div class="left" @click="navigateTo('/')">
             <h1 class="logo-placeholder-text">Школа №550</h1>
         </div>
