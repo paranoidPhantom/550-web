@@ -31,11 +31,7 @@ buttons.forEach((button, index) => {
 
 const mobileHeaderOpen = ref(false);
 
-
 const currentRoute = computed(() => {
-    const { path } = useRoute()
-    return path
-})
     const { path } = useRoute();
     mobileHeaderOpen.value = false;
     return path;
@@ -158,7 +154,8 @@ const socialLinks = [
 
 <style>
 header .header-link .dropdown .current {
-    background-color:  rgba(var(--color-primary-DEFAULT) / 0.2);
+    background-color: rgba(var(--color-primary-DEFAULT) / 0.1);
+    border-left: rgb(var(--color-primary-DEFAULT)) 2px solid;
 }
 </style>
 
@@ -219,7 +216,7 @@ header {
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
-                padding: 0 0.25rem;
+                padding: 0 0.5rem;
             }
         }
         &:hover .dropdown {
