@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: { enabled: true },
-	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxthq/studio', '@nuxtjs/supabase'],
+	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxthq/studio', '@nuxtjs/supabase', '@nuxtjs/mdc'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'page', mode: 'out-in' }

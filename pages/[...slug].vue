@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 definePageMeta({
     middleware: async (to, from) => {
@@ -32,19 +31,13 @@ current_url = `/${current_url}`
 
 
 const routeData = ref()
-const routeContent = ref()
 const pageLoaded = ref(false)
+const routeContentTree = ref()
 
-const routeContentTree = computedAsync(async () => {
-    const ast = await parseMarkdown(routeContent.value)
-    return ast
-}, null)
-
-const updateFromData = (data: any) => {
+const updateFromData = async (data: any) => {
     routeData.value = data
-    routeContent.value = routeData.value.content
-    if (process.server) return
     pageLoaded.value = true
+    routeContentTree.value = await parseMarkdown(data.content)
 }
 
 const supabase = useSupabaseClient();
@@ -85,9 +78,10 @@ const content = supabase
             <Meta name="description" :content="routeContentTree.data.description" />
         </Head>
         <MarkdownForamatter>
-            <ContentRendererMarkdown
-                v-if="routeContentTree"
-                :value="routeContentTree"
+            <MDC
+                v-if="routeData.content"
+                tag="article"
+                :value="routeData.content"
             />
         </MarkdownForamatter>
     </div>

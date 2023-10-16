@@ -22,7 +22,7 @@ onMounted(() => {
 
 <style lang="scss">
 .md-formatter {
-    > div {
+    > div, > article {
         font-weight: 300;
         > * {
             margin: 1rem 0;
