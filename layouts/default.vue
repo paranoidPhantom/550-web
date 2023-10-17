@@ -8,6 +8,7 @@
             <slot />
         </main>
         <ClientUtilityFeedback />
+        <ClientStructureFooter />
     </div>
 </template>
 
