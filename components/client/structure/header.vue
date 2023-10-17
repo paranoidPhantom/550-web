@@ -36,24 +36,13 @@ const currentRoute = computed(() => {
     mobileHeaderOpen.value = false;
     return path;
 });
-
-const socialLinks = [
-    {
-        icon: "i-mdi-vk",
-        link: "https://vk.com/school_550_spb"
-    },
-    {
-        icon: "i-mdi-telegram",
-        link: "https://t.me/school550_spb"
-    }
-]
 </script>
 
 <template>
     <header
         :style="{
             '--scrolled': mobileHeaderOpen ? 1 : scrolled,
-            backdropFilter: feedbackForm ? 'none' : 'unset',
+            backdropFilter: feedbackForm ? 'none' : '',
         }"
     >
         <div class="left" @click="navigateTo('/')">
@@ -141,12 +130,7 @@ const socialLinks = [
             </div>
             <div class="global">
                 <ColorModeSwitch />
-                <div class="social">
-                    <UButton v-for="link in socialLinks" :to="link.link" variant="link"
-                    target="_blank"
-                        ><Icon :name="link.icon" style="font-size: 1.5rem"
-                    /></UButton>
-                </div>
+                <ClientUtilitySocial />
             </div>
         </div>
     </Transition>

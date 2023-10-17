@@ -5,4 +5,14 @@ export default defineAppConfig({
         gray: 'neutral'
     },
     express_server_port: 3001,
+    socialLinks: [
+        {
+            icon: "i-mdi-vk",
+            link: "https://vk.com/school_550_spb"
+        },
+        {
+            icon: "i-mdi-telegram",
+            link: "https://t.me/school550_spb"
+        }
+    ]
 });
