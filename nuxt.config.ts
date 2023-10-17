@@ -4,10 +4,15 @@ export default defineNuxtConfig({
 	nitro: {
 		preset: "node-cluster"
 	},
-	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxthq/studio', '@nuxtjs/supabase', '@nuxtjs/mdc'],
+	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', 'nuxt-simple-sitemap'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
-		layoutTransition: { name: 'page', mode: 'out-in' }
+		layoutTransition: { name: 'page', mode: 'out-in' },
+		head: {
+		  htmlAttrs: {
+			lang: 'ru',
+		  },
+		},
 	},
 	routeRules: {
 		"/docs": {
@@ -36,6 +41,11 @@ export default defineNuxtConfig({
 	},
 	supabase: {
 		redirect: false
+	},
+	robots: {
+		rules: {
+			Disallow: ["/admin/", "/docs/"]
+		}
 	},
 	runtimeConfig: {
 		public: {
