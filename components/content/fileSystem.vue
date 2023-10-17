@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { props } from '../FolderViewer.vue';
+interface props {
+    bucket: string;
+    root: string;
+}
 const open = ref(false)
 
 defineProps<props>()

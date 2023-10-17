@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
-export interface props {
+interface props {
     bucket: string;
     root: string;
 }
