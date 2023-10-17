@@ -18,4 +18,4 @@ EXPOSE 3000
 RUN bun run build
 
 # Host app
-CMD [ "bun", ".output/server/index.mjs" ]
+CMD [ "node", ".output/server/index.mjs" ]
