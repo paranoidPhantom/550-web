@@ -14,5 +14,9 @@ export default defineAppConfig({
             icon: "i-mdi-telegram",
             link: "https://t.me/school550_spb"
         }
-    ]
+    ],
+    tableNames: {
+        content: "content",
+        news: "news"
+    }
 });
