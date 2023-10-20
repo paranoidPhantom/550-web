@@ -228,8 +228,9 @@ onMounted(() => {
 
     h1 {
         font-family: CascadiaCode, sans-serif;
-        font-weight: 200;
+        font-weight: 800;
         font-size: 3rem;
+        text-transform: uppercase;
     }
 
     .center-container {
