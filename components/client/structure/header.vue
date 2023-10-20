@@ -11,6 +11,10 @@ onMounted(() => {
 
 const buttons = [
     {
+        text: "Новости",
+        href: "/news",
+    },
+    {
         text: "Сведения об ОУ",
         dropdown: [
             [
@@ -54,11 +58,12 @@ const currentRoute = computed(() => {
                 class="header-link"
                 color="white"
                 variant="link"
+                :to="button.href"
             >
                 {{ button.text }}
                 <ClientOnly>
                     <div class="bridge" />
-                    <div class="dropdown">
+                    <div class="dropdown" v-if="button.dropdown">
                         <div
                             class="section"
                             v-for="(section, index) in button.dropdown"
@@ -110,7 +115,7 @@ const currentRoute = computed(() => {
                         variant="link"
                         @click="buttonStates[index] = !buttonStates[index]"
                     />
-                    <div class="dropdown" v-if="buttonStates[index]">
+                    <div class="dropdown" v-if="buttonStates[index] && button.dropdown">
                         <div
                             class="section"
                             v-for="(section, sectionIndex) in button.dropdown"
