@@ -39,16 +39,18 @@ defineProps<{
 .__news-list {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 2rem;
     padding: 2rem;
     article {
         transition: all 0.5s ease-in-out;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.8rem;
         width: 20rem;
         padding: 1rem;
         border-radius: 0.8rem;
+        height: fit-content;
         outline: 1px solid rgba(var(--inverted-rgb), 0.1);
         box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
         img {
@@ -86,6 +88,15 @@ defineProps<{
             box-shadow: 0 0 2rem rgb(var(--color-primary-500) / 0.8);
             background-color: rgb(var(--color-primary-500));
             color: white;
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    .__news-list {
+        padding: 1rem;
+        article {
+            width: 100%;
         }
     }
 }
