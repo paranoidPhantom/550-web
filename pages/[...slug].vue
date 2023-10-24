@@ -79,7 +79,7 @@ const content = supabase
         </Head>
         <MarkdownForamatter>
             <MDC
-                v-if="routeData.content"
+                v-if="routeData && routeData.content"
                 tag="article"
                 :value="routeData.content"
             />
