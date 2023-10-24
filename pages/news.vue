@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 definePageMeta({
     name: "Новости",
 });

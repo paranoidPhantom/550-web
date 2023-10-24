@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DropdownItem } from '@nuxt/ui/dist/runtime/types';
+import type { DropdownItem } from '@nuxt/ui/dist/runtime/types';
 
 const toast = useToast()
 
