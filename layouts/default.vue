@@ -8,12 +8,13 @@
             <slot />
         </main>
         <ClientUtilityFeedback />
+        <ClientUtilityVisImpairment />
         <ClientStructureFooter />
     </div>
 </template>
 
 <style>
 .__user {
-    font-family: "Oswald", sans-serif;
+    font-family: "Inter", sans-serif;
 }
 </style>
