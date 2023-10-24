@@ -59,7 +59,8 @@ defineProps<{
             height: 2rem;
         }
         .description {
-            height: 1.5rem;
+            font-size: 1rem;
+
         }
         .title-sk {
             height: 2rem;
