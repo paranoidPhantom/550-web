@@ -16,6 +16,7 @@ const buttons = [
     },
     {
         text: "Сведения об ОУ",
+        sectionMacher: (route: string) => route.startsWith("/info"),
         dropdown: [
             [
                 {
@@ -54,11 +55,14 @@ const currentRoute = computed(() => {
         </div>
         <div class="center">
             <UButton
-                v-for="button in buttons"
+                v-for="(button, root_index) in buttons"
                 class="header-link"
                 color="white"
                 variant="link"
                 :to="button.href"
+                :class="{
+                    current: button.href === currentRoute || (button.sectionMacher && button.sectionMacher(currentRoute)),
+                }"
             >
                 {{ button.text }}
                 <ClientOnly>
@@ -114,8 +118,12 @@ const currentRoute = computed(() => {
                         :label="button.text"
                         variant="link"
                         @click="buttonStates[index] = !buttonStates[index]"
+                        :to="button.href"
                     />
-                    <div class="dropdown" v-if="buttonStates[index] && button.dropdown">
+                    <div
+                        class="dropdown"
+                        v-if="buttonStates[index] && button.dropdown"
+                    >
                         <div
                             class="section"
                             v-for="(section, sectionIndex) in button.dropdown"
@@ -142,9 +150,13 @@ const currentRoute = computed(() => {
 </template>
 
 <style>
+header .current {
+    border-bottom: rgb(var(--color-primary-DEFAULT)) 1px solid;
+}
 header .header-link .dropdown .current {
-    background-color: rgba(var(--color-primary-DEFAULT) / 0.1);
     border-left: rgb(var(--color-primary-DEFAULT)) 2px solid;
+    border-bottom: none;
+    background-color: rgba(var(--color-primary-DEFAULT) / 0.1);
 }
 </style>
 
@@ -160,7 +172,7 @@ header {
     position: fixed;
     width: 100%;
     backdrop-filter: blur(8px);
-    z-index: 1;
+    z-index: 2;
     .logo-placeholder-text {
         font-weight: 700;
         font-size: 20px;
@@ -181,7 +193,7 @@ header {
             width: 100%;
             height: 1rem;
         }
-        &:hover .bridge {
+        &:hover .bridge, &:focus .bridge {
             display: block;
         }
         .dropdown {
@@ -208,7 +220,7 @@ header {
                 padding: 0 0.5rem;
             }
         }
-        &:hover .dropdown {
+        &:hover .dropdown, &:focus .dropdown, .dropdown:has(*:focus) {
             display: flex;
         }
     }
