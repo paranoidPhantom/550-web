@@ -10,18 +10,27 @@ interface article {
 
 defineProps<{
     news: article[];
-}>()
+}>();
 </script>
 
 <template>
     <div class="__news-list">
         <article v-for="article in news">
-            <img :src="article.thumbnail" alt="Новость">
+            <img :src="article.thumbnail" alt="Новость" />
             <h1 v-if="article.title">{{ article.title }}</h1>
-            <USkeleton v-else class="title-sk"/>
-            <p v-if="article.description">{{ article.description }}</p>
-            <USkeleton v-else class="description-sk"/>
-            <UButton :to="article.route" :label="article.link_text || 'Подробнее'"/>
+            <USkeleton v-else class="title-sk" />
+            <p class="description" v-if="article.description">{{ article.description }}</p>
+            <USkeleton v-else class="description-sk" />
+            <div class="details">
+                <p class="date">{{ useFormatedDate(article.created_at) }}</p>
+                <UButton
+                    class="link"
+                    variant="link"
+                    trailing-icon="i-heroicons-arrow-small-right"
+                    :to="article.route"
+                    :label="article.link_text || 'Подробнее'"
+                />
+            </div>
         </article>
     </div>
 </template>
@@ -30,24 +39,26 @@ defineProps<{
 .__news-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    padding: 0.5rem;
+    gap: 2rem;
+    padding: 2rem;
     article {
+        transition: all 0.5s ease-in-out;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         width: 20rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        outline: 1px solid rgb(var(--color-primary-DEFAULT) / 0.75);
+        padding: 1rem;
+        border-radius: 0.8rem;
+        outline: 1px solid rgba(var(--inverted-rgb), 0.1);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
         img {
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
         }
         h1 {
             font-size: 1.5rem;
             height: 2rem;
         }
-        p {
+        .description {
             height: 1.5rem;
         }
         .title-sk {
@@ -57,6 +68,23 @@ defineProps<{
         .description-sk {
             height: 1.5rem;
             width: 10rem;
+        }
+        .details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .date {
+                font-size: 0.8rem;
+                opacity: 0.5;
+            }
+            .link {
+                color: inherit;
+            }
+        }
+        &:hover {
+            box-shadow: 0 0 2rem rgb(var(--color-primary-500) / 0.8);
+            background-color: rgb(var(--color-primary-500));
+            color: white;
         }
     }
 }
