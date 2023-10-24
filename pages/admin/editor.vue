@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core";
-import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 import type {
     PostgrestError,
     RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
 import nuxtStorage from "nuxt-storage";
-import { content } from "#tailwind-config";
 
 interface article {
     route: string;
@@ -31,11 +29,6 @@ const {
 
 const input = ref();
 const initialInput = ref("");
-const preview = computedAsync(async () => {
-    let initialText = input.value;
-    const tree = await parseMarkdown(initialText);
-    return tree;
-}, null);
 
 const handleDBError = (error: PostgrestError | null) => {
     if (!error) {
@@ -486,7 +479,7 @@ const news_edit_settings: {
                 <div class="body">
                     <UFormGroup
                         label="Путь к странице"
-                        hint="Должен начинаться на '/'"
+                        hint="Должен начинаться на '/' или '/news/' (для новостных)"
                         name="route"
                         help="Нельзя менять после создания"
                     >
@@ -704,7 +697,7 @@ const news_edit_settings: {
         <div class="line"></div>
         <div class="preview">
             <MarkdownForamatter>
-                <ContentRendererMarkdown v-if="preview" :value="preview" />
+                <MDC v-if="input" :value="input" />
                 <div
                     class="no-preview"
                     style="opacity: 0.8"
