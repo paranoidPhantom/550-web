@@ -1,16 +1,16 @@
 import { serverSupabaseServiceRole } from '#supabase/server'
 
-export default defineEventHandler(
+export default defineCachedEventHandler(
 	async (event) => {
 		const supabase = await serverSupabaseServiceRole(event)
-		const { data, error } = await supabase
+		const { data } = await supabase
 			.from("content")
-			.select("route, created_at")
-		console.log(data)
+			.select("route, created_at") as { data: any }
 		return data.map((p) => {
+			const actualDate: Date = new Date(p.created_at)
 			return {
 				loc: p.route,
-				lastmod: p.created_at,
+				lastmod: actualDate,
 			};
 		});
 	},

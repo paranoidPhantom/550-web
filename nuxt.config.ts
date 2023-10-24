@@ -4,6 +4,9 @@ export default defineNuxtConfig({
 	nitro: {
 		preset: "node-cluster"
 	},
+	sitemap: {
+	  xslTips: false,
+	},
 	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', 'nuxt-simple-sitemap'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
