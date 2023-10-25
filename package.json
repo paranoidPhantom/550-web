@@ -15,7 +15,7 @@
     "@nuxt/content": "^2.8.5",
     "@nuxt/devtools": "^1.0.0-beta.2",
     "@nuxt/ui": "^2.9.0",
-    "@nuxtjs/mdc": "^0.2.3",
+    "@nuxtjs/mdc": "^0.2.5",
     "@nuxtjs/robots": "^3.0.0",
     "@nuxtjs/supabase": "^1.1.3",
     "@supabase/supabase-js": "^2.38.1",
