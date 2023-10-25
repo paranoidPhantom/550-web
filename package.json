@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@iconify-json/line-md": "^1.1.33",
-    "@iconify/json": "^2.2.129",
+    "@iconify/json": "^2.2.133",
     "@nuxt/content": "^2.8.5",
     "@nuxt/devtools": "^1.0.0-beta.2",
     "@nuxt/ui": "^2.9.0",
