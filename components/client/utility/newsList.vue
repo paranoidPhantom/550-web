@@ -58,7 +58,6 @@ defineProps<{
         }
         h1 {
             font-size: 1.5rem;
-            height: 2rem;
         }
         .description {
             font-size: 1rem;
