@@ -76,6 +76,7 @@ onMounted(() => {
                 <div class="buttons">
                     <UButton>Рассписание</UButton>
                     <UButton>Вопросы и ответы</UButton>
+                    <UButton @click="visImpairment = !visImpairment" color="white" icon="i-heroicons-eye-20-solid">Для пользователей с нарушением зрения</UButton>
                 </div>
             </div>
             <div class="render-container">
@@ -100,8 +101,7 @@ onMounted(() => {
             </div>
         </section>
         <ClientStructureNewsBlock />
-        <UButton @click="visImpairment = !visImpairment">test</UButton>
-        <UButton @click="feedbackForm = true">Открыть форму</UButton>
+        <UButton @click="feedbackForm = true">Открыть форму госуслуг (вместо кнопки будет банер)</UButton>
     </div>
 </template>
 
@@ -140,6 +140,7 @@ onMounted(() => {
             .buttons {
                 display: flex;
                 gap: 2rem;
+                flex-wrap: wrap;
                 > * {
                     padding-left: 2rem;
                     padding-right: 2rem;
