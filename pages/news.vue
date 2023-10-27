@@ -37,6 +37,11 @@ const reparseContent = () => {
         news.value[index].title = title;
         news.value[index].description = description;
     });
+    news.value.sort((a,b) => {
+        const date_b = new Date(b.created_at)
+        const date_a = new Date(a.created_at)
+        return date_b.getTime() - date_a.getTime()
+    })
 };
 
 const handle_postgres_changes = (
