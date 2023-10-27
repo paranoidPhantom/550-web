@@ -296,6 +296,7 @@ onMounted(() => {
         margin-top: 1rem;
         transition: all 0.3s;
         transition: margin-left 0.3s 0.3s;
+        margin: 0 !important;
     }
 
     > .hover-overlay {
@@ -388,7 +389,7 @@ onMounted(() => {
         display: none !important;
     }
 
-    #hero-container {
+    #news-container {
         height: auto;
         min-height: calc(35vh);
         padding: 1.5rem 3rem;

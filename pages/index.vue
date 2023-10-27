@@ -74,9 +74,9 @@ onMounted(() => {
                     центре города.
                 </p>
                 <div class="buttons">
-                    <UButton>Рассписание</UButton>
+                    <UButton>Расписание</UButton>
                     <UButton>Вопросы и ответы</UButton>
-                    <UButton @click="visImpairment = !visImpairment" color="white" icon="i-heroicons-eye-20-solid">Для пользователей с нарушением зрения</UButton>
+                    <UButton class="vis-impairment-btn" @click="visImpairment = !visImpairment" variant="soft" icon="i-heroicons-eye-20-solid">Для пользователей с нарушением зрения</UButton>
                 </div>
             </div>
             <div class="render-container">
@@ -126,6 +126,7 @@ onMounted(() => {
             .title {
                 font-size: 2.5rem;
                 font-weight: 700;
+                line-height: 120%;
                 .simple {
                     color: rgb(var(--color-primary-500));
                 }
@@ -139,11 +140,13 @@ onMounted(() => {
             }
             .buttons {
                 display: flex;
-                gap: 2rem;
+                column-gap: 2rem;
+                row-gap: 0.5rem;
                 flex-wrap: wrap;
                 > * {
-                    padding-left: 2rem;
-                    padding-right: 2rem;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                    max-width: 100%;
                 }
             }
         }
@@ -210,7 +213,20 @@ onMounted(() => {
                 max-width: 100vw;
                 padding: 1rem;
                 justify-content: center;
-                align-items: center;
+                .title {
+                    font-size: 2rem;
+                }
+                .buttons {
+                    justify-content: space-between;
+                    > * {
+                        padding-left: 0.5rem;
+                        padding-right: 0.5rem;
+                        width: 45%;
+                        &.vis-impairment-btn {
+                            flex-grow: 2;
+                        }
+                    }
+                }
             }
             .render-container {
                 display: none;
