@@ -1,21 +1,19 @@
 <script setup lang="ts">
-const { error } = defineProps(["error"])
-const suffix = ref()
+const { error } = defineProps(["error"]);
+const suffix = ref();
 
-onMounted(() => {
-    switch (error.statusCode) {
-        case 500: {
-            suffix.value = "Серверная ошибка"
-        }
+switch (error.statusCode) {
+    case 500: {
+        suffix.value = "Серверная ошибка";
     }
-})
+}
 </script>
 
 <template>
     <div class="__error">
-        <h1>{{ error.statusCode }} {{ suffix ? `(${suffix})` : '' }}</h1>
+        <h1>{{ error.statusCode }} {{ suffix ? `(${suffix})` : "" }}</h1>
         <h2>{{ error.message }}</h2>
-        <UButton to="/" label="На главную"/>
+        <UButton to="/" label="На главную" />
     </div>
 </template>
 
