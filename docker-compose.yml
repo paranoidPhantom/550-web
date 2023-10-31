@@ -1,0 +1,20 @@
+version: '3'
+services:
+  web:
+    image: paranoidphantom/550-web:v1.0
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+  fs_server:
+    image: paranoidphantom/550-server:v1.0
+    build: ../550-portal-server
+    ports:
+      - "3001:3001"
+    volumes:
+      - fs_server_vol:/usr/src/fs_server/db
+
+
+volumes:
+  fs_server_vol:
