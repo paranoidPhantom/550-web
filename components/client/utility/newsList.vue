@@ -36,7 +36,7 @@ defineProps<{
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .__news-list {
     display: flex;
     flex-wrap: wrap;
@@ -100,6 +100,11 @@ defineProps<{
             .description {
                 opacity: 1;
                 filter: drop-shadow(0 0 6px black);
+            }
+            .details {
+                .date {
+                    opacity: 1;
+                }
             }
         }
     }
