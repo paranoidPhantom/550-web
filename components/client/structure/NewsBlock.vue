@@ -82,7 +82,7 @@ setIndex(0);
 
 onMounted(() => {
     setIndex(0);
-    if (entries.length > 1) {
+    if (entries && entries.length > 1) {
         setTimeout(() => {
             setIndex(1);
         }, 100);
