@@ -4,10 +4,11 @@ import type { RouteLocationRaw } from '#vue-router';
 definePageMeta({
     name: "Авторизация",
     layout: "admin",
-    middleware: async () => {
+    middleware: async (to, from) => {
         const { auth } = useSupabaseClient()
         const { data: { user }, error } = await auth.getUser()
-        if (user) { return navigateTo("/auth/logout") }
+        const goingTo = to.query.callback
+        if (user) { return navigateTo( goingTo ? goingTo : "/auth/logout") }
     }
 })
 
