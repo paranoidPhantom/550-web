@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
+import normalize from 'normalize-path'
 interface props {
     bucket: string;
     root: string;
 }
-const { bucket, root: rootPath } = defineProps<props>();
+const props = defineProps<props>();
 const { express_server_port } = useAppConfig();
 
 const toast = useToast();
@@ -56,9 +57,9 @@ const subpath = computed(() => {
 });
 
 const rawFileData = computedAsync(async () => {
-    const path = `${rootPath}/${subpath.value}`;
+    const path = `${props.root}/${subpath.value}`;
     const { data } = await useFetch(
-        encodeURI(`${express_server}api/list_files/${bucket}/${path}`)
+        encodeURI(`${express_server}api/list_files/${props.bucket}/${path}`)
     );
     return data.value;
 }, null);
@@ -97,10 +98,10 @@ const accessFile = (
     file: string | undefined,
     download: boolean
 ) => {
-    const path = `${rootPath}/${subpath}${subpath ? "/" : ""}${file}`;
+    const path = normalize(`${props.root}/${subpath}/${file}`);
     const publicUrl = `${express_server}${
         download ? "download/" : ""
-    }${bucket}/${path}`;
+    }${props.bucket}${path}`;
     if (download) {
         window.location = publicUrl as unknown as typeof window.location;
     } else {
@@ -141,7 +142,7 @@ const handleFileUpload = (event: any) => {
     const files: FileList = dataTransfer
         ? dataTransfer.files
         : event.target.files;
-    const path = `${bucket}/${rootPath}/${subpath.value}`;
+    const path = `${props.bucket}/${props.root}/${subpath.value}`;
     let formData = new FormData();
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
@@ -172,7 +173,7 @@ const createFolder = () => {
     const { status, error } = useFetch(`${express_server}newdir`, {
         method: "post",
         query: {
-            folder: `${bucket}/${rootPath}/${subpath.value}/${newFolderModal.name}`,
+            folder: `${props.bucket}/${props.root}/${subpath.value}/${newFolderModal.name}`,
         },
         headers: {
             access_token: session.access_token,
@@ -198,7 +199,7 @@ const confirmationForDeleteEntity = (
 
 const deleteEntity = (subpath: string, file: string) => {
     toast.remove("delete_entity_confirmation")
-    const path = `${bucket}/${rootPath}/${subpath}/${file}`;
+    const path = `${props.bucket}/${props.root}/${subpath}/${file}`;
     if (!session?.access_token) return;
     const { status, error } = useFetch(`${express_server}remove`, {
         method: "post",
@@ -209,6 +210,12 @@ const deleteEntity = (subpath: string, file: string) => {
     });
     recomputeSubpath(status, "Удаляем");
 };
+
+const fileExtIcon = (name: string) => {
+    if (name.endsWith("pdf")) return "codicon:file-pdf"
+    else if (name.endsWith("png") || name.endsWith("jpg") || name.endsWith("jpeg") || name.endsWith("webp")) return "codicon:file-media"
+    else return "codicon:file-binary"
+}
 </script>
 
 <template>
@@ -237,9 +244,9 @@ const deleteEntity = (subpath: string, file: string) => {
                     <p>{{ node }}</p>
                 </div>
             </template>
-            <div v-if="pending" style="margin-left: auto; gap: 1rem; display: flex; align-items: center;">
-                <p>{{ pendingText }}</p>
-                <Icon name="svg-spinners:ring-resize" />
+            <div v-if="pending" style="width: 100%; display: flex; flex-direction: column; align-items: center; width: fit-content; margin-left: auto;">
+                <p style="font-size: 0.8rem;">{{ pendingText }}</p>
+                <UProgress style="flex-shrink: 2;" animation="carousel" />
             </div>
         </div>
         <hr />
@@ -280,12 +287,13 @@ const deleteEntity = (subpath: string, file: string) => {
                                 : null;
                         }
                     "
+                    :title="entity.name"
                 >
                     <div class="main-data">
                         <Icon
                             :name="
                                 entity.isFile
-                                    ? 'codicon:file-pdf'
+                                    ? fileExtIcon(entity.name)
                                     : 'codicon:folder'
                             "
                         />
@@ -374,6 +382,13 @@ const deleteEntity = (subpath: string, file: string) => {
     --footer-height: 4rem;
     background-color: rgba(var(--inverted-rgb), 0.05);
     outline: 1px solid rgba(var(--inverted-rgb), 0.2);
+
+    &.full {
+        height: 100%;
+        .body {
+            height: calc(100% - var(--footer-height));
+        }
+    }
 
     &.no-user {
         --footer-height: 0;
