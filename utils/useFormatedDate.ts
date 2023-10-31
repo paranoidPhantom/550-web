@@ -5,5 +5,5 @@ const zeroPrefix = (value: string | number) => {
 
 export const useFormatedDate = (date: Date | string) => {
     if (typeof date === "string") date = new Date(date)
-    return `${zeroPrefix(date.getDate())}.${zeroPrefix(date.getMonth())}.${zeroPrefix(date.getFullYear())}`
+    return `${zeroPrefix(date.getDate())}.${zeroPrefix(date.getMonth() + 1)}.${zeroPrefix(date.getFullYear())}`
 }
