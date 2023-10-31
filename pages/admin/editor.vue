@@ -56,7 +56,7 @@ const handleDBError = (error: PostgrestError | null) => {
 
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
-const { data, error } = await supabase.from(tableName).select("*, news(*)");
+const { data, error } = await supabase.from(tableName).select(`*, ${newsTableName}(*)`);
 handleDBError(error);
 content_pages.value = data as page[];
 
@@ -135,6 +135,8 @@ const contentRealtime = supabase
 
 const editing_route_cookie = useCookie("editing_route");
 
+const { query: routeQuery } = useRoute()
+
 const current_route = ref();
 const content_routes_list = computed(() => {
     let result: {
@@ -143,9 +145,8 @@ const content_routes_list = computed(() => {
     }[] = [];
     let lastHref = current_route.value ? current_route.value.href : undefined;
     if (!lastHref) {
-        if (editing_route_cookie.value) {
-            lastHref = editing_route_cookie.value;
-        }
+        if (editing_route_cookie.value) lastHref = editing_route_cookie.value;
+        if (routeQuery.editing) lastHref = routeQuery.editing
     }
     content_pages.value.forEach((page: page, index: number) => {
         const option_object = {
@@ -672,11 +673,11 @@ const news_edit_settings: {
                 >
                     <div class="side">
                         <Icon name="material-symbols:edit-rounded" />
-                        <p>Вы внесли изменения</p>
+                        <p>Изменения не синхронизованы</p>
                     </div>
                     <div class="side">
                         <UTooltip>
-                            <template #text> Отменить действия </template>
+                            <template #text>Отменить действия (скачать)</template>
                             <UButton
                                 @click="input = initialInput"
                                 icon="i-heroicons-trash-20-solid"
@@ -684,7 +685,7 @@ const news_edit_settings: {
                             />
                         </UTooltip>
                         <UTooltip :shortcuts="['CTRL', 'S']">
-                            <template #text> Опубликовать </template>
+                            <template #text>Опубликовать действия (загрузить)</template>
                             <UButton
                                 @click="publishChanges"
                                 icon="i-heroicons-check-circle-20-solid"
