@@ -62,7 +62,7 @@ onMounted(() => {
         <section id="primary-hero">
             <div class="primary">
                 <h1 class="title">
-                    <span class="simple">Школа № 550</span><br /><span
+                    <span class="simple">Школа № 550</span><br><span
                         class="full"
                         >Школа<br />информационных<br />технологий</span
                     >
