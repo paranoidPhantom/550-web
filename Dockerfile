@@ -4,18 +4,16 @@ WORKDIR /usr/src/nuxt_server
 
 COPY package*.json ./
 
-RUN npm install -g bun
+RUN npm install 
 
-# Install deps
-RUN bun install
-RUN bun install typescript -g
+RUN npm install typescript -g
 
 COPY . .
 
 EXPOSE 3000
 
 # Build app
-RUN bun run build
+RUN npm run build
 
 # Host app
 CMD [ "node", ".output/server/index.mjs" ]
