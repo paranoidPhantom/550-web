@@ -30,7 +30,7 @@ const items = computed(() => {
                 label: 'Панель управления',
                 icon: 'i-heroicons-adjustments-horizontal-solid',
                 route: "/admin"
-            }
+            },
         ])
     }
     const logout = session.value ? {
