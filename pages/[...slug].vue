@@ -11,7 +11,7 @@ definePageMeta({
             abortNavigation(
                 createError({
                     statusCode: 404,
-                    statusMessage: "Страница не найдена...",
+                    message: "Страница не найдена...",
                 })
             );
         }
