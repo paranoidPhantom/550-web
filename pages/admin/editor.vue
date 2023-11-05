@@ -22,6 +22,10 @@ definePageMeta({
 
 const supabase = useSupabaseClient();
 const toast = useToast();
+const loaderStatus = reactive({
+    enabled: false,
+    message: ""
+})
 
 const {
     tableNames: { content: tableName, news: newsTableName },
@@ -34,6 +38,7 @@ const handleDBError = (error: PostgrestError | null) => {
     if (!error) {
         return;
     }
+    loaderStatus.enabled = false
     let errorDescription = `${error.message}`;
     switch (parseInt(error.code)) {
         case 23505:
@@ -226,6 +231,8 @@ const confirmPublishChanges = async () => {
     if (!current_route.value) {
         return;
     }
+    loaderStatus.enabled = true
+    loaderStatus.message = "Публикуем изменения"
     const { error } = await supabase
         .from(tableName)
         .update({ content: input.value })
@@ -234,6 +241,11 @@ const confirmPublishChanges = async () => {
         handleDBError(error);
         return;
     }
+    if (error) {
+        handleDBError(error);
+        return;
+    }
+    loaderStatus.enabled = false
     nuxtStorage.sessionStorage.removeItem("editing_value_cookie");
     initialInput.value = input.value;
     toast.add({
@@ -262,6 +274,8 @@ const createPage = async () => {
         return;
     }
     pageCreateOpen.value = false;
+    loaderStatus.enabled = true
+    loaderStatus.message = "Создаём страницу"
     const { error } = await supabase.from(tableName as any).insert({
         route: pageCreateFields.route,
         name: pageCreateFields.name,
@@ -269,6 +283,7 @@ const createPage = async () => {
             pageCreateFields
         )}\n---\n::`,
     } as any);
+    loaderStatus.enabled = false
     if (error) {
         handleDBError(error);
         return;
@@ -472,6 +487,12 @@ const news_edit_settings: {
 
 <template>
     <div class="__editor" ref="editor">
+        <UModal class="loader" v-model="loaderStatus.enabled" prevent-close>
+            <div class="flex flex-col items-center gap-4 p-4 select-none">
+                <Icon style="font-size: 2rem;" name="svg-spinners:ring-resize" />
+                <p class="text-current">{{ loaderStatus.message }}</p>
+            </div>
+        </UModal>
         <UModal v-model="pageCreateOpen" :transition="false">
             <div class="__editor-page-create">
                 <div class="header">
