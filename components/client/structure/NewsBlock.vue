@@ -61,6 +61,7 @@ const currentIndex = ref(0);
 const currentData = computed(() => {
     currentIndex.value = currentIndex.value % entries.length;
     const gotObject = slidesReactive.value[currentIndex.value];
+    if (!gotObject) return null
     gotObject.id = currentIndex.value;
     return gotObject;
 });
@@ -91,7 +92,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <section id="news-container">
+    <section id="news-container" v-if="currentData">
         <div class="hover-overlay"></div>
         <Transition name="image" mode="out-in">
             <img
