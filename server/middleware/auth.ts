@@ -14,8 +14,11 @@ export default defineEventHandler(async (event) => {
                     event.context.authenticated = true
                     return
                 }
+                console.log("Claims fetched")
             }
+            console.log("Access token valid | Got user")
         }
+        console.log("Got access_token")
     }
     throw createError({
         statusCode: 401,
