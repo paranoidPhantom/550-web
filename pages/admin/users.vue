@@ -167,8 +167,10 @@ const changeClaims = async (uid: string, claim_changed: string) => {
     await useFetch(`/api/admin/user-claims`, {
         headers: {
             'access-token': current_session.value.access_token,
+        },
+        body: {
             uid: uid,
-            claim_changed: claim_changed,
+            claim: claim_changed,
             value: claimsFetched.value[uid][claim_changed] ? "false" : "true",
         },
         method: "post",
