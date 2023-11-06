@@ -64,25 +64,29 @@ const list_columns = [
 
 const supabase = useSupabaseClient();
 
-const current_session = ref()
+const current_session = ref();
+
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
 
 const refreshUsers = async () => {
     if (current_session.value && current_session.value?.access_token) {
-        const { data: users_r } = (await useFetch("/api/admin/users", {
+        const { data: users_r } = (await useFetch(`/api/admin/users`, {
             headers: {
-                access_token: current_session.value.access_token,
+                'access-token': current_session.value.access_token,
             },
         })) as { data: Ref<User[]> };
         users.value = users_r.value;
     }
-}
+};
 
 onMounted(async () => {
     const {
         data: { session },
     } = (await supabase.auth.getSession()) as { data: { session: Session } };
-    current_session.value = session
-    refreshUsers()
+    current_session.value = session;
+    refreshUsers();
 });
 
 const editedTable = computed(() => {
@@ -97,9 +101,10 @@ const editedTable = computed(() => {
             });
             result[index] = object;
             const claims = Object.keys(object.app_metadata);
-            claimsFetched.value[user.id] = unRef(object.app_metadata)
+            claimsFetched.value[user.id] = unRef(object.app_metadata);
             claims.map((claim: string) => {
-                claimsFetched.value[user.id][claim] = unRef(object.app_metadata)[claim] === true;
+                claimsFetched.value[user.id][claim] =
+                    unRef(object.app_metadata)[claim] === true;
             });
         });
         return result;
@@ -159,9 +164,9 @@ const userEdited = computed(() => {
 });
 
 const changeClaims = async (uid: string, claim_changed: string) => {
-    await useFetch("/api/admin/user-claims", {
+    await useFetch(`/api/admin/user-claims`, {
         headers: {
-            access_token: current_session.value.access_token,
+            'access-token': current_session.value.access_token,
             uid: uid,
             claim_changed: claim_changed,
             value: claimsFetched.value[uid][claim_changed] ? "false" : "true",
@@ -176,21 +181,20 @@ const create_form = reactive({
     password: "",
 });
 
-
 const onCreateUser = async () => {
-    const { error } = await useFetch("/api/admin/new-user", {
+    const { error } = await useFetch(`/api/admin/new-user`, {
         headers: {
-            access_token: current_session.value.access_token,
+            'access-token': current_session.value.access_token,
         },
         body: {
             email: create_form.email,
-            password: create_form.password
+            password: create_form.password,
         },
         method: "post",
     });
     if (!error.value) {
-        await refreshUsers()
-        creating.value = false
+        await refreshUsers();
+        creating.value = false;
     }
 };
 </script>
@@ -200,18 +204,14 @@ const onCreateUser = async () => {
         <UModal class="user-create" v-model="creating">
             <div class="wrapper">
                 <h1>Создание пользователя</h1>
-                <hr style="opacity: 0.1;">
+                <hr style="opacity: 0.1" />
                 <UFormGroup label="Почта" help="Нельзя менять после создания">
                     <UInput v-model="create_form.email" />
                 </UFormGroup>
                 <UFormGroup label="Пароль">
                     <UInput type="password" v-model="create_form.password" />
                 </UFormGroup>
-                <UButton
-                    type="submit"
-                    @click="onCreateUser"
-                    variant="soft"
-                >
+                <UButton type="submit" @click="onCreateUser" variant="soft">
                     Создать
                 </UButton>
             </div>
@@ -262,7 +262,13 @@ const onCreateUser = async () => {
                             size="2xs"
                             color="white"
                             @click="editUser(row)"
-                            :disabled="(row.email !== current_session.user.email && current_session.user.email !== 'root@ort') || (row.email !== current_session.user.email && row.email === 'root@ort')"
+                            :disabled="
+                                (row.email !== current_session.user.email &&
+                                    current_session.user.email !==
+                                        'root@ort') ||
+                                (row.email !== current_session.user.email &&
+                                    row.email === 'root@ort')
+                            "
                         />
                     </div>
                 </template>
@@ -276,7 +282,10 @@ const onCreateUser = async () => {
                                 v-if="claimsFetched[row.id]"
                                 v-model="claimsFetched[row.id][perm.claim]"
                                 @click="changeClaims(row.id, perm.claim)"
-                                :disabled="row.email === current_session.user.email || row.email === 'root@ort'"
+                                :disabled="
+                                    row.email === current_session.user.email ||
+                                    row.email === 'root@ort'
+                                "
                             />
                             <Icon v-else name="svg-spinners:ring-resize" />
                         </UTooltip>
@@ -289,7 +298,8 @@ const onCreateUser = async () => {
 </template>
 
 <style lang="scss">
-.user-edit, .user-create {
+.user-edit,
+.user-create {
     .wrapper {
         display: flex;
         flex-direction: column;
