@@ -11,14 +11,14 @@ definePageMeta({
 const links = [
     {
         label: "Страницы",
-        detail: "Список страниц с контентом",
+        detail: "Список страниц",
         icon: "i-heroicons-list-bullet-20-solid",
         perm_required: "can_edit_content",
         href: "/admin/pages",
     },
     {
         label: "Редактор",
-        detail: "Редактирование страниц с контентом",
+        detail: "Редактор контента",
         icon: "i-heroicons-pencil-square-solid",
         perm_required: "can_edit_content",
         href: "/admin/editor",
