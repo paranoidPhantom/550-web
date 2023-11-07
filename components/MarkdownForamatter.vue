@@ -29,6 +29,10 @@ onMounted(() => {
         }
 
         color: rgba(var(--inverted-rgb), 0.8);
+        
+        strong {
+            font-weight: 600;
+        }
 
         > h1 {
             font-size: xx-large;
