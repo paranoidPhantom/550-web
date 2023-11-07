@@ -14,6 +14,9 @@ watchEffect(() => {
 </script>
 
 <template>
+    <Head>
+        <Meta property="og:site_name" :content="website_name"/>
+    </Head>
     <NuxtLayout>
         <NuxtPage />
     </NuxtLayout>
