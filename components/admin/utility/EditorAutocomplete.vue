@@ -12,7 +12,7 @@ const properties = defineProps<{
 }>();
 
 const suggestions = computed(() => {
-    return useAutocomplete(properties.input, properties.index);
+    return useAutocomplete(properties.input as string, properties.index);
 });
 
 const suggestionFieldsModal: {
@@ -34,10 +34,10 @@ const suggestionFieldsModal: {
 const currentInput = useState("editor_input_global", () => "");
 
 const applyCompletion = (completion: string) => {
-    currentInput.value = `${properties.input.slice(
+    currentInput.value = `${(properties.input as string).slice(
         0,
         properties.index
-    )}${completion}${properties.input.slice(properties.index)}`;
+    )}${completion}${(properties.input as string).slice(properties.index)}`;
 };
 
 const suggestionExecute = (suggestion: completion) => {
@@ -68,19 +68,28 @@ const fireModalInput = () => {
 
 <template>
     <div class="__autocomplete">
-        <div class="suggestions">
-            <UTooltip
-                v-for="suggestion in suggestions"
-                :text="suggestion.title"
-            >
-                <UButton
-                    class="suggestion"
-                    color="white"
-                    @click="suggestionExecute(suggestion)"
-                    ><Icon :name="suggestion.icon"
-                /></UButton>
-            </UTooltip>
-        </div>
+        <UPopover :popper="{ placement: 'bottom-end' }">
+            <UButton
+                :disabled="!suggestions || suggestions.length === 0"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+                color="white"
+            />
+            <template #panel>
+                <div class="suggestions p-1">
+                    <UTooltip
+                        v-for="suggestion in suggestions"
+                        :text="suggestion.title"
+                    >
+                        <UButton
+                            class="suggestion"
+                            color="white"
+                            @click="suggestionExecute(suggestion)"
+                            ><Icon :name="suggestion.icon"
+                        /></UButton>
+                    </UTooltip>
+                </div>
+            </template>
+        </UPopover>
         <UModal v-model="suggestionFieldsModal.enabled">
             <div class="__autocomplete-modal">
                 <div class="header">
@@ -141,11 +150,16 @@ const fireModalInput = () => {
 </style>
 
 <style scoped lang="scss">
+.__autocomplete {
+    margin-left: auto;
+}
 .suggestions {
     display: flex;
     gap: 0.5rem;
-    overflow-x: auto;
+    flex-wrap: wrap;
     flex-shrink: 2;
+    max-width: 6rem;
+    justify-content: space-evenly;
     height: 100%;
     .suggestion {
         display: flex;
@@ -158,4 +172,3 @@ const fireModalInput = () => {
     }
 }
 </style>
-~/utils/useAutocomplete~/utils/useAutocomplete
