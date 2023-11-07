@@ -34,10 +34,28 @@ const permsTemplate = [
     },
 ];
 
+const stringToColour = (str: string) => {
+    let hash = 0;
+    str.split("").forEach((char) => {
+        hash = char.charCodeAt(0) + ((hash << 5) - hash);
+    });
+    let colour = "#";
+    for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xff;
+        colour += value.toString(16).padStart(2, "0");
+    }
+    return colour;
+};
+
 const list_columns = [
     {
         label: "Почта",
         key: "email",
+        sortable: true,
+    },
+    {
+        label: "Имя пользователя",
+        key: "user_metadata.username",
         sortable: true,
     },
     {
@@ -66,15 +84,11 @@ const supabase = useSupabaseClient();
 
 const current_session = ref();
 
-const {
-    public: { service_domain },
-} = useRuntimeConfig();
-
 const refreshUsers = async () => {
     if (current_session.value && current_session.value?.access_token) {
         const { data: users_r } = (await useFetch(`/api/admin/users`, {
             headers: {
-                'access-token': current_session.value.access_token,
+                "access-token": current_session.value.access_token,
             },
         })) as { data: Ref<User[]> };
         users.value = users_r.value;
@@ -137,36 +151,86 @@ const toClipboard = async (text: string) => {
 };
 
 interface FormState extends Partial<User> {
+    username?: string;
     password?: string;
 }
 
 let EU_template: FormState = {
     email: undefined,
+    user_metadata: {
+        username: undefined,
+    },
     password: undefined,
 };
 const editing = ref(false);
+const editing_id = ref();
 const userInitial = ref<FormState>(unRef(EU_template));
 const editingUser = reactive<FormState>(EU_template);
 
 const editUser = (user: FormState) => {
+    editing_id.value = user.id;
     editing.value = true;
     const keys = Object.keys(EU_template) as (keyof typeof EU_template)[];
     keys.forEach((key) => {
-        editingUser[key] = user[key] as any;
-        userInitial.value[key] = user[key] ? (user[key] as any) : "";
+        editingUser[key] = unRef(user[key]) as any;
+        userInitial.value[key] = user[key] ? (unRef(user[key]) as any) : "";
     });
 };
 
-const onEditUser = async () => {};
+const onEditUser = async () => {
+    const oldForm = unRef(userInitial.value);
+    oldForm.password = "";
+    const newForm = unRef(editingUser);
+    const keys = Object.keys(newForm);
+    let sendval: {
+        [key: string]: any;
+    } = {};
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const oldVal = oldForm[key];
+        const newVal = newForm[key];
+        if (typeof newVal === "object") {
+            if (!Object.is(oldVal.username, newVal.username)) {
+                sendval["user_metadata"] = newVal;
+            }
+        } else if (!Object.is(oldVal, newVal)) {
+            sendval[key] = newVal;
+        }
+    }
+    const { error } = await useFetch("/api/admin/update-user", {
+        headers: {
+            "access-token": current_session.value.access_token,
+        },
+        body: {
+            id: editing_id.value,
+            value: sendval,
+        },
+        method: "post",
+    });
+    if (!error.value) editing.value = false;
+    refreshUsers();
+};
 
 const userEdited = computed(() => {
-    return JSON.stringify(editingUser) !== JSON.stringify(userInitial.value);
+    const oldForm = unRef(userInitial.value);
+    oldForm.password = "";
+    const newForm = unRef(editingUser);
+    const keys = Object.keys(newForm);
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const oldVal = oldForm[key];
+        const newVal = newForm[key];
+        if (typeof newVal === "object") {
+            if (!Object.is(oldVal.username, newVal.username)) return true;
+        } else if (!Object.is(oldVal, newVal)) return true;
+    }
+    return false;
 });
 
 const changeClaims = async (uid: string, claim_changed: string) => {
     await useFetch(`/api/admin/user-claims`, {
         headers: {
-            'access-token': current_session.value.access_token,
+            "access-token": current_session.value.access_token,
         },
         body: {
             uid: uid,
@@ -180,17 +244,21 @@ const changeClaims = async (uid: string, claim_changed: string) => {
 const creating = ref(false);
 const create_form = reactive({
     email: "",
+    username: "",
     password: "",
 });
 
 const onCreateUser = async () => {
     const { error } = await useFetch(`/api/admin/new-user`, {
         headers: {
-            'access-token': current_session.value.access_token,
+            "access-token": current_session.value.access_token,
         },
         body: {
             email: create_form.email,
             password: create_form.password,
+            user_metadata: {
+                username: create_form.username,
+            },
         },
         method: "post",
     });
@@ -208,7 +276,16 @@ const onCreateUser = async () => {
                 <h1>Создание пользователя</h1>
                 <hr style="opacity: 0.1" />
                 <UFormGroup label="Почта" help="Нельзя менять после создания">
-                    <UInput v-model="create_form.email" />
+                    <UInput
+                        v-model="create_form.email"
+                        placeholder="user@example.com"
+                    />
+                </UFormGroup>
+                <UFormGroup
+                    label="Имя пользователя"
+                    help="Короткое имя пользователя без киррилицы"
+                >
+                    <UInput v-model="create_form.username" />
                 </UFormGroup>
                 <UFormGroup label="Пароль">
                     <UInput type="password" v-model="create_form.password" />
@@ -223,7 +300,15 @@ const onCreateUser = async () => {
                 <UFormGroup label="Почта" help="Нельзя менять после создания">
                     <UInput disabled v-model="editingUser.email" />
                 </UFormGroup>
-                <UFormGroup label="Пароль">
+                <UFormGroup label="Имя пользователя">
+                    <UInput
+                        v-model="(editingUser.user_metadata as any).username"
+                    />
+                </UFormGroup>
+                <UFormGroup
+                    label="Пароль"
+                    help="Оставте пустым чтобы не менять"
+                >
                     <UInput type="password" v-model="editingUser.password" />
                 </UFormGroup>
                 <UButton
