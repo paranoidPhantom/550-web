@@ -24,8 +24,8 @@ const supabase = useSupabaseClient();
 const toast = useToast();
 const loaderStatus = reactive({
     enabled: false,
-    message: ""
-})
+    message: "",
+});
 
 const {
     tableNames: { content: tableName, news: newsTableName },
@@ -38,7 +38,7 @@ const handleDBError = (error: PostgrestError | null) => {
     if (!error) {
         return;
     }
-    loaderStatus.enabled = false
+    loaderStatus.enabled = false;
     let errorDescription = `${error.message}`;
     switch (parseInt(error.code)) {
         case 23505:
@@ -61,7 +61,9 @@ const handleDBError = (error: PostgrestError | null) => {
 
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
-const { data, error } = await supabase.from(tableName).select(`*, ${newsTableName}(*)`);
+const { data, error } = await supabase
+    .from(tableName)
+    .select(`*, ${newsTableName}(*)`);
 handleDBError(error);
 content_pages.value = data as page[];
 
@@ -140,7 +142,7 @@ const contentRealtime = supabase
 
 const editing_route_cookie = useCookie("editing_route");
 
-const { query: routeQuery } = useRoute()
+const { query: routeQuery } = useRoute();
 
 const current_route = ref();
 const content_routes_list = computed(() => {
@@ -151,7 +153,7 @@ const content_routes_list = computed(() => {
     let lastHref = current_route.value ? current_route.value.href : undefined;
     if (!lastHref) {
         if (editing_route_cookie.value) lastHref = editing_route_cookie.value;
-        if (routeQuery.editing) lastHref = routeQuery.editing
+        if (routeQuery.editing) lastHref = routeQuery.editing;
     }
     content_pages.value.forEach((page: page, index: number) => {
         const option_object = {
@@ -231,8 +233,8 @@ const confirmPublishChanges = async () => {
     if (!current_route.value) {
         return;
     }
-    loaderStatus.enabled = true
-    loaderStatus.message = "Публикуем изменения"
+    loaderStatus.enabled = true;
+    loaderStatus.message = "Публикуем изменения";
     const { error } = await supabase
         .from(tableName)
         .update({ content: input.value })
@@ -245,7 +247,7 @@ const confirmPublishChanges = async () => {
         handleDBError(error);
         return;
     }
-    loaderStatus.enabled = false
+    loaderStatus.enabled = false;
     nuxtStorage.sessionStorage.removeItem("editing_value_cookie");
     initialInput.value = input.value;
     toast.add({
@@ -274,8 +276,8 @@ const createPage = async () => {
         return;
     }
     pageCreateOpen.value = false;
-    loaderStatus.enabled = true
-    loaderStatus.message = "Создаём страницу"
+    loaderStatus.enabled = true;
+    loaderStatus.message = "Создаём страницу";
     const { error } = await supabase.from(tableName as any).insert({
         route: pageCreateFields.route,
         name: pageCreateFields.name,
@@ -283,7 +285,7 @@ const createPage = async () => {
             pageCreateFields
         )}\n---\n::`,
     } as any);
-    loaderStatus.enabled = false
+    loaderStatus.enabled = false;
     if (error) {
         handleDBError(error);
         return;
@@ -489,7 +491,7 @@ const news_edit_settings: {
     <div class="__editor" ref="editor">
         <UModal class="loader" v-model="loaderStatus.enabled" prevent-close>
             <div class="flex flex-col items-center gap-4 p-4 select-none">
-                <Icon style="font-size: 2rem;" name="svg-spinners:ring-resize" />
+                <Icon style="font-size: 2rem" name="svg-spinners:ring-resize" />
                 <p class="text-current">{{ loaderStatus.message }}</p>
             </div>
         </UModal>
@@ -501,11 +503,36 @@ const news_edit_settings: {
                 <div class="body">
                     <UFormGroup
                         label="Путь к странице"
-                        hint="Должен начинаться на '/' или '/news/' (для новостных)"
                         name="route"
                         help="Нельзя менять после создания"
                     >
                         <UInput v-model="pageCreateFields.route" />
+                        <template #hint>
+                            <UPopover mode="hover">
+                                <Icon
+                                    style="font-size: 1.2rem"
+                                    name="line-md:alert-circle-twotone"
+                                />
+                                <template #panel>
+                                    <div class="p-1">
+                                        <ul style="list-style: disc; padding-left: 1.5rem;">
+                                            <li><i>НЕ должен</i> содержать кириллицу</li>
+                                            <li><i>Должен</i> начинаться на '/'</li>
+                                            <li><strong>Для новосных страниц:</strong>
+                                                <ul style="list-style: circle; padding-left: 1.5rem;">
+                                                    <li>Должен начинаться на '/news/'</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>Для страниц личного блога:</strong>
+                                                <ul style="list-style: circle; padding-left: 1.5rem;">
+                                                    <li>Должен начинаться на '/blog/<i>[имя пользователя]</i>/'</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </template>
+                            </UPopover>
+                        </template>
                     </UFormGroup>
                     <UFormGroup
                         label="Название страницы"
@@ -651,12 +678,22 @@ const news_edit_settings: {
                     ><Icon name="material-symbols:add-circle-rounded"
                 /></UButton>
                 <USelectMenu
-                    selected-icon="i-heroicons-pencil-square-solid"
+                    selected-icon="i-heroicons-check"
                     v-model="current_route"
                     :options="content_routes_list"
                     class="select-route"
                     :disabled="input !== initialInput || !firstLoadComplete"
-                />
+                    searchable
+                    searchable-placeholder="Поиск..."
+                >
+                    <template #option="{ option }">
+                        <UTooltip :text="option.href" class="max-w-full">
+                            <span class="truncate max-w-full">{{
+                                option.label
+                            }}</span>
+                        </UTooltip>
+                    </template></USelectMenu
+                >
                 <UButton
                     @click="openSlideover"
                     class="edit-page"
@@ -698,7 +735,9 @@ const news_edit_settings: {
                     </div>
                     <div class="side">
                         <UTooltip>
-                            <template #text>Отменить действия (скачать)</template>
+                            <template #text
+                                >Отменить действия (скачать)</template
+                            >
                             <UButton
                                 @click="input = initialInput"
                                 icon="i-heroicons-trash-20-solid"
@@ -706,7 +745,9 @@ const news_edit_settings: {
                             />
                         </UTooltip>
                         <UTooltip :shortcuts="['CTRL', 'S']">
-                            <template #text>Опубликовать действия (загрузить)</template>
+                            <template #text
+                                >Опубликовать действия (загрузить)</template
+                            >
                             <UButton
                                 @click="publishChanges"
                                 icon="i-heroicons-check-circle-20-solid"
