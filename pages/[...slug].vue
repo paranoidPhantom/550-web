@@ -76,6 +76,8 @@ const content = supabase
         <Head v-if="routeContentTree">
             <Title>{{ routeContentTree.data.title }}</Title>
             <Meta name="description" :content="routeContentTree.data.description" />
+            <Meta property="og:title" :content="routeContentTree.data.title" />
+            <Meta property="og:description" :content="routeContentTree.data.description" />
         </Head>
         <MarkdownForamatter>
             <MDC
