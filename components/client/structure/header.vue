@@ -41,6 +41,7 @@ const currentRoute = computed(() => {
     mobileHeaderOpen.value = false;
     return path;
 });
+const globalSearchBar = useState("search_bar_open", () => false)
 </script>
 
 <template>
@@ -89,7 +90,10 @@ const currentRoute = computed(() => {
                 </ClientOnly>
             </UButton>
         </div>
-        <div class="right">
+        <div class="right flex gap-4">
+            <UTooltip text="Поиск" :shortcuts="['CTRL + K']">
+                <UButton icon="i-heroicons-magnifying-glass" variant="link" color="white" size="xs" @click="globalSearchBar = true"/>
+            </UTooltip>
             <ColorModeSwitch />
         </div>
         <div class="mobile-right">

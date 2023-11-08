@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const { website_name } = useAppConfig()
 
 const route = useRoute()
@@ -21,4 +22,5 @@ watchEffect(() => {
         <NuxtPage />
     </NuxtLayout>
     <UNotifications />
+    <SearchPallete />
 </template>
