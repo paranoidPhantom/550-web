@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
+import { getReadableFileSizeString } from "@/utils/useFormattedFileSize"
 import normalize from 'normalize-path'
 interface props {
     bucket: string;
@@ -107,17 +108,6 @@ const accessFile = (
     } else {
         window.open(publicUrl);
     }
-};
-
-const getReadableFileSizeString = (fileSizeInBytes: number) => {
-    var i = -1;
-    var byteUnits = [" КБ", " МБ", " ГБ", " ТБ", "ПБ", "ЭБ", "ЗБ", "ЙБ"];
-    do {
-        fileSizeInBytes /= 1024;
-        i++;
-    } while (fileSizeInBytes > 1024);
-
-    return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
 const handledragAndDrop = (event: Event) => {
