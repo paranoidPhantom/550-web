@@ -19,11 +19,12 @@ defineShortcuts({
 
 const supabase = useSupabaseClient();
 
-const searchResults = async (q: string) => {
-    q = q.trim().split(" ").join(" | ");
+const searchResults = async (query: string) => {
+    const pattern = query.trim().split(" ").map(str => `(${str}:*)`).join("|");
+    console.log(pattern)
     modal_state.searching = true;
-    let { data: results } = q
-        ? await supabase.rpc(`content_and_name`, { query: q } as any) //.textSearch("content_and_name", q)
+    let { data: results } = query
+        ? await supabase.rpc(`content_and_name`, { query: pattern } as any) //
         : await supabase.from("content").select();
     modal_state.searching = false;
     if (!results) {
@@ -51,9 +52,9 @@ const router = useRouter();
 
 watchEffect(() => {
     if (modal_state.selected) {
-        router.push((modal_state.selected as any).route);
         modal_state.open = false;
-        modal_state.results = undefined;
+        const route = (modal_state.selected as any).route;
+        window.location = route;
     }
 });
 
@@ -72,7 +73,6 @@ watchEffect(() => {
             ref="pallete"
             v-model="modal_state.selected"
             :groups="groups"
-            autoclear
             placeholder="Поиск..."
         >
             <template #empty-state>
