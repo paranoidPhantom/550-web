@@ -23,7 +23,7 @@ defineProps<{
             <p class="description" v-if="article.description">{{ article.description }}</p>
             <USkeleton v-else class="description-sk" />
             <div class="details">
-                <p class="date">{{ article.title ? useFormatedDate(article.created_at) : '' }}</p>
+                <p class="date">{{ article.title && article.created_at ? useFormatedDate(article.created_at) : '' }}</p>
                 <UButton
                     class="link"
                     variant="link"
