@@ -89,7 +89,7 @@ const avatarAlt = computed(() => {
                     </p>
                     <p
                         class="w-44 text-xs text-ellipsis overflow-hidden whitespace-nowrap font-medium  text-gray-900 dark:text-white">
-                        {{ session?.user.email }}
+                        [{{ session?.user.user_metadata.username }}]<br>{{ session?.user.email }}
                     </p>
                 </div>
             </template>
