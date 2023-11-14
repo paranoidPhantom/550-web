@@ -23,8 +23,128 @@ const buttons = [
                     text: "Основные",
                     href: "/info/primary",
                 },
+                {
+                    text: "Структура и органы управления образовательной организацией",
+                    href: "/info/structure",
+                },
+                {
+                    text: "Документы",
+                    href: "/info/documents",
+                },
+                {
+                    text: "Оброзование",
+                    href: "/info/education",
+                },
+                {
+                    text: "Образоват​ельные стандарты",
+                    href: "/info/standards",
+                },
+                {
+                    text: "Руководство. Педагогический (научно-педагогический) состав школы",
+                    href: "/info/teachers",
+                },
+                {
+                    text: "Материально-техническое обеспечение и оснащенность образовательного процесса",
+                    href: "/info/equipment",
+                },
+                {
+                    text: "​​​Стипендии и иные виды материальной поддержки",
+                    href: "/info/scholarship",
+                },
+                {
+                    text: "​​​​​​​​​Платные образовательные услуги",
+                    href: "/info/paid",
+                },
+                {
+                    text: "Финансово-хозяйственная деятельность",
+                    href: "/info/finance",
+                },
+                {
+                    text: "Вакантные места для приёма (перевода) обучающихся",
+                    href: "/info/vacancies",
+                },
+                {
+                    text: "Доступная среда",
+                    href: "/info/accessible-environment",
+                },
+                {
+                    text: "​​​​Международное сотрудничество",
+                    href: "/info/collaboration",
+                },
+                {
+                    text: "Организация питания",
+                    href: "/info/food",
+                },
+                {
+                    text: "Учебно-методические материалы",
+                    href: "/info/materials",
+                },
+                {
+                    text: "Доступная среда",
+                    href: "/accessible-environment",
+                },
             ],
         ],
+    },
+    {
+        text: "Родителям",
+        sectionMacher: (route: string) => route.startsWith("/for-parents"),
+        dropdown: [
+            [
+                {
+                    text: "Новости",
+                    href: "/for-parents/news",
+                },
+                {
+                    text: "​​​Обучение с использованием дистанционных образовательных технологий",
+                    href: "/for-parents/distantedu",
+                },
+                {
+                    text: "Информация о ГИА",
+                    href: "/for-parents/gia",
+                },
+                {
+                    text: "О приёме в школу",
+                    href: "/for-parents/admission",
+                },
+                {
+                    text: "О толкерантности",
+                    href: "/for-parents/tolerance",
+                },
+                {
+                    text: "ОРКСЭ",
+                    href: "/for-parents/orkse",
+                },
+            ],
+        ],
+    },
+    {
+        text: "Партнёры",
+        href: "/partners"
+    },
+    {
+        text: "Медалисты школы",
+        href: "/medalists"
+    },
+    {
+        text: "Противодействие коррупции",
+        href: "/anti-corruption"
+    },
+    {
+        text: "Безопасная среда",
+        href: "/safe-environment"
+    },
+    {
+        text: "Функциональная грамотность",
+        href: "/funclit",
+    },
+    {
+        text: "Школьный спортивный клуб",
+        href: "/sportclub",
+    },
+    {
+        text: "Наставничество",
+        href: "/mentoring",
     },
 ];
 
@@ -74,17 +194,19 @@ const globalSearchBar = useState("search_bar_open", () => false)
                             v-for="(section, index) in button.dropdown"
                         >
                             <hr v-if="index !== 0" />
-                            <UButton
-                                v-for="subbutton in section"
-                                class="dropdown-link"
-                                color="white"
-                                variant="ghost"
-                                :class="{
-                                    current: currentRoute === subbutton.href,
-                                }"
-                                :to="subbutton.href"
-                                :label="subbutton.text"
-                            />
+                                <UButton
+                                    v-for="subbutton in section"
+                                    class="dropdown-link"
+                                    color="white"
+                                    size="xs"
+                                    variant="ghost"
+                                    :class="{
+                                        current: currentRoute === subbutton.href,
+                                    }"
+                                    :title="subbutton.text"
+                                    :to="subbutton.href"
+                                    :label="subbutton.text"
+                                />
                         </div>
                     </div>
                 </ClientOnly>
@@ -135,7 +257,7 @@ const globalSearchBar = useState("search_bar_open", () => false)
                             <hr v-if="sectionIndex !== 0" />
                             <UButton
                                 v-for="subbutton in section"
-                                class="dropdown-link"
+                                class="dropdown-link truncate"
                                 color="white"
                                 variant="link"
                                 :to="subbutton.href"
@@ -153,14 +275,24 @@ const globalSearchBar = useState("search_bar_open", () => false)
     </Transition>
 </template>
 
-<style>
+<style lang="scss">
 header .current {
-    border-bottom: rgb(var(--color-primary-DEFAULT)) 1px solid;
+    text-decoration: underline rgb(var(--color-primary-DEFAULT));
 }
 header .header-link .dropdown .current {
     border-left: rgb(var(--color-primary-DEFAULT)) 2px solid;
-    border-bottom: none;
+    text-decoration: none;
     background-color: rgba(var(--color-primary-DEFAULT) / 0.1);
+}
+
+.dropdown-link {
+    width: 100%;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
 }
 </style>
 
@@ -207,7 +339,7 @@ header {
             translate: -50% 0;
             position: absolute;
             background-color: rgba(var(--normal-rgb), 1);
-            min-width: 10rem;
+            width: 15rem;
             z-index: 2;
             outline: 1px solid rgba(var(--inverted-rgb), 0.2);
             border-radius: 0.75rem;
