@@ -463,6 +463,19 @@ const updateNewsEntry = async (key: keyof typeof editNewsEntry) => {
     }
 };
 
+const deleteAssociatedArticle = async () => {
+    const { error } = await supabase
+        .from(newsTableName as any)
+        .delete()
+        .eq("route", current_route.value.href)
+        .select();
+    if (error) {
+        handleDBError(error);
+        return;
+    }
+    window.location.reload()
+}
+
 const news_edit_settings: {
     label: string;
     name: string;
@@ -646,6 +659,14 @@ const news_edit_settings: {
                                 </template>
                             </UInput>
                         </UFormGroup>
+                        
+                        <UButton
+                            label="Удалить ассоциированную новость"
+                            variant="soft"
+                            color="red"
+                            icon="i-heroicons-exclamation-triangle"
+                            @click="deleteAssociatedArticle"
+                        />
                     </template>
                 </template>
                 <UAlert
