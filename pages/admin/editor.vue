@@ -180,6 +180,8 @@ const firstLoadComplete = ref(false);
 watchEffect(async () => {
     if (current_route.value) {
         const request_href = current_route.value.href;
+        loaderStatus.enabled = true;
+        loaderStatus.message = "Загрузка страницы...";
         const { data, error } = await supabase
             .from(tableName)
             .select()
@@ -187,6 +189,7 @@ watchEffect(async () => {
             .single();
         if (error) {
             handleDBError(error);
+            loaderStatus.enabled = false;
             return;
         }
         const loadedVal = (data as unknown as page).content;
@@ -202,6 +205,7 @@ watchEffect(async () => {
         if (!firstLoadComplete.value) firstLoadComplete.value = true;
         input.value = input.value.toString();
         initialInput.value = initialInput.value.toString();
+        loaderStatus.enabled = false;
     }
 });
 
@@ -550,7 +554,7 @@ const news_edit_settings: {
                     <UFormGroup
                         label="Название страницы"
                         name="name"
-                        help="Не используется публично"
+                        help="Используется публично"
                     >
                         <UInput v-model="pageCreateFields.name" />
                     </UFormGroup>
@@ -581,7 +585,7 @@ const news_edit_settings: {
                 <UFormGroup
                     label="Название страницы"
                     name="name"
-                    help="Не используется публично"
+                    help="Используется публично"
                 >
                     <UInput
                         :placeholder="current_route.label"
@@ -784,9 +788,9 @@ const news_edit_settings: {
                 <MDC v-if="input" :value="input" />
                 <div
                     class="no-preview"
-                    style="opacity: 0.8"
+                    style="opacity: 0.5; user-select: none;"
                     v-if="input === ''"
-                ></div>
+                >[Нет контента]</div>
             </MarkdownForamatter>
         </div>
     </div>
