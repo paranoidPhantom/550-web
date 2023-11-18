@@ -7,21 +7,6 @@ definePageMeta({
     login_message: "Для доступа к списку страниц необходимо авторизоваться",
 });
 
-const options = [
-    {
-        label: "Изображения",
-        id: "images",
-    },
-    {
-        label: "Документы",
-        id: "docs",
-    },
-    {
-        label: "Другое",
-        id: "misc",
-    },
-];
-
 const columns = [
     {
         key: "article_thumbnail",
@@ -51,8 +36,6 @@ const {
 } = useAppConfig();
 
 const supabase = useSupabaseClient();
-
-const folderViewerBucket = ref(options[0]);
 
 const { push } = useRouter();
 
@@ -89,23 +72,6 @@ const filteredRows = computed(() => {
 
 <template>
     <div class="__admin-pages">
-        <div class="fs-wrapper">
-            <USelectMenu v-model="folderViewerBucket" :options="options">
-                <UAlert
-                    :title="folderViewerBucket.label"
-                    variant="subtle"
-                    icon="i-heroicons-command-line"
-                    color="primary"
-                />
-            </USelectMenu>
-            <Icon name="i-heroicons-arrow-down-solid" class="arrow" />
-            <FolderViewer
-                class="fs full"
-                :bucket="folderViewerBucket.id"
-                root=""
-            />
-        </div>
-        <div class="divider" />
         <div class="page-list">
             <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
                 <UInput v-model="q" placeholder="Поиск..." />
@@ -175,22 +141,6 @@ const filteredRows = computed(() => {
         width: 100%;
         max-height: calc(100vh - 5rem);;
         overflow-y: auto;
-    }
-    .fs-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        width: 25rem;
-        flex-shrink: 0;
-        height: calc(100vh - 5rem);
-        .arrow {
-            font-size: 1.5rem;
-            width: 100%;
-        }
-        .fs {
-            max-width: unset;
-            --files-frame-height: 20rem;
-        }
     }
 }
 </style>

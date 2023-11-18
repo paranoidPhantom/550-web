@@ -1,27 +1,85 @@
 <script setup lang="ts">
-
 defineProps<{
-    title: string,
-    icon: string,
-    home: string
-}>()
+    title: string;
+    icon: string;
+    home: string;
+}>();
 
+const options = [
+    {
+        label: "Изображения",
+        id: "images",
+    },
+    {
+        label: "Документы",
+        id: "docs",
+    },
+    {
+        label: "Другое",
+        id: "misc",
+    },
+];
+
+const folderViewerBucket = ref(options[0]);
+const fs_state = ref(false);
 </script>
 
 <template>
     <header>
+        <USlideover v-model="fs_state">
+            <div class="__fs-wrapper">
+                <USelectMenu v-model="folderViewerBucket" :options="options">
+                    <UAlert
+                        :title="folderViewerBucket.label"
+                        variant="subtle"
+                        icon="i-heroicons-command-line"
+                        color="primary"
+                    />
+                </USelectMenu>
+                <Icon name="i-heroicons-arrow-down-solid" class="arrow" />
+                <FolderViewer
+                    class="fs full"
+                    :bucket="folderViewerBucket.id"
+                    root=""
+                />
+            </div>
+        </USlideover>
         <div class="title" @click="navigateTo(home)">
-            <Icon :name="icon"/>
+            <Icon :name="icon" />
             <h1>{{ title }}</h1>
         </div>
-        
+
         <div class="edge">
+            <UButton
+                variant="soft"
+                icon="i-heroicons-folder-open-20-solid"
+                @click="fs_state = true"
+            />
             <ColorModeSwitch />
             <AccountInfo />
         </div>
     </header>
     <div class="header-placeholder" />
 </template>
+
+<style lang="scss">
+.__fs-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    flex-shrink: 0;
+    height: 100%;
+    .arrow {
+        font-size: 1.5rem;
+        width: 100%;
+    }
+    .fs {
+        max-width: unset;
+        --files-frame-height: 20rem;
+    }
+}
+</style>
 
 <style scoped lang="scss">
 header {
@@ -43,7 +101,8 @@ header {
         svg {
             width: 1.5rem;
         }
-        svg, h1 {
+        svg,
+        h1 {
             font-size: 1.2rem;
         }
     }
