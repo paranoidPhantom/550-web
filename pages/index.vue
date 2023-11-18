@@ -59,6 +59,7 @@ onMounted(() => {
 
 <template>
     <div class="__home" :class="{ dark: colorMode.value === 'dark' }">
+        <ClientStructureDissapearingArrow />
         <section id="primary-hero">
             <div class="primary">
                 <h1 class="title">
