@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { computedAsync, useMouse, useWindowScroll } from "@vueuse/core";
-import { getReadableFileSizeString } from "@/utils/useFormattedFileSize"
-import normalize from 'normalize-path'
+import { getReadableFileSizeString } from "@/utils/useFormattedFileSize";
+import normalize from "normalize-path";
 interface props {
     bucket: string;
     root: string;
+    picker_mode?: {
+        key: string;
+        type?: string | string[];
+        multiple: boolean;
+    };
 }
 const props = defineProps<props>();
+const picker_mode_enabled = props.picker_mode !== undefined;
 const { express_server_port } = useAppConfig();
 
 const toast = useToast();
@@ -87,6 +93,18 @@ const currentFiles = computed(() => {
         resultEntity.isFile = fsEntity.file;
         if (resultEntity.isFile) {
             resultEntity.size = fsEntity.size;
+            if (picker_mode_enabled && props.picker_mode.type !== undefined) {
+                const type = props.picker_mode.type;
+                if (Array.isArray(type)) {
+                    let mathed = false;
+                    type.some((element) => {
+                        if (fsEntity.name.endsWith(element)) mathed = true;
+                    });
+                    if (!mathed) continue;
+                } else {
+                    if (!fsEntity.name.endsWith(type)) continue;
+                }
+            }
         }
         result.push(resultEntity);
     }
@@ -100,9 +118,9 @@ const accessFile = (
     download: boolean
 ) => {
     const path = normalize(`${props.root}/${subpath}/${file}`);
-    const publicUrl = `${express_server}${
-        download ? "download/" : ""
-    }${props.bucket}${path}`;
+    const publicUrl = `${express_server}${download ? "download/" : ""}${
+        props.bucket
+    }${path}`;
     if (download) {
         window.location = publicUrl as unknown as typeof window.location;
     } else {
@@ -174,21 +192,19 @@ const createFolder = () => {
     recomputeSubpath(status, "Создаём папку");
 };
 
-const confirmationForDeleteEntity = (
-    event: Event
-) => {
+const confirmationForDeleteEntity = (event: Event) => {
     event.stopPropagation();
     toast.add({
         id: `delete_entity_confirmation`,
         title: "Чтобы удалить элемент кликнете дважды",
         icon: "i-heroicons-exclamation-triangle-20-solid",
         color: "yellow",
-        timeout: 3000
+        timeout: 3000,
     });
 };
 
 const deleteEntity = (subpath: string, file: string) => {
-    toast.remove("delete_entity_confirmation")
+    toast.remove("delete_entity_confirmation");
     const path = `${props.bucket}/${props.root}/${subpath}/${file}`;
     if (!session?.access_token) return;
     const { status, error } = useFetch(`${express_server}remove`, {
@@ -202,14 +218,63 @@ const deleteEntity = (subpath: string, file: string) => {
 };
 
 const fileExtIcon = (name: string) => {
-    if (name.endsWith("pdf")) return "codicon:file-pdf"
-    else if (name.endsWith("png") || name.endsWith("jpg") || name.endsWith("jpeg") || name.endsWith("webp")) return "codicon:file-media"
-    else return "codicon:file-binary"
-}
+    if (name.endsWith("pdf")) return "codicon:file-pdf";
+    else if (
+        name.endsWith("png") ||
+        name.endsWith("jpg") ||
+        name.endsWith("jpeg") ||
+        name.endsWith("webp")
+    )
+        return "codicon:file-media";
+    else return "codicon:file-binary";
+};
+
+const pickerState = picker_mode_enabled
+    ? useState<undefined | string[]>(props.picker_mode.key, () => undefined)
+    : null;
+
+const selectedFiles = reactive<{ [key: string]: boolean | undefined }>({});
+
+const selectedCount = computed(() => {
+    let selected = 0;
+    const keys = Object.keys(selectedFiles);
+    keys.forEach((key) => {
+        if (selectedFiles[key] === true) selected++;
+    });
+    return selected;
+});
+
+const pickerLabel = computed(() => {
+    const count = selectedCount.value;
+    let w_picked = "Выбрано";
+    let w_file = "файлов";
+    if (count === 1) {
+        w_picked = "Выбран";
+        w_file = "файл";
+    } else if (count < 5) {
+        w_file = "файла";
+    }
+    return `${w_picked} ${count} ${w_file}`;
+});
+
+const finishFilePick = () => {
+    if (pickerState) {
+        let selected: string[] = [];
+        const keys = Object.keys(selectedFiles);
+        keys.forEach((key) => {
+            if (selectedFiles[key] === true) selected.push(key);
+        });
+        pickerState.value = selected;
+        Object.assign(selectedFiles, {});
+    }
+};
 </script>
 
 <template>
-    <div class="root" :class="{ 'no-user': !user }">
+    <div
+        class="root"
+        :class="{ 'no-user': !user, 'picker-mode': picker_mode_enabled }"
+    >
         <UModal v-model="newFolderModal.enabled">
             <div class="new-folder-container">
                 <UFormGroup label="Назавние папки">
@@ -234,10 +299,26 @@ const fileExtIcon = (name: string) => {
                     <p>{{ node }}</p>
                 </div>
             </template>
-            <div v-if="pending" style="width: 100%; display: flex; flex-direction: column; align-items: center; width: fit-content; margin-left: auto;">
-                <p style="font-size: 0.8rem;">{{ pendingText }}</p>
-                <UProgress style="flex-shrink: 2;" animation="carousel" />
+            <div
+                v-if="pending"
+                style="
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: fit-content;
+                    margin-left: auto;
+                "
+            >
+                <p style="font-size: 0.8rem">{{ pendingText }}</p>
+                <UProgress style="flex-shrink: 2" animation="carousel" />
             </div>
+            <p
+                v-if="picker_mode_enabled && selectedCount > 0"
+                style="margin-left: auto"
+            >
+                {{ pickerLabel }}
+            </p>
         </div>
         <hr />
         <div
@@ -280,6 +361,16 @@ const fileExtIcon = (name: string) => {
                     :title="entity.name"
                 >
                     <div class="main-data">
+                        <UCheckbox
+                            v-if="entity.isFile && picker_mode"
+                            :disabled="
+                                !(picker_mode.multiple === true) &&
+                                selectedCount > 0 &&
+                                selectedFiles[`${bucket}/${root}/${subpath}/${entity.name}`] !==
+                                    true
+                            "
+                            v-model="selectedFiles[`${bucket}/${root}/${subpath}/${entity.name}`]"
+                        />
                         <Icon
                             :name="
                                 entity.isFile
@@ -290,7 +381,7 @@ const fileExtIcon = (name: string) => {
                         <p>{{ entity.name }}</p>
                     </div>
                     <div class="actions">
-                        <template v-if="entity.isFile">
+                        <template v-if="entity.isFile && !picker_mode_enabled">
                             <p class="size">
                                 {{
                                     getReadableFileSizeString(entity.size || 0)
@@ -323,12 +414,14 @@ const fileExtIcon = (name: string) => {
                         </template>
                         <UButton
                             v-if="user"
-                            @click="(event) => {
-                                confirmationForDeleteEntity(
-                                    event
-                                )}
+                            @click="
+                                (event) => {
+                                    confirmationForDeleteEntity(event);
+                                }
                             "
-                            @dblclick="deleteEntity(subpath as string, entity.name)"
+                            @dblclick="
+                                deleteEntity(subpath as string, entity.name)
+                            "
                             variant="ghost"
                         >
                             <Icon name="codicon:trash" />
@@ -336,28 +429,39 @@ const fileExtIcon = (name: string) => {
                     </div>
                 </div>
             </div>
-            <div class="footer" v-if="user">
+            <div class="footer" v-if="user || picker_mode_enabled">
                 <hr />
                 <div class="options">
-                    <UButton
-                        color="white"
-                        @click="newFolderModal.enabled = true"
-                    >
-                        <Icon name="codicon:add" />
-                        Создать папку
-                    </UButton>
-                    <div class="upload-btn">
-                        <UButton color="white" @click="factualInput.click()">
-                            <Icon name="codicon:cloud-upload" />
-                            Загрузить
+                    <template v-if="user">
+                        <UButton
+                            color="white"
+                            @click="newFolderModal.enabled = true"
+                        >
+                            <Icon name="codicon:add" />
+                            Создать папку
                         </UButton>
-                        <input
-                            type="file"
-                            multiple
-                            @change="handleFileUpload"
-                            ref="factualInput"
-                        />
-                    </div>
+                        <div class="upload-btn">
+                            <UButton
+                                color="white"
+                                @click="factualInput.click()"
+                            >
+                                <Icon name="codicon:cloud-upload" />
+                                Загрузить
+                            </UButton>
+                            <input
+                                type="file"
+                                multiple
+                                @change="handleFileUpload"
+                                ref="factualInput"
+                            />
+                        </div>
+                    </template>
+                    <template v-if="picker_mode_enabled">
+                        <UButton color="white" @click="finishFilePick">
+                            <Icon name="codicon:check" />
+                            Готово
+                        </UButton>
+                    </template>
                 </div>
             </div>
         </div>
@@ -385,6 +489,12 @@ const fileExtIcon = (name: string) => {
         .files {
             max-height: var(--files-frame-height);
         }
+    }
+    &.picker-mode {
+        background: none;
+        outline: none;
+        width: 100%;
+        max-width: none;
     }
     border-radius: 0.5rem;
 

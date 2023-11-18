@@ -20,9 +20,10 @@ defineShortcuts({
     <div class="__fs">
         <USlideover v-model="open" class="__fs-slideover">
             <div class="component-container">
-                <FolderViewer :bucket="bucket" :root="root"/>
+                <FolderViewer :bucket="bucket" :root="root as unknown === true ? '' : root"/>
             </div>
         </USlideover>
+        {{ root }}
         <UButton color="white" @click="open = true">
             <Icon name="line-md:clipboard-list-twotone"/>
             Посмотреть документы
