@@ -7,7 +7,7 @@ definePageMeta({
             .from("content")
             .select()
             .eq("route", to.path);
-        if (!data || data.length === 0) {
+        if (!data || data.length === 0 || to.path.startsWith("/blog")) {
             abortNavigation(
                 createError({
                     statusCode: 404,

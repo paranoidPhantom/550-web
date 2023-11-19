@@ -17,7 +17,8 @@ export default defineAppConfig({
     ],
     tableNames: {
         content: "content",
-        news: "news"
+        news: "news",
+        blog: "blogs"
     },
     home_bubble_text: [
         "Современное оборудование",

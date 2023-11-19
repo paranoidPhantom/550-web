@@ -3,7 +3,8 @@ const zeroPrefix = (value: string | number) => {
     return value.length > 1 ? value : `0${value}`
 }
 
-export const useFormatedDate = (date: Date | string) => {
+export const useFormatedDate = (date: Date | string, withTime?: boolean) => {
     if (typeof date === "string") date = new Date(date)
-    return `${zeroPrefix(date.getDate())}.${zeroPrefix(date.getMonth() + 1)}.${zeroPrefix(date.getFullYear())}`
+    const time = `${zeroPrefix(date.getHours())}:${zeroPrefix(date.getMinutes())}`
+    return `${zeroPrefix(date.getDate())}.${zeroPrefix(date.getMonth() + 1)}.${zeroPrefix(date.getFullYear())}${withTime ? ' '+time : ''}`
 }
