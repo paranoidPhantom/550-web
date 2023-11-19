@@ -230,7 +230,7 @@ const fileExtIcon = (name: string) => {
 };
 
 const pickerState = picker_mode_enabled
-    ? useState<undefined | string[]>(props.picker_mode.key, () => undefined)
+    ? useState<undefined | null | string[]>(props.picker_mode.key, () => undefined)
     : null;
 
 const selectedFiles = reactive<{ [key: string]: boolean | undefined }>({});
@@ -259,6 +259,10 @@ const pickerLabel = computed(() => {
 
 const finishFilePick = () => {
     if (pickerState) {
+        if (selectedCount.value <= 0) {
+            pickerState.value = null
+            return
+        }
         let selected: string[] = [];
         const keys = Object.keys(selectedFiles);
         keys.forEach((key) => {
@@ -458,6 +462,10 @@ const finishFilePick = () => {
                     </template>
                     <template v-if="picker_mode_enabled">
                         <UButton color="white" @click="finishFilePick">
+                            <Icon name="codicon:close" />
+                            Отмена
+                        </UButton>
+                        <UButton color="white" @click="finishFilePick" :disabled="selectedCount <= 0">
                             <Icon name="codicon:check" />
                             Готово
                         </UButton>

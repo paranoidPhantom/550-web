@@ -10,6 +10,7 @@ definePageMeta({
 });
 
 const unRef = (input: any) => {
+    if (!input) return input;
     return JSON.parse(JSON.stringify(input));
 };
 
@@ -48,6 +49,9 @@ const stringToColour = (str: string) => {
 };
 
 const list_columns = [
+    {
+        key: "pfp",
+    },
     {
         label: "Почта",
         key: "email",
@@ -159,6 +163,10 @@ let EU_template: FormState = {
     email: undefined,
     user_metadata: {
         username: undefined,
+        pfp: undefined,
+        last_name: undefined,
+        first_name: undefined,
+        middle_name: undefined,
     },
     password: undefined,
 };
@@ -190,9 +198,7 @@ const onEditUser = async () => {
         const oldVal = oldForm[key];
         const newVal = newForm[key];
         if (typeof newVal === "object") {
-            if (!Object.is(oldVal.username, newVal.username)) {
-                sendval["user_metadata"] = newVal;
-            }
+            sendval["user_metadata"] = newVal;
         } else if (!Object.is(oldVal, newVal)) {
             sendval[key] = newVal;
         }
@@ -221,7 +227,13 @@ const userEdited = computed(() => {
         const oldVal = oldForm[key];
         const newVal = newForm[key];
         if (typeof newVal === "object") {
-            if (!Object.is(oldVal.username, newVal.username)) return true;
+            const obj_keys = Object.keys(newVal);
+            for (let k = 0; k < obj_keys.length; k++) {
+                const obj_key = obj_keys[k];
+                if (oldVal[obj_key] !== newVal[obj_key]) {
+                    return true;
+                }
+            }
         } else if (!Object.is(oldVal, newVal)) return true;
     }
     return false;
@@ -267,10 +279,65 @@ const onCreateUser = async () => {
         creating.value = false;
     }
 };
+
+const file_pickers = reactive({
+    image: false,
+    attachment: false,
+});
+
+const set_file_picker = (event: Event, key: keyof typeof file_pickers) => {
+    // event.stopPropagation()
+    file_pickers[key] = false;
+    setTimeout(() => {
+        file_pickers[key] = true;
+    }, 0);
+};
+
+const image_picked = useState("pfp_picked", undefined);
+
+watchEffect(() => {
+    if (image_picked.value !== undefined) {
+        if (image_picked.value === null) {
+            file_pickers.image = false;
+            image_picked.value = undefined;
+        }
+        file_pickers.image = false;
+        const picked_list = image_picked.value as any;
+        image_picked.value = undefined;
+        if (picked_list) {
+            (editingUser.user_metadata as any).pfp = picked_list[0];
+        }
+    }
+});
+
+const { express_server_port } = useAppConfig();
+
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
+
+const express_server = `http://${service_domain}:${express_server_port}/`;
+
+const picking = computed(() => {
+    const keys = Object.keys(file_pickers);
+    let found = false;
+    keys.forEach((key: string) => {
+        if (found) return;
+        if (file_pickers[key] === true) found = true;
+    });
+    return found;
+});
 </script>
 
 <template>
     <div class="__admin-users">
+        <ClientOnly>
+            <FilePicker
+                state_key="pfp_picked"
+                bucket="profile_pictures"
+                :enabled="file_pickers.image"
+            />
+        </ClientOnly>
         <UModal class="user-create" v-model="creating">
             <div class="wrapper">
                 <h1>Создание пользователя</h1>
@@ -295,7 +362,11 @@ const onCreateUser = async () => {
                 </UButton>
             </div>
         </UModal>
-        <USlideover class="user-edit" v-model="editing">
+        <USlideover
+            class="user-edit"
+            v-model="editing"
+            :prevent-close="picking"
+        >
             <div class="wrapper">
                 <UFormGroup label="Почта" help="Нельзя менять после создания">
                     <UInput disabled v-model="editingUser.email" />
@@ -310,6 +381,54 @@ const onCreateUser = async () => {
                     help="Оставте пустым чтобы не менять"
                 >
                     <UInput type="password" v-model="editingUser.password" />
+                </UFormGroup>
+                <hr style="border-color: rgba(var(--inverted-rgb), 0.2);">
+                <UFormGroup label="Фотография">
+                    <div class="preview flex items-center flex-col">
+                        <UAvatar
+                            class="m-4"
+                            size="xl"
+                            :src="`${express_server}/${(editingUser.user_metadata as any).pfp}`"
+                            icon="i-heroicons-photo"
+                        />
+                        <div class="flex gap-2">
+                            <UButton
+                                icon="i-heroicons-cursor-arrow-rays-20-solid"
+                                label="Выбрать"
+                                variant="soft"
+                                @click="
+                                    (event) => set_file_picker(event, 'image')
+                                "
+                            />
+                            <UButton
+                                icon="i-heroicons-trash"
+                                label="Удалить"
+                                variant="soft"
+                                color="red"
+                                v-if="(editingUser.user_metadata as any).pfp"
+                                @click="
+                                    editingUser.user_metadata
+                                        ? (editingUser.user_metadata.pfp = null)
+                                        : null
+                                "
+                            />
+                        </div>
+                    </div>
+                </UFormGroup>
+                <UFormGroup label="Фамилия">
+                    <UInput
+                        v-model="(editingUser.user_metadata as any).last_name"
+                    />
+                </UFormGroup>
+                <UFormGroup label="Имя">
+                    <UInput
+                        v-model="(editingUser.user_metadata as any).first_name"
+                    />
+                </UFormGroup>
+                <UFormGroup label="Отчество">
+                    <UInput
+                        v-model="(editingUser.user_metadata as any).middle_name"
+                    />
                 </UFormGroup>
                 <UButton
                     type="submit"
@@ -334,6 +453,24 @@ const onCreateUser = async () => {
                 :rows="editedTable"
                 :columns="list_columns"
             >
+                <template #pfp-data="{ row }">
+                    <div class="flex gap-2">
+                        <UTooltip
+                            :text="
+                                row.email === 'root@ort'
+                                    ? 'Корневой пользователь'
+                                    : `${row.user_metadata.last_name || ''} ${
+                                          row.user_metadata.first_name || ''
+                                      } ${row.user_metadata.middle_name || ''}`
+                            "
+                        >
+                            <UAvatar
+                                :icon="'i-heroicons-user'"
+                                :src="`${express_server}/${row.user_metadata.pfp}`"
+                            />
+                        </UTooltip>
+                    </div>
+                </template>
                 <template #id-data="{ row }">
                     <div class="flex gap-8">
                         <UTooltip :text="row.id">

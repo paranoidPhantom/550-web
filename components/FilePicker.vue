@@ -16,9 +16,13 @@ watchEffect(() => {
 </script>
 
 <template>
-    <UModal v-model="ModalState">
+    <UModal v-model="ModalState" prevent-close>
         <FolderViewer
-            :picker_mode="{ key: state_key, type: type, multiple: props.multiple === true }"
+            :picker_mode="{
+                key: state_key,
+                type: type,
+                multiple: props.multiple === true,
+            }"
             :bucket="bucket || ''"
             :root="root || ''"
         />
