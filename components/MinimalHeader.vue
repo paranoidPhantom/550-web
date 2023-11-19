@@ -22,6 +22,10 @@ const options = [
 
 const folderViewerBucket = ref(options[0]);
 const fs_state = ref(false);
+
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
 </script>
 
 <template>
@@ -50,11 +54,12 @@ const fs_state = ref(false);
         </div>
 
         <div class="edge">
-            <UButton
-                variant="soft"
-                icon="i-heroicons-folder-open-20-solid"
-                @click="fs_state = true"
-            />
+            <UButton variant="soft" @click="fs_state = true"
+                ><Icon name="heroicons:folder-open-20-solid"
+            /></UButton>
+            <UButton variant="soft" :to="`http://${service_domain}:8000/project/default/editor`" target="_blank" class="h-full" color="green"
+                ><Icon name="ri:supabase-fill"
+            /></UButton>
             <ColorModeSwitch />
             <AccountInfo />
         </div>
