@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
 definePageMeta({
     middleware: async (to, from) => {
@@ -54,7 +55,7 @@ const content = supabase
     .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "content", filter: `route=eq.${current_url}` },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload) => {
             switch (payload.eventType) {
                 case "UPDATE":
                     updateFromData(payload.new)
@@ -62,8 +63,6 @@ const content = supabase
                 case "DELETE":
                     if (!window) return
                     window.location.reload()
-                default:
-                    break;
             }
         }
     )
