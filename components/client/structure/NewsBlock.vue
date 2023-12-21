@@ -59,6 +59,7 @@ await refreshSlides();
 
 const currentIndex = ref(0);
 const currentData = computed(() => {
+	if (!entries) return null
     currentIndex.value = currentIndex.value % entries.length;
     const gotObject = slidesReactive.value[currentIndex.value];
     if (!gotObject) return null
