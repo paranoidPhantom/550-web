@@ -18,6 +18,7 @@ watchEffect(() => {
     <Head>
         <Meta property="og:site_name" :content="website_name"/>
     </Head>
+	<NuxtLoadingIndicator color="rgb(var(--color-primary-DEFAULT))" />
     <NuxtLayout>
         <NuxtPage />
     </NuxtLayout>
