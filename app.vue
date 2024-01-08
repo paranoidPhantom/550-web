@@ -18,8 +18,7 @@ watchEffect(() => {
     <Head>
         <Meta property="og:site_name" :content="website_name"/>
     </Head>
-	<MDCRenderer />
-	<MDC value="# MDC now works!"/>
+	<NuxtLoadingIndicator color="rgb(var(--color-primary-DEFAULT))" />
     <NuxtLayout>
         <NuxtPage />
     </NuxtLayout>

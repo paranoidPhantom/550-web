@@ -7,8 +7,8 @@ export default defineEventHandler(
 		let retval: {[key: string]: any} = {}
 		users.forEach(user => {
 			const meta = user.user_metadata as any
+			console.log(meta)
 			const username = meta.username
-			delete meta.username
 			retval[username] = meta
 		})
 		return retval

@@ -28,7 +28,7 @@ const loaderStatus = reactive({
 });
 
 const {
-    tableNames: { content: tableName, news: newsTableName },
+    tableNames: { content: tableName, news: newsTableName, blog: blogTableName },
 } = useAppConfig();
 
 const input = ref();
@@ -290,6 +290,12 @@ const createPage = async () => {
             pageCreateFields
         )}\n---\n::`,
     } as any);
+    if (pageCreateFields.route.startsWith("/blog")) {
+        await supabase.from(blogTableName as any).insert({
+            route: pageCreateFields.route,
+            restricted: true
+        } as any);
+    }
     loaderStatus.enabled = false;
     if (error) {
         handleDBError(error);
@@ -503,6 +509,11 @@ const news_edit_settings: {
         key: "link_text",
     },
 ];
+
+const blog_url = (route: string) => {
+    const split = route.split("/")
+    return `/${split[1]}/${split[2]}#${split[3]}`
+}
 </script>
 
 <template>
@@ -727,7 +738,7 @@ const news_edit_settings: {
                     :disabled="!firstLoadComplete"
                     ><Icon name="clarity:cog-solid"
                 /></UButton>
-                <UButton :to="current_route.href" target="_blank" color="white"
+                <UButton :to="current_route.href.startsWith('/blog') ? blog_url(current_route.href) : current_route.href" target="_blank" color="white"
                     ><Icon name="ic:baseline-remove-red-eye"
                 /></UButton>
                 <AdminUtilityEditorAutocomplete

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { parseMarkdown } from "@nuxtjs/mdc/dist/runtime";
+
 definePageMeta({
     middleware: async (to, from) => {
         const supabase = useSupabaseClient();

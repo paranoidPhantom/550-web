@@ -5,17 +5,12 @@ export default defineNuxtConfig({
 		preset: "node-cluster"
 	},
 	sitemap: {
-	  xslTips: false,
+		xslTips: false,
 	},
 	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', 'nuxt-simple-sitemap'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'page', mode: 'out-in' },
-		head: {
-		  htmlAttrs: {
-			lang: 'ru',
-		  },
-		},
 	},
 	routeRules: {
 		"/docs": {

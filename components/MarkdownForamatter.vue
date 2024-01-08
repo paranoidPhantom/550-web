@@ -1,13 +1,14 @@
 <script setup lang="ts">
 const formatter = ref();
 
+const route = useRoute()
 onMounted(() => {
     setTimeout(() => {
         const anchors = formatter.value.querySelectorAll(
             "a"
         ) as HTMLAnchorElement[];
         anchors.forEach((anchor: HTMLAnchorElement) => {
-            anchor.target = "_blank";
+            anchor.target = anchor.href.includes(route.path) ? "" : "_blank";
         });
     }, 1000);
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-    title: string,
+    title?: string,
     description?: string,
     icon?: string,
     color?: string,
@@ -8,5 +8,5 @@ defineProps<{
 </script>
 
 <template>
-    <UAlert :title="title" :description="description" :icon="icon" :color="color || 'primary'" variant="soft"/>
+    <UAlert :title="title || ''" :description="description" :icon="icon" :color="color || 'primary'" variant="soft"/>
 </template>
