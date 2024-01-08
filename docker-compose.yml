@@ -1,9 +1,5 @@
 version: '3'
 services:
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
   web:
     image: paranoidphantom/550-web:latest
     build: .
@@ -18,6 +14,11 @@ services:
       - "3001:3001"
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
 
 
 volumes:
