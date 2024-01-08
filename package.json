@@ -11,25 +11,19 @@
 	"DEPLOY_PRODUCTION": "docker compose build && docker compose push"
   },
   "devDependencies": {
-    "@iconify-json/line-md": "^1.1.33",
-    "@iconify/json": "^2.2.140",
     "@nuxt/content": "^2.9.0",
-    "@nuxt/devtools": "^1.0.1",
     "@nuxt/ui": "^2.10.0",
     "@nuxtjs/mdc": "^0.2.8",
     "@nuxtjs/robots": "^3.0.0",
     "@nuxtjs/supabase": "^1.1.3",
     "@supabase/supabase-js": "^2.38.3",
     "@types/normalize-path": "^3.0.2",
-    "@types/path-browserify": "^1.0.2",
     "normalize-path": "^3.0.0",
     "nuxt": "^3.8.2",
     "nuxt-icon": "^0.6.5",
     "nuxt-simple-sitemap": "^3.4.1",
     "nuxt-storage": "^1.2.2",
-    "path-browserify": "^1.0.1",
     "sass": "^1.69.3",
-    "supabase": "^1.110.1",
     "vue-clipboard3": "^2.0.0"
   }
 }
