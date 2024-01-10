@@ -22,7 +22,7 @@
     "@types/normalize-path": "^3.0.2",
     "@types/path-browserify": "^1.0.2",
     "normalize-path": "^3.0.0",
-    "nuxt": "^3.8.2",
+    "nuxt": "^3.9.1",
     "nuxt-icon": "^0.6.5",
     "nuxt-simple-sitemap": "^3.4.1",
     "nuxt-storage": "^1.2.2",
