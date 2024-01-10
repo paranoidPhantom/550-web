@@ -1,10 +1,10 @@
-FROM node:20
+FROM node:20-slim
 
 WORKDIR /usr/src/nuxt_server
 
 COPY package*.json ./
 
-RUN npm install 
+RUN npm ci
 
 RUN npm install typescript -g
 
