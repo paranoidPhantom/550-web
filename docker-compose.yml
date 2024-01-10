@@ -5,6 +5,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   web:
+    restart: unless-stopped
     image: paranoidphantom/550-web:latest
     build: .
     ports:
@@ -12,13 +13,21 @@ services:
     env_file:
       - ./.env
   fs_server:
+    restart: always
     image: paranoidphantom/550-server:latest
     build: ../550-portal-server
     ports:
       - "3001:3001"
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
-
+  watchtower:
+    restart: always
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+    environment: 
+      WATCHTOWER_CLEANUP: "true"
 
 volumes:
   fs_server_vol:

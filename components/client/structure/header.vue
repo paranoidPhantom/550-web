@@ -9,6 +9,8 @@ onMounted(() => {
     });
 });
 
+const globalSearchBar = useState("search_bar_open", () => false);
+
 const buttons = [
     {
         text: "Новости",
@@ -120,19 +122,19 @@ const buttons = [
     },
     {
         text: "Партнёры",
-        href: "/partners"
+        href: "/partners",
     },
     {
         text: "Медалисты школы",
-        href: "/medalists"
+        href: "/medalists",
     },
     {
         text: "Противодействие коррупции",
-        href: "/anti-corruption"
+        href: "/anti-corruption",
     },
     {
         text: "Безопасная среда",
-        href: "/safe-environment"
+        href: "/safe-environment",
     },
     {
         text: "Функциональная грамотность",
@@ -161,7 +163,6 @@ const currentRoute = computed(() => {
     mobileHeaderOpen.value = false;
     return path;
 });
-const globalSearchBar = useState("search_bar_open", () => false)
 </script>
 
 <template>
@@ -182,7 +183,10 @@ const globalSearchBar = useState("search_bar_open", () => false)
                 variant="link"
                 :to="button.href"
                 :class="{
-                    current: button.href === currentRoute || (button.sectionMacher && button.sectionMacher(currentRoute)),
+                    current:
+                        button.href === currentRoute ||
+                        (button.sectionMacher &&
+                            button.sectionMacher(currentRoute)),
                 }"
             >
                 {{ button.text }}
@@ -194,19 +198,19 @@ const globalSearchBar = useState("search_bar_open", () => false)
                             v-for="(section, index) in button.dropdown"
                         >
                             <hr v-if="index !== 0" />
-                                <UButton
-                                    v-for="subbutton in section"
-                                    class="dropdown-link"
-                                    color="white"
-                                    size="xs"
-                                    variant="ghost"
-                                    :class="{
-                                        current: currentRoute === subbutton.href,
-                                    }"
-                                    :title="subbutton.text"
-                                    :to="subbutton.href"
-                                    :label="subbutton.text"
-                                />
+                            <UButton
+                                v-for="subbutton in section"
+                                class="dropdown-link"
+                                color="white"
+                                size="xs"
+                                variant="ghost"
+                                :class="{
+                                    current: currentRoute === subbutton.href,
+                                }"
+                                :title="subbutton.text"
+                                :to="subbutton.href"
+                                :label="subbutton.text"
+                            />
                         </div>
                     </div>
                 </ClientOnly>
@@ -214,7 +218,13 @@ const globalSearchBar = useState("search_bar_open", () => false)
         </div>
         <div class="right flex gap-4">
             <UTooltip text="Поиск" :shortcuts="['CTRL + K']">
-                <UButton icon="i-heroicons-magnifying-glass" variant="link" color="white" size="xs" @click="globalSearchBar = true"/>
+                <UButton
+                    icon="i-heroicons-magnifying-glass"
+                    variant="link"
+                    color="white"
+                    size="xs"
+                    @click="globalSearchBar = true"
+                />
             </UTooltip>
             <ColorModeSwitch />
         </div>
@@ -329,7 +339,8 @@ header {
             width: 100%;
             height: 1rem;
         }
-        &:hover .bridge, &:focus .bridge {
+        &:hover .bridge,
+        &:focus .bridge {
             display: block;
         }
         .dropdown {
@@ -356,7 +367,9 @@ header {
                 padding: 0 0.5rem;
             }
         }
-        &:hover .dropdown, &:focus .dropdown, .dropdown:has(*:focus) {
+        &:hover .dropdown,
+        &:focus .dropdown,
+        .dropdown:has(*:focus) {
             display: flex;
         }
     }

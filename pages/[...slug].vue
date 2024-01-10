@@ -91,11 +91,13 @@ const content = supabase
 
 <style lang="scss">
 .__content {
-    padding: 0 10%;
     display: flex;
     justify-content: center;
     align-items: center;
+	max-width: 100%;
+	padding: 0 10%;
     .page-await {
+		max-width: 1000px;
         font-size: 2rem;
         margin-top: calc(50vh - 5rem);
     }

@@ -56,7 +56,7 @@ watchEffect(() => {
 }
 
 .dark-mode-icon-leave-active {
-    transition: all 0.5s;
+    transition: all 0.7s;
     position: absolute;
 }
 </style>
