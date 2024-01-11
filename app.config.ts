@@ -4,7 +4,6 @@ export default defineAppConfig({
         primary: 'sky',
         gray: 'neutral'
     },
-    express_server_port: 3001,
     socialLinks: [
         {
             icon: "i-mdi-vk",

@@ -57,7 +57,7 @@ const {
             <UButton variant="soft" @click="fs_state = true"
                 ><Icon name="heroicons:folder-open-20-solid"
             /></UButton>
-            <UButton variant="soft" :to="`http://${service_domain}:8000/project/default/editor`" target="_blank" class="h-full" color="green"
+            <UButton variant="soft" :to="`/supabase`" target="_blank" class="h-full" color="green"
                 ><Icon name="ri:supabase-fill"
             /></UButton>
             <ColorModeSwitch />

@@ -39,13 +39,9 @@ let { data: initial_posts } = await supabase
 
 posts.value = initial_posts as post[];
 
-const { express_server_port } = useAppConfig();
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
-
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const renderedPosts = ref<any[]>([]);
 
@@ -56,10 +52,9 @@ const renderPosts = async () => {
     if (!props.authorMode) {
         loaderStatus.value = true
     }
-    console.log(searchQuery.value, selectedTag.value)
     const {
         data: { value: user_meta },
-    } = await useFetch("/api/user-meta");
+    } = await useFetch("/api/public/_user-meta");
     const retval = await Promise.all(
         posts.value.map(async (post: post, index: number) => {
             if (!post.restricted || props.authorMode) {
@@ -233,8 +228,8 @@ onMounted(renderPosts);
     <div class="__blog-posts">
         <div class="options flex justify-between" v-if="!authorMode">
             <div class="tags flex gap-4 items-center">
-                <UBadge class="flex gap-1 items-center cursor-pointer" @click="selectedTag = tag" v-for="tag in availableTags" variant="subtle" size="lg">
-                    <Icon color="red" v-if="selectedTag === tag" @click="(event: Event) => { selectedTag = undefined; event.stopPropagation() }" class="text-lg" name="i-heroicons-x-mark-solid"/>
+                <UBadge class="flex gap-1 items-center cursor-pointer" @click="selectedTag = tag" v-for="tag in availableTags" :variant="selectedTag === tag ? 'outline' : 'subtle'" size="lg">
+                    <Icon v-if="selectedTag === tag" @click="(event: Event) => { selectedTag = undefined; event.stopPropagation() }" class="text-lg" name="i-heroicons-x-mark-solid"/>
                     {{ (tag as string) }}
                 </UBadge>
                 <Icon style="font-size: 1rem" v-show="loaderStatus" name="svg-spinners:ring-resize" />
@@ -259,7 +254,7 @@ onMounted(renderPosts);
                             post.author.username ===
                                 user?.user_metadata.username || !post?.author.pfp
                                 ? ``
-                                : `${express_server}${normalize(
+                                : `https://${service_domain}/fs/${normalize(
                                       post?.author.pfp
                                   )}`
                         "

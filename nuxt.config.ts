@@ -5,9 +5,12 @@ export default defineNuxtConfig({
 		preset: "node-cluster"
 	},
 	sitemap: {
-		xslTips: false,
+		sources: [
+			'/api/public/_sitemap-urls'
+		],
+		xslTips: false
 	},
-	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', 'nuxt-simple-sitemap'],
+	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', '@nuxtjs/sitemap'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'page', mode: 'out-in' },
@@ -15,6 +18,9 @@ export default defineNuxtConfig({
 	routeRules: {
 		"/docs": {
 			redirect: "/docs/base/intro"
+		},
+		"/supabase": {
+			redirect: "/project/default/editor"
 		}
 	},
 	content: {

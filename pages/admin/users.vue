@@ -92,7 +92,7 @@ const refreshUsers = async () => {
     if (current_session.value && current_session.value?.access_token) {
         const { data: users_r } = (await useFetch(`/api/admin/users`, {
             headers: {
-                "access-token": current_session.value.access_token,
+                "access_token": current_session.value.access_token,
             },
         })) as { data: Ref<User[]> };
         users.value = users_r.value;
@@ -205,7 +205,7 @@ const onEditUser = async () => {
     }
     const { error } = await useFetch("/api/admin/update-user", {
         headers: {
-            "access-token": current_session.value.access_token,
+            "access_token": current_session.value.access_token,
         },
         body: {
             id: editing_id.value,
@@ -242,7 +242,7 @@ const userEdited = computed(() => {
 const changeClaims = async (uid: string, claim_changed: string) => {
     await useFetch(`/api/admin/user-claims`, {
         headers: {
-            "access-token": current_session.value.access_token,
+            "access_token": current_session.value.access_token,
         },
         body: {
             uid: uid,
@@ -263,7 +263,7 @@ const create_form = reactive({
 const onCreateUser = async () => {
     const { error } = await useFetch(`/api/admin/new-user`, {
         headers: {
-            "access-token": current_session.value.access_token,
+            "access_token": current_session.value.access_token,
         },
         body: {
             email: create_form.email,
@@ -310,13 +310,9 @@ watchEffect(() => {
     }
 });
 
-const { express_server_port } = useAppConfig();
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
-
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const picking = computed(() => {
     const keys = Object.keys(file_pickers);
@@ -388,7 +384,7 @@ const picking = computed(() => {
                         <UAvatar
                             class="m-4"
                             size="xl"
-                            :src="`${express_server}/${(editingUser.user_metadata as any).pfp}`"
+                            :src="`https://${service_domain}/fs/${(editingUser.user_metadata as any).pfp}`"
                             icon="i-heroicons-photo"
                         />
                         <div class="flex gap-2">
@@ -466,7 +462,7 @@ const picking = computed(() => {
                         >
                             <UAvatar
                                 :icon="'i-heroicons-user'"
-                                :src="`${express_server}/${row.user_metadata.pfp}`"
+                                :src="`https://${service_domain}/fs/${row.user_metadata.pfp}`"
                             />
                         </UTooltip>
                     </div>

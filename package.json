@@ -8,20 +8,20 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-	"DEPLOY_PRODUCTION": "docker compose build && docker compose push"
+    "DEPLOY_PRODUCTION": "docker compose build && docker compose push"
   },
   "devDependencies": {
     "@nuxt/content": "^2.9.0",
     "@nuxt/ui": "^2.10.0",
     "@nuxtjs/mdc": "^0.2.8",
     "@nuxtjs/robots": "^3.0.0",
+    "@nuxtjs/sitemap": "^5.0.1",
     "@nuxtjs/supabase": "^1.1.3",
     "@supabase/supabase-js": "^2.38.3",
     "@types/normalize-path": "^3.0.2",
     "normalize-path": "^3.0.0",
     "nuxt": "^3.9.1",
     "nuxt-icon": "^0.6.5",
-    "nuxt-simple-sitemap": "^3.4.1",
     "nuxt-storage": "^1.2.2",
     "sass": "^1.69.3",
     "vue-clipboard3": "^2.0.0"

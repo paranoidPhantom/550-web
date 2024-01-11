@@ -6,12 +6,10 @@ const props = defineProps<{
     file_urls: string[];
 }>();
 
-const { express_server_port } = useAppConfig();
 
 const {
     public: { service_domain },
 } = useRuntimeConfig();
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const completeList = computedAsync(async () => {
     let retval: {
@@ -22,7 +20,7 @@ const completeList = computedAsync(async () => {
         name: string;
     }[] = [];
     const { data: file_data, error } = await useFetch(
-        `${express_server}file_data?routes=${props.file_urls.concat(",")}`
+        `https://${service_domain}/fs/file_data?routes=${props.file_urls.concat(",")}`
     );
     if (error.value) return { error: error.value };
     props.file_urls.forEach((route: string, index: number) => {
@@ -49,8 +47,8 @@ const completeList = computedAsync(async () => {
             "pdf"
         ];
         retval.push({
-            preview: `${express_server}` + normalize(`${route}`),
-            href: `${express_server}` + normalize(`download/${route}`),
+            preview: `https://${service_domain}/fs/` + normalize(`${route}`),
+            href: `https://${service_domain}/fs/` + normalize(`download/${route}`),
             icon: good_ext.includes(ext)
                 ? `ph:file-${ext}-light`
                 : `ph:file-light`,

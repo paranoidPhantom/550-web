@@ -77,20 +77,17 @@ const avatarAlt = computed(() => {
 
 const user = useSupabaseUser()
 
-const { express_server_port } = useAppConfig();
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
 
-const express_server = `http://${service_domain}:${express_server_port}/`;
 </script>
 
 <template>
     <ClientOnly>
         <UDropdown :items="(items as DropdownItem[][])" :ui="{ item: { disabled: 'cursor-text select-text' } }"
             :popper="{ placement: 'bottom-start' }">
-            <UAvatar :icon="session ? '' : 'i-heroicons-user'" :alt="avatarAlt" :src="`${express_server}/${user.user_metadata.pfp}`" />
+            <UAvatar :icon="session ? '' : 'i-heroicons-user'" :alt="avatarAlt" :src="`https://${service_domain}/fs/${user.user_metadata.pfp}`" />
             <template #account="{ item }">
                 <div class="text-left">
                     <p>
