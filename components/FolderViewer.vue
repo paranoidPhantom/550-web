@@ -13,7 +13,6 @@ interface props {
 }
 const props = defineProps<props>();
 const picker_mode_enabled = props.picker_mode !== undefined;
-const { express_server_port } = useAppConfig();
 
 const toast = useToast();
 
@@ -21,8 +20,6 @@ const {
     public: { service_domain },
 } = useRuntimeConfig();
 const loading = ref(false);
-
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const pathComponents: Ref<string[]> = ref([]);
 
@@ -66,7 +63,7 @@ const subpath = computed(() => {
 const rawFileData = computedAsync(async () => {
     const path = `${props.root}/${subpath.value}`;
     const { data } = await useFetch(
-        encodeURI(`${express_server}api/list_files/${props.bucket}/${path}`)
+        encodeURI(`/fs/list_files/${props.bucket}/${path}`)
     );
     return data.value;
 }, null);
@@ -118,7 +115,7 @@ const accessFile = (
     download: boolean
 ) => {
     const path = normalize(`${props.root}/${subpath}/${file}`);
-    const publicUrl = `${express_server}${download ? "download/" : ""}${
+    const publicUrl = `/fs/${download ? "download/" : ""}${
         props.bucket
     }${path}`;
     if (download) {
@@ -157,7 +154,7 @@ const handleFileUpload = (event: any) => {
         formData.append("file", file, encodeURI(file.name));
     }
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`${express_server}upload`, {
+    const { status, error } = useFetch(`/fs/upload`, {
         method: "post",
         query: { folder: path },
         body: formData,
@@ -178,7 +175,7 @@ const newFolderModal = reactive({
 
 const createFolder = () => {
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`${express_server}newdir`, {
+    const { status, error } = useFetch(`/fs/newdir`, {
         method: "post",
         query: {
             folder: `${props.bucket}/${props.root}/${subpath.value}/${newFolderModal.name}`,
@@ -207,7 +204,7 @@ const deleteEntity = (subpath: string, file: string) => {
     toast.remove("delete_entity_confirmation");
     const path = `${props.bucket}/${props.root}/${subpath}/${file}`;
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`${express_server}remove`, {
+    const { status, error } = useFetch(`/fs/remove`, {
         method: "post",
         query: { entity: path },
         headers: {

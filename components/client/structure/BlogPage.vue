@@ -39,13 +39,9 @@ let { data: initial_posts } = await supabase
 
 posts.value = initial_posts as post[];
 
-const { express_server_port } = useAppConfig();
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
-
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const renderedPosts = ref<any[]>([]);
 
@@ -56,10 +52,9 @@ const renderPosts = async () => {
     if (!props.authorMode) {
         loaderStatus.value = true
     }
-    console.log(searchQuery.value, selectedTag.value)
     const {
         data: { value: user_meta },
-    } = await useFetch("/api/user-meta");
+    } = await useFetch("/api/public/_user-meta");
     const retval = await Promise.all(
         posts.value.map(async (post: post, index: number) => {
             if (!post.restricted || props.authorMode) {
@@ -259,7 +254,7 @@ onMounted(renderPosts);
                             post.author.username ===
                                 user?.user_metadata.username || !post?.author.pfp
                                 ? ``
-                                : `${express_server}${normalize(
+                                : `/fs/${normalize(
                                       post?.author.pfp
                                   )}`
                         "

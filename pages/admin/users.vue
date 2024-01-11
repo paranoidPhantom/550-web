@@ -310,13 +310,9 @@ watchEffect(() => {
     }
 });
 
-const { express_server_port } = useAppConfig();
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
-
-const express_server = `http://${service_domain}:${express_server_port}/`;
 
 const picking = computed(() => {
     const keys = Object.keys(file_pickers);
@@ -388,7 +384,7 @@ const picking = computed(() => {
                         <UAvatar
                             class="m-4"
                             size="xl"
-                            :src="`${express_server}/${(editingUser.user_metadata as any).pfp}`"
+                            :src="`/fs/${(editingUser.user_metadata as any).pfp}`"
                             icon="i-heroicons-photo"
                         />
                         <div class="flex gap-2">
@@ -466,7 +462,7 @@ const picking = computed(() => {
                         >
                             <UAvatar
                                 :icon="'i-heroicons-user'"
-                                :src="`${express_server}/${row.user_metadata.pfp}`"
+                                :src="`/fs/${row.user_metadata.pfp}`"
                             />
                         </UTooltip>
                     </div>

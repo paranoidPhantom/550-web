@@ -1,6 +1,6 @@
 import { serverSupabaseServiceRole } from '#supabase/server'
 
-export default defineCachedEventHandler(
+export default defineEventHandler(
 	async (event) => {
 		const supabase = await serverSupabaseServiceRole(event)
 		const { data } = await supabase
@@ -11,11 +11,8 @@ export default defineCachedEventHandler(
 			return {
 				loc: p.route,
 				lastmod: actualDate,
+				_sitemap: 'pages',
 			};
 		});
-	},
-	{
-		name: 'sitemap-dynamic-url',
-		maxAge: 60 * 10, // cache URLs for 10 minutes
 	}
 );

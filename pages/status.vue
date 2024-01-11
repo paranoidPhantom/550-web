@@ -6,7 +6,6 @@ definePageMeta({
     layout: "empty",
 });
 
-const { express_server_port } = useAppConfig();
 const { public: { service_domain } } = useRuntimeConfig();
 
 const fetching = ref(true);
@@ -33,19 +32,11 @@ const checksPassed = ref(0);
 const checks = [
     {
         name: "File storage",
-        port: express_server_port,
-        test_route: "/status",
+        test_route: "/fs/status",
     },
     {
-        name: "Supabase API (HTTP)",
-        port: 8000,
-        test_route: "/",
-    },
-    {
-        name: "Supabase API (HTTPS)",
-        port: 8443,
-        test_route: "/",
-        https: true,
+        name: "Supabase API",
+        test_route: "/supabase",
     },
 ];
 
@@ -62,9 +53,7 @@ const executeChecks = async () => {
     for (let index = 0; index < checks.length; index++) {
         const check = checks[index];
         const { data, error, status, pending } = await useFetch(
-            `${check.https ? "https" : "http"}://${service_domain}:${
-                check.port
-            }${check.test_route}`
+            `https://${service_domain}${check.test_route}`
         );
         checkResults.value[index] = {
             pending: true,
