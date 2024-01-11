@@ -4,7 +4,6 @@ export default defineEventHandler(
 	async (event) => {
 		const supabase = await serverSupabaseServiceRole(event)
 		const { data: { users }, error } = await supabase.auth.admin.listUsers()
-		console.log("ERROR <<<", error, ">>>")
 		let retval: {[key: string]: any} = {}
 		users.forEach(user => {
 			const meta = user.user_metadata as any

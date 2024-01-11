@@ -20,7 +20,7 @@ const completeList = computedAsync(async () => {
         name: string;
     }[] = [];
     const { data: file_data, error } = await useFetch(
-        `/fs/file_data?routes=${props.file_urls.concat(",")}`
+        `https://${service_domain}/fs/file_data?routes=${props.file_urls.concat(",")}`
     );
     if (error.value) return { error: error.value };
     props.file_urls.forEach((route: string, index: number) => {
@@ -47,8 +47,8 @@ const completeList = computedAsync(async () => {
             "pdf"
         ];
         retval.push({
-            preview: `/fs/` + normalize(`${route}`),
-            href: `/fs/` + normalize(`download/${route}`),
+            preview: `https://${service_domain}/fs/` + normalize(`${route}`),
+            href: `https://${service_domain}/fs/` + normalize(`download/${route}`),
             icon: good_ext.includes(ext)
                 ? `ph:file-${ext}-light`
                 : `ph:file-light`,

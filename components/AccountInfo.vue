@@ -87,7 +87,7 @@ const {
     <ClientOnly>
         <UDropdown :items="(items as DropdownItem[][])" :ui="{ item: { disabled: 'cursor-text select-text' } }"
             :popper="{ placement: 'bottom-start' }">
-            <UAvatar :icon="session ? '' : 'i-heroicons-user'" :alt="avatarAlt" :src="`/fs/${user.user_metadata.pfp}`" />
+            <UAvatar :icon="session ? '' : 'i-heroicons-user'" :alt="avatarAlt" :src="`https://${service_domain}/fs/${user.user_metadata.pfp}`" />
             <template #account="{ item }">
                 <div class="text-left">
                     <p>

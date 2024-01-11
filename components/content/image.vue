@@ -11,5 +11,5 @@ const {
 </script>
 
 <template>
-    <img :src="`/fs/${src}`" alt="">
+    <img :src="`https://${service_domain}/fs/${src}`" alt="">
 </template>

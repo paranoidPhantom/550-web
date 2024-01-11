@@ -63,7 +63,7 @@ const subpath = computed(() => {
 const rawFileData = computedAsync(async () => {
     const path = `${props.root}/${subpath.value}`;
     const { data } = await useFetch(
-        encodeURI(`/fs/list_files/${props.bucket}/${path}`)
+        encodeURI(`https://${service_domain}/fs/list_files/${props.bucket}/${path || ''}`)
     );
     return data.value;
 }, null);
@@ -115,7 +115,7 @@ const accessFile = (
     download: boolean
 ) => {
     const path = normalize(`${props.root}/${subpath}/${file}`);
-    const publicUrl = `/fs/${download ? "download/" : ""}${
+    const publicUrl = `https://${service_domain}/fs/${download ? "download/" : ""}${
         props.bucket
     }${path}`;
     if (download) {
@@ -154,7 +154,7 @@ const handleFileUpload = (event: any) => {
         formData.append("file", file, encodeURI(file.name));
     }
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`/fs/upload`, {
+    const { status, error } = useFetch(`https://${service_domain}/fs/upload`, {
         method: "post",
         query: { folder: path },
         body: formData,
@@ -175,7 +175,7 @@ const newFolderModal = reactive({
 
 const createFolder = () => {
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`/fs/newdir`, {
+    const { status, error } = useFetch(`https://${service_domain}/fs/newdir`, {
         method: "post",
         query: {
             folder: `${props.bucket}/${props.root}/${subpath.value}/${newFolderModal.name}`,
@@ -204,7 +204,7 @@ const deleteEntity = (subpath: string, file: string) => {
     toast.remove("delete_entity_confirmation");
     const path = `${props.bucket}/${props.root}/${subpath}/${file}`;
     if (!session?.access_token) return;
-    const { status, error } = useFetch(`/fs/remove`, {
+    const { status, error } = useFetch(`https://${service_domain}/fs/remove`, {
         method: "post",
         query: { entity: path },
         headers: {
