@@ -10,10 +10,14 @@ export default defineNuxtConfig({
 		],
 		xslTips: false
 	},
-	modules: ['@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', '@nuxtjs/sitemap'],
+	modules: ['@nuxtjs/turnstile', '@nuxt/ui', '@nuxt/content', 'nuxt-icon', '@nuxtjs/supabase', '@nuxtjs/mdc', '@nuxtjs/robots', '@nuxtjs/sitemap'],
 	app: {
 		pageTransition: { name: 'page', mode: 'out-in' },
 		layoutTransition: { name: 'page', mode: 'out-in' },
+	},
+	turnstile: {
+		siteKey: '0x4AAAAAAAP-6VsidBtdKXE8',
+		addValidateEndpoint: true
 	},
 	routeRules: {
 		"/docs": {
@@ -54,6 +58,9 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			service_domain: process.env.SUPABASE_URL?.split(":8000")[0].split("://")[1]
+		},
+		turnstile: {
+			secretKey: '',
 		}
 	}
 })
