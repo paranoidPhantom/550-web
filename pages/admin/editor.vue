@@ -28,7 +28,11 @@ const loaderStatus = reactive({
 });
 
 const {
-    tableNames: { content: tableName, news: newsTableName, blog: blogTableName },
+    tableNames: {
+        content: tableName,
+        news: newsTableName,
+        blog: blogTableName,
+    },
 } = useAppConfig();
 
 const input = ref();
@@ -61,11 +65,14 @@ const handleDBError = (error: PostgrestError | null) => {
 
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
+
+console.log("Called");
 const { data, error } = await supabase
     .from(tableName)
     .select(`*, ${newsTableName}(*)`);
 handleDBError(error);
 content_pages.value = data as page[];
+console.log(content_pages.value);
 
 interface page {
     content: string;
@@ -193,7 +200,7 @@ watchEffect(async () => {
             return;
         }
         const loadedVal = (data as unknown as page).content;
-        if (!nuxtStorage.localStorage) window.location.reload()
+        if (!nuxtStorage.localStorage) window.location.reload();
         const editing_value_cookie = nuxtStorage.localStorage.getData(
             "editing_value_cookie"
         );
@@ -293,7 +300,7 @@ const createPage = async () => {
     if (pageCreateFields.route.startsWith("/blog")) {
         await supabase.from(blogTableName as any).insert({
             route: pageCreateFields.route,
-            restricted: true
+            restricted: true,
         } as any);
     }
     loaderStatus.enabled = false;
@@ -465,8 +472,7 @@ const updateNewsEntry = async (key: keyof typeof editNewsEntry) => {
     const { error } = await supabase
         .from(newsTableName as any)
         .update(setTo)
-        .eq("route", current_route.value.href)
-        .select();
+        .eq("route", current_route.value.href);
     if (error) {
         handleDBError(error);
         associateNewsEntryPending.value = false;
@@ -478,14 +484,13 @@ const deleteAssociatedArticle = async () => {
     const { error } = await supabase
         .from(newsTableName as any)
         .delete()
-        .eq("route", current_route.value.href)
-        .select();
+        .eq("route", current_route.value.href);
     if (error) {
         handleDBError(error);
         return;
     }
-    window.location.reload()
-}
+    window.location.reload();
+};
 
 const news_edit_settings: {
     label: string;
@@ -511,9 +516,9 @@ const news_edit_settings: {
 ];
 
 const blog_url = (route: string) => {
-    const split = route.split("/")
-    return `/${split[1]}/${split[2]}#${split[3]}`
-}
+    const split = route.split("/");
+    return `/${split[1]}/${split[2]}#${split[3]}`;
+};
 </script>
 
 <template>
@@ -544,17 +549,54 @@ const blog_url = (route: string) => {
                                 />
                                 <template #panel>
                                     <div class="p-1">
-                                        <ul style="list-style: disc; padding-left: 1.5rem;">
-                                            <li><i>НЕ должен</i> содержать кириллицу</li>
-                                            <li><i>Должен</i> начинаться на '/'</li>
-                                            <li><strong>Для новосных страниц:</strong>
-                                                <ul style="list-style: circle; padding-left: 1.5rem;">
-                                                    <li>Должен начинаться на '/news/'</li>
+                                        <ul
+                                            style="
+                                                list-style: disc;
+                                                padding-left: 1.5rem;
+                                            "
+                                        >
+                                            <li>
+                                                <i>НЕ должен</i> содержать
+                                                кириллицу
+                                            </li>
+                                            <li>
+                                                <i>Должен</i> начинаться на '/'
+                                            </li>
+                                            <li>
+                                                <strong
+                                                    >Для новосных
+                                                    страниц:</strong
+                                                >
+                                                <ul
+                                                    style="
+                                                        list-style: circle;
+                                                        padding-left: 1.5rem;
+                                                    "
+                                                >
+                                                    <li>
+                                                        Должен начинаться на
+                                                        '/news/'
+                                                    </li>
                                                 </ul>
                                             </li>
-                                            <li><strong>Для страниц личного блога:</strong>
-                                                <ul style="list-style: circle; padding-left: 1.5rem;">
-                                                    <li>Должен начинаться на '/blog/<i>[имя пользователя]</i>/'</li>
+                                            <li>
+                                                <strong
+                                                    >Для страниц личного
+                                                    блога:</strong
+                                                >
+                                                <ul
+                                                    style="
+                                                        list-style: circle;
+                                                        padding-left: 1.5rem;
+                                                    "
+                                                >
+                                                    <li>
+                                                        Должен начинаться на
+                                                        '/blog/<i
+                                                            >[имя
+                                                            пользователя]</i
+                                                        >/'
+                                                    </li>
                                                 </ul>
                                             </li>
                                         </ul>
@@ -675,7 +717,7 @@ const blog_url = (route: string) => {
                                 </template>
                             </UInput>
                         </UFormGroup>
-                        
+
                         <UButton
                             label="Удалить ассоциированную новость"
                             variant="soft"
@@ -712,8 +754,9 @@ const blog_url = (route: string) => {
                     @click="pageCreateOpen = true"
                     class="add-page"
                     color="white"
-                    ><Icon name="material-symbols:add-circle-rounded"
-                /></UButton>
+                >
+                    <Icon name="material-symbols:add-circle-rounded" />
+                </UButton>
                 <USelectMenu
                     selected-icon="i-heroicons-check"
                     v-model="current_route"
@@ -729,18 +772,27 @@ const blog_url = (route: string) => {
                                 option.label
                             }}</span>
                         </UTooltip>
-                    </template></USelectMenu
-                >
+                    </template>
+                </USelectMenu>
                 <UButton
                     @click="openSlideover"
                     class="edit-page"
                     color="white"
                     :disabled="!firstLoadComplete"
-                    ><Icon name="clarity:cog-solid"
-                /></UButton>
-                <UButton :to="current_route.href.startsWith('/blog') ? blog_url(current_route.href) : current_route.href" target="_blank" color="white"
-                    ><Icon name="ic:baseline-remove-red-eye"
-                /></UButton>
+                >
+                    <Icon name="clarity:cog-solid" />
+                </UButton>
+                <UButton
+                    :to="
+                        current_route.href.startsWith('/blog')
+                            ? blog_url(current_route.href)
+                            : current_route.href
+                    "
+                    target="_blank"
+                    color="white"
+                >
+                    <Icon name="ic:baseline-remove-red-eye" />
+                </UButton>
                 <AdminUtilityEditorAutocomplete
                     :input="input"
                     :index="selectionIndex"
@@ -789,7 +841,8 @@ const blog_url = (route: string) => {
                                 @click="publishChanges"
                                 icon="i-heroicons-check-circle-20-solid"
                                 color="red"
-                        /></UTooltip>
+                            />
+                        </UTooltip>
                     </div>
                 </div>
             </Transition>
@@ -800,9 +853,11 @@ const blog_url = (route: string) => {
                 <MDC v-if="input" :value="input" />
                 <div
                     class="no-preview"
-                    style="opacity: 0.5; user-select: none;"
+                    style="opacity: 0.5; user-select: none"
                     v-if="input === ''"
-                >[Нет контента]</div>
+                >
+                    [Нет контента]
+                </div>
             </MarkdownForamatter>
         </div>
     </div>
@@ -817,15 +872,18 @@ const blog_url = (route: string) => {
         gap: 1rem;
         padding: 1rem 1rem;
         border-bottom: 1px solid rgba(var(--inverted-rgb), 0.05);
+
         h1 {
             font-size: 1.2rem;
         }
     }
+
     .body {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         padding: 1rem;
+
         button {
             width: fit-content;
         }
@@ -875,12 +933,15 @@ const blog_url = (route: string) => {
             align-items: center;
             gap: 0.5rem;
             padding-bottom: 0.5rem;
+
             .select-route {
                 min-width: 12rem;
             }
+
             > * {
                 height: 100%;
             }
+
             .load-spinner {
                 width: 1.2rem;
             }
@@ -894,11 +955,13 @@ const blog_url = (route: string) => {
             transition: all 0.5s;
             padding-top: 0.5rem;
             overflow: hidden;
+
             .side {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
             }
+
             &.unsaved-enter-from,
             &.unsaved-leave-to {
                 height: 0;
@@ -910,6 +973,7 @@ const blog_url = (route: string) => {
 
         .area {
             height: 100%;
+
             textarea {
                 height: 100%;
             }
