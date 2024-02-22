@@ -29,14 +29,6 @@ services:
       - "3002:3000"
     env_file:
       - ./.env
-  preview_fs_server:
-    restart: unless-stopped
-    image: paranoidphantom/550-server:preview
-    build: ../550-portal-server
-    ports:
-      - "3003:3001"
-    volumes:
-      - fs_server_vol:/usr/src/fs_server/db
 
   # Watchtower
   watchtower:
