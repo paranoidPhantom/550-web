@@ -1,4 +1,4 @@
-name: Docker deployment - preview
+name: Docker deployment - Preview
 
 on:
   push:
