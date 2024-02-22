@@ -1,14 +1,10 @@
 name: Docker deployment - Preview
 
-run-name: Docker | Deploy to preview by @${{ github.actor }}
+run-name: ❗ Docker | Deploy to production by @${{ github.actor }}
 
 on:
   push:
     branches:
-      - 'dev'
-  pull_request:
-    branches:
-      - 'dev'
       - 'master'
 
 jobs:
@@ -32,4 +28,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: paranoidphantom/550-web:preview
+          tags: paranoidphantom/550-web:latest
