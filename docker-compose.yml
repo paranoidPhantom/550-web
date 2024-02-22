@@ -1,5 +1,6 @@
 version: '3'
 services:
+  # Production containers
   web:
     restart: unless-stopped
     image: paranoidphantom/550-web:latest
@@ -10,13 +11,34 @@ services:
     env_file:
       - ./.env
   fs_server:
-    restart: always
+    restart: unless-stopped
     image: paranoidphantom/550-server:latest
     build: ../550-portal-server
     ports:
       - "3001:3001"
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
+
+  # Preview containers
+  preview_web:
+    restart: unless-stopped
+    image: paranoidphantom/550-web:preview
+    build: .
+    network_mode: host
+    ports:
+      - "3002:3000"
+    env_file:
+      - ./.env
+  preview_fs_server:
+    restart: unless-stopped
+    image: paranoidphantom/550-server:preview
+    build: ../550-portal-server
+    ports:
+      - "3003:3001"
+    volumes:
+      - fs_server_vol:/usr/src/fs_server/db
+
+  # Watchtower
   watchtower:
     restart: always
     image: containrrr/watchtower
