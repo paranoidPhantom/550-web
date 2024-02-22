@@ -1,4 +1,4 @@
-name: Docker deployment - Preview
+name: Docker deployment - Production
 
 run-name: ❗ Docker | Deploy to production by @${{ github.actor }}
 
