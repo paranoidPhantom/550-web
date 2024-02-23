@@ -10,7 +10,7 @@ RUN npm install typescript -g
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3000 3002
 
 # Build app
 RUN npm run build
