@@ -26,9 +26,9 @@ services:
     build: .
     network_mode: host
     ports:
-      - "3002:3000"
+      - "3002:3002"
     env_file:
-      - ./.env
+      - ./.preview.env
 
   # Watchtower
   watchtower:
