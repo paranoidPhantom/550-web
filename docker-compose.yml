@@ -4,12 +4,16 @@ services:
   web:
     restart: unless-stopped
     image: paranoidphantom/550-web:latest
-    build: .
-    network_mode: host
+    build:
+      context: .
+      args:
+        - NITRO_PRESET=node_cluster
     ports:
       - "3000:3000"
     env_file:
-      - ./.env
+      - ./.prod.env
+    environment:
+      - NITRO_PRESET=node_cluster
   fs_server:
     restart: unless-stopped
     image: paranoidphantom/550-server:latest
@@ -23,8 +27,10 @@ services:
   preview_web:
     restart: unless-stopped
     image: paranoidphantom/550-web:preview
-    build: .
-    network_mode: host
+    build:
+      context: .
+      args:
+        - NITRO_PRESET=node-server
     ports:
       - "3002:3002"
     env_file:
