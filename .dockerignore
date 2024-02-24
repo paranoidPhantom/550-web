@@ -18,4 +18,5 @@ logs
 .fleet
 .idea
 
-.*.env
+.prod.env
+.preview.env
