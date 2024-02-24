@@ -33,5 +33,5 @@ jobs:
         with:
           push: true
           tags: paranoidphantom/550-web:latest
-          build-args:
-            -NITRO_PRESET=node_cluster
+          build-args: |
+            NITRO_PRESET=node_cluster

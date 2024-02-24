@@ -33,5 +33,5 @@ jobs:
         with:
           push: true
           tags: paranoidphantom/550-web:preview
-          build-args:
-            -NITRO_PRESET=node-server
+          build-args: |
+            NITRO_PRESET=node-server
