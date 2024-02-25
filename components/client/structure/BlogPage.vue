@@ -49,12 +49,8 @@ const searchQuery = ref("")
 const selectedTag = ref()
 
 const renderPosts = async () => {
-    if (!props.authorMode) {
-        loaderStatus.value = true
-    }
-    const {
-        data: { value: user_meta },
-    } = await useFetch("/api/public/_user-meta");
+    if (!props.authorMode) loaderStatus.value = true
+    const user_meta = await $fetch("/api/public/_user-meta");
     const retval = await Promise.all(
         posts.value.map(async (post: post, index: number) => {
             if (!post.restricted || props.authorMode) {
@@ -209,8 +205,12 @@ const deleteTag = (route: string, deleteTageName: string) => {
     });
 };
 
-watchEffect(() => {
-    if (posts.value) renderPosts();
+watch(searchQuery, () => {
+    renderPosts();
+});
+
+watch(selectedTag, () => {
+    renderPosts();
 });
 
 const availableTags = computed(() => {
