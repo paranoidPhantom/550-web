@@ -10,6 +10,7 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    environment: preview
     steps:
       -
         name: Checkout
