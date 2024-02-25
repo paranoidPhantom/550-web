@@ -12,8 +12,6 @@ services:
       - "3000:3000"
     env_file:
       - ./.prod.env
-    environment:
-      - NITRO_PRESET=node_cluster
   fs_server:
     restart: unless-stopped
     image: paranoidphantom/550-server:latest
