@@ -36,7 +36,7 @@ const checks = [
     },
     {
         name: "Supabase API",
-        test_route: "/supabase",
+        test_route: "/project/default/editor",
     },
 ];
 
@@ -48,7 +48,6 @@ const executeChecks = async () => {
     }
     checkResults.value = [];
     checksPassed.value = 0;
-    console.log("RESET");
     fetching.value = true;
     for (let index = 0; index < checks.length; index++) {
         const check = checks[index];
