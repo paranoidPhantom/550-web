@@ -66,13 +66,12 @@ const handleDBError = (error: PostgrestError | null) => {
 // Handling content_pages reactivity
 const content_pages: Ref<page[]> = ref([]);
 
-console.log("Called");
 const { data, error } = await supabase
     .from(tableName)
     .select(`*, ${newsTableName}(*)`);
+
 handleDBError(error);
 content_pages.value = data as page[];
-console.log(content_pages.value);
 
 interface page {
     content: string;
@@ -157,29 +156,37 @@ const content_routes_list = computed(() => {
         label: string;
         href: string;
     }[] = [];
-    let lastHref = current_route.value ? current_route.value.href : undefined;
-    if (!lastHref) {
-        if (editing_route_cookie.value) lastHref = editing_route_cookie.value;
-        if (routeQuery.editing) lastHref = routeQuery.editing;
-    }
     content_pages.value.forEach((page: page, index: number) => {
         const option_object = {
             label: page.name,
             href: page.route,
         };
         result.push(option_object);
-        if (lastHref && lastHref === page.route) {
-            current_route.value = option_object;
-        } else if (
-            !current_route.value &&
-            index === content_pages.value.length - 1
-        ) {
-            current_route.value = option_object;
-        }
     });
 
     return result;
 });
+
+let lastHref = current_route.value ? current_route.value.href : undefined;
+if (!lastHref) {
+    if (editing_route_cookie.value) lastHref = editing_route_cookie.value;
+    if (routeQuery.editing) lastHref = routeQuery.editing;
+}
+content_pages.value.forEach((page: page, index: number) => {
+    const option_object = {
+        label: page.name,
+        href: page.route,
+    };
+    if (lastHref && lastHref === page.route) {
+        current_route.value = option_object;
+    } else if (
+        !current_route.value &&
+        index === content_pages.value.length - 1
+    ) {
+        current_route.value = option_object;
+    }
+});
+
 // Done with content_pages
 
 const firstLoadComplete = ref(false);
@@ -758,7 +765,7 @@ const blog_url = (route: string) => {
                     <Icon name="material-symbols:add-circle-rounded" />
                 </UButton>
                 <USelectMenu
-                    selected-icon="i-heroicons-check"
+                    selected-icon="i-heroicons-pencil-solid"
                     v-model="current_route"
                     :options="content_routes_list"
                     class="select-route"
