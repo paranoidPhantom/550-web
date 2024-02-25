@@ -92,9 +92,10 @@ const refreshUsers = async () => {
     if (current_session.value && current_session.value?.access_token) {
         const { data: users_r } = (await useFetch(`/api/admin/users`, {
             headers: {
-                "access_token": current_session.value.access_token,
+                access_token: current_session.value.access_token,
             },
         })) as { data: Ref<User[]> };
+        console.log(users_r.value);
         users.value = users_r.value;
     }
 };
@@ -108,25 +109,24 @@ onMounted(async () => {
 });
 
 const editedTable = computed(() => {
-    if (users.value) {
-        let result: User[] = [];
-        users.value.map((user: User, index: number) => {
-            let object = user;
-            const keys = Object.keys(user) as (keyof User)[];
-            keys.forEach((key) => {
-                if (key.endsWith("at"))
-                    object[key] = useFormatedDate(user[key] as string) as any;
-            });
-            result[index] = object;
-            const claims = Object.keys(object.app_metadata);
-            claimsFetched.value[user.id] = unRef(object.app_metadata);
-            claims.map((claim: string) => {
-                claimsFetched.value[user.id][claim] =
-                    unRef(object.app_metadata)[claim] === true;
-            });
+    return users.value || null
+});
+
+watchEffect(() => {
+	console.log(editedTable.value)
+});
+
+const stopInitialClaimFetch = watchEffect(() => {
+	editedTable.value?.forEach((user: User) => {
+		let object = user;
+        const claims = Object.keys(object.app_metadata);
+        claimsFetched.value[user.id] = unRef(object.app_metadata);
+        claims.map((claim: string) => {
+			claimsFetched.value[user.id][claim] =
+			unRef(object.app_metadata)[claim] === true;
         });
-        return result;
-    } else return null;
+    });
+	if (Array.isArray(editedTable.value)) stopInitialClaimFetch()
 });
 
 const toast = useToast();
@@ -205,7 +205,7 @@ const onEditUser = async () => {
     }
     const { error } = await useFetch("/api/admin/update-user", {
         headers: {
-            "access_token": current_session.value.access_token,
+            access_token: current_session.value.access_token,
         },
         body: {
             id: editing_id.value,
@@ -242,7 +242,7 @@ const userEdited = computed(() => {
 const changeClaims = async (uid: string, claim_changed: string) => {
     await useFetch(`/api/admin/user-claims`, {
         headers: {
-            "access_token": current_session.value.access_token,
+            access_token: current_session.value.access_token,
         },
         body: {
             uid: uid,
@@ -263,7 +263,7 @@ const create_form = reactive({
 const onCreateUser = async () => {
     const { error } = await useFetch(`/api/admin/new-user`, {
         headers: {
-            "access_token": current_session.value.access_token,
+            access_token: current_session.value.access_token,
         },
         body: {
             email: create_form.email,
@@ -319,7 +319,7 @@ const picking = computed(() => {
     let found = false;
     keys.forEach((key: string) => {
         if (found) return;
-        if (file_pickers[key] === true) found = true;
+        if (file_pickers[key as keyof typeof file_pickers] === true) found = true;
     });
     return found;
 });
@@ -378,13 +378,13 @@ const picking = computed(() => {
                 >
                     <UInput type="password" v-model="editingUser.password" />
                 </UFormGroup>
-                <hr style="border-color: rgba(var(--inverted-rgb), 0.2);">
+                <hr style="border-color: rgba(var(--inverted-rgb), 0.2)" />
                 <UFormGroup label="Фотография">
                     <div class="preview flex items-center flex-col">
                         <UAvatar
                             class="m-4"
                             size="xl"
-                            :src="`https://${service_domain}/fs/${(editingUser.user_metadata as any).pfp}`"
+                            :src="(editingUser.user_metadata as any).pfp ? `https://${service_domain}/fs/${(editingUser.user_metadata as any).pfp}` : undefined"
                             icon="i-heroicons-photo"
                         />
                         <div class="flex gap-2">
@@ -462,7 +462,7 @@ const picking = computed(() => {
                         >
                             <UAvatar
                                 :icon="'i-heroicons-user'"
-                                :src="`https://${service_domain}/fs/${row.user_metadata.pfp}`"
+                                :src="row.user_metadata.pfp ? `https://${service_domain}/fs/${row.user_metadata.pfp}` : undefined"
                             />
                         </UTooltip>
                     </div>
