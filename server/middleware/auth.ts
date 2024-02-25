@@ -19,6 +19,6 @@ export default defineEventHandler(async (event) => {
     }
     throw createError({
         statusCode: 401,
-        message: 'Insufficient rights - '+JSON.stringify(event.headers)
+        message: 'Insufficient rights - '+JSON.stringify(event.headers.get("access_token"))
     })
 })
