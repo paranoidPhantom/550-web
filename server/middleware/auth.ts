@@ -4,7 +4,7 @@ import type { UserResponse } from '@supabase/supabase-js'
 export default defineEventHandler(async (event) => {
     if (!getRequestURL(event).pathname.startsWith("/api/admin")) return
     const supabase = await serverSupabaseServiceRole(event)
-    const access_token = event.headers.get("access-token")
+    const access_token = event.headers.get("access_token")
     if (access_token) {
         const { data: { user } } = await supabase.auth.getUser(access_token) as UserResponse
         if (user) {

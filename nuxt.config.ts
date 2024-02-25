@@ -45,7 +45,7 @@ export default defineNuxtConfig({
 		storageKey: 'nuxt-color-mode'
 	},
 	supabase: {
-		redirect: false
+		redirect: false,
 	},
 	robots: {
 		rules: {
@@ -56,8 +56,5 @@ export default defineNuxtConfig({
 		public: {
 			service_domain: process.env.SUPABASE_URL?.split(":8000")[0].split("://")[1]
 		},
-		turnstile: {
-			secretKey: '',
-		}
 	}
 })
