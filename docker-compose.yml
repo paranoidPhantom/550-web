@@ -4,6 +4,7 @@ services:
   web:
     restart: unless-stopped
     image: paranoidphantom/550-web:latest
+    network_mode: host
     build:
       context: .
       args:
@@ -25,6 +26,7 @@ services:
   preview_web:
     restart: unless-stopped
     image: paranoidphantom/550-web:preview
+    network_mode: host
     build:
       context: .
       args:
@@ -44,6 +46,8 @@ services:
     command: --interval 30
     environment: 
       WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_NOTIFICATIONS: slack
+      WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: "https://discord.com/api/webhooks/1215667608234360924/U8U94ILOFdYH8QTzkQsUhDpTaLTga9qDmaXkiBY6eBW-xEBMqofXcDDTBNKztz4WnVTj/slack"
 
 volumes:
   fs_server_vol:
