@@ -70,6 +70,7 @@ const { data, error } = await supabase
     .from(tableName)
     .select(`*, ${newsTableName}(*)`);
 
+console.log(error)
 handleDBError(error);
 content_pages.value = data as page[];
 
@@ -207,7 +208,6 @@ watchEffect(async () => {
             return;
         }
         const loadedVal = (data as unknown as page).content;
-        if (!nuxtStorage.localStorage) window.location.reload();
         const editing_value_cookie = nuxtStorage.localStorage.getData(
             "editing_value_cookie"
         );
