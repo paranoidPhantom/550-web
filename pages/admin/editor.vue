@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core";
 import type {
     PostgrestError,
     RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
-import nuxtStorage from "nuxt-storage";
 
 interface article {
     route: string;
@@ -70,7 +68,6 @@ const { data, error } = await supabase
     .from(tableName)
     .select(`*, ${newsTableName}(*)`);
 
-console.log(error)
 handleDBError(error);
 content_pages.value = data as page[];
 
@@ -208,7 +205,7 @@ watchEffect(async () => {
             return;
         }
         const loadedVal = (data as unknown as page).content;
-        const editing_value_cookie = nuxtStorage.localStorage.getData(
+        const editing_value_cookie = localStorage.getItem(
             "editing_value_cookie"
         );
         input.value =
@@ -267,7 +264,7 @@ const confirmPublishChanges = async () => {
         return;
     }
     loaderStatus.enabled = false;
-    nuxtStorage.sessionStorage.removeItem("editing_value_cookie");
+    localStorage.removeItem("editing_value_cookie");
     initialInput.value = input.value;
     toast.add({
         id: `publish_complete_${input.value}`,
@@ -395,11 +392,9 @@ watchEffect(() => {
     if (input.value === undefined) {
         return;
     }
-    nuxtStorage.localStorage.setData(
+    localStorage.setItem(
         "editing_value_cookie",
-        input.value,
-        24,
-        "h"
+        input.value
     );
     updateSI();
 });
