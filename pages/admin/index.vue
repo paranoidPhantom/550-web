@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useFormatedDate } from "@/utils/useFormatedDate";
-import { SupabaseClient } from "@supabase/supabase-js";
 definePageMeta({
     name: "Панель управления",
     layout: "admin",
