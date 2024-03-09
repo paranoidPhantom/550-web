@@ -69,7 +69,7 @@ const { data, error } = await supabase
     .select(`*, ${newsTableName}(*)`);
 
 handleDBError(error);
-content_pages.value = data as page[];
+content_pages.value = data as unknown as page[];
 
 interface page {
     content: string;
@@ -259,10 +259,6 @@ const confirmPublishChanges = async () => {
         handleDBError(error);
         return;
     }
-    if (error) {
-        handleDBError(error);
-        return;
-    }
     loaderStatus.enabled = false;
     localStorage.removeItem("editing_value_cookie");
     initialInput.value = input.value;
@@ -392,10 +388,7 @@ watchEffect(() => {
     if (input.value === undefined) {
         return;
     }
-    localStorage.setItem(
-        "editing_value_cookie",
-        input.value
-    );
+    localStorage.setItem("editing_value_cookie", input.value);
     updateSI();
 });
 
@@ -516,6 +509,8 @@ const news_edit_settings: {
         key: "link_text",
     },
 ];
+
+const test = "test";
 
 const blog_url = (route: string) => {
     const split = route.split("/");

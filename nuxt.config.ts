@@ -54,6 +54,7 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		public: {
+			access: process.env.ACCESS,
 			service_domain: process.env.SUPABASE_URL?.split(":8000")[0].split("://")[1]
 		},
 	}

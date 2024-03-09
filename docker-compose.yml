@@ -31,6 +31,7 @@ services:
       context: .
       args:
         - NITRO_PRESET=node-server
+        - ACCESS=testers
     ports:
       - "3002:3002"
     env_file:
