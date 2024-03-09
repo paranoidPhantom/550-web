@@ -11,7 +11,7 @@
     scroll-behavior: smooth;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Martian+Mono:wght@500;600;700&family=Inter:wght@200;300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wght@500;600;700&family=Inter:wght@200;300;400;500;600;700&display=swap");
 
 @font-face {
     font-family: CascadiaCode;
@@ -27,4 +27,12 @@
 .page-leave-active,
 .page-enter-active {
     transition: all 0.3s ease-in-out;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }

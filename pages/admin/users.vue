@@ -90,13 +90,12 @@ const current_session = ref();
 
 const refreshUsers = async () => {
     if (current_session.value && current_session.value?.access_token) {
-        const { data: users_r } = (await useFetch(`/api/admin/users`, {
+        const data = (await $fetch(`/api/admin/users`, {
             headers: {
                 access_token: current_session.value.access_token,
             },
-        })) as { data: Ref<User[]> };
-        console.log(users_r.value);
-        users.value = users_r.value;
+        })) as User[];
+        users.value = data;
     }
 };
 
@@ -109,24 +108,24 @@ onMounted(async () => {
 });
 
 const editedTable = computed(() => {
-    return users.value || null
+    return users.value || null;
 });
 
 watchEffect(() => {
-	console.log(editedTable.value)
+    console.log(editedTable.value);
 });
 
 const stopInitialClaimFetch = watchEffect(() => {
-	editedTable.value?.forEach((user: User) => {
-		let object = user;
+    editedTable.value?.forEach((user: User) => {
+        let object = user;
         const claims = Object.keys(object.app_metadata);
         claimsFetched.value[user.id] = unRef(object.app_metadata);
         claims.map((claim: string) => {
-			claimsFetched.value[user.id][claim] =
-			unRef(object.app_metadata)[claim] === true;
+            claimsFetched.value[user.id][claim] =
+                unRef(object.app_metadata)[claim] === true;
         });
     });
-	if (Array.isArray(editedTable.value)) stopInitialClaimFetch()
+    if (Array.isArray(editedTable.value)) stopInitialClaimFetch();
 });
 
 const toast = useToast();
@@ -203,7 +202,7 @@ const onEditUser = async () => {
             sendval[key] = newVal;
         }
     }
-    const { error } = await useFetch("/api/admin/update-user", {
+    await $fetch("/api/admin/update-user", {
         headers: {
             access_token: current_session.value.access_token,
         },
@@ -212,9 +211,10 @@ const onEditUser = async () => {
             value: sendval,
         },
         method: "post",
+    }).finally(async () => {
+        editing.value = false;
+        refreshUsers();
     });
-    if (!error.value) editing.value = false;
-    refreshUsers();
 };
 
 const userEdited = computed(() => {
@@ -240,7 +240,7 @@ const userEdited = computed(() => {
 });
 
 const changeClaims = async (uid: string, claim_changed: string) => {
-    await useFetch(`/api/admin/user-claims`, {
+    await $fetch(`/api/admin/user-claims`, {
         headers: {
             access_token: current_session.value.access_token,
         },
@@ -261,7 +261,7 @@ const create_form = reactive({
 });
 
 const onCreateUser = async () => {
-    const { error } = await useFetch(`/api/admin/new-user`, {
+    await $fetch(`/api/admin/new-user`, {
         headers: {
             access_token: current_session.value.access_token,
         },
@@ -273,11 +273,10 @@ const onCreateUser = async () => {
             },
         },
         method: "post",
-    });
-    if (!error.value) {
+    }).finally(async () => {
         await refreshUsers();
         creating.value = false;
-    }
+    });
 };
 
 const file_pickers = reactive({
@@ -319,7 +318,8 @@ const picking = computed(() => {
     let found = false;
     keys.forEach((key: string) => {
         if (found) return;
-        if (file_pickers[key as keyof typeof file_pickers] === true) found = true;
+        if (file_pickers[key as keyof typeof file_pickers] === true)
+            found = true;
     });
     return found;
 });
@@ -462,7 +462,11 @@ const picking = computed(() => {
                         >
                             <UAvatar
                                 :icon="'i-heroicons-user'"
-                                :src="row.user_metadata.pfp ? `https://${service_domain}/fs/${row.user_metadata.pfp}` : undefined"
+                                :src="
+                                    row.user_metadata.pfp
+                                        ? `https://${service_domain}/fs/${row.user_metadata.pfp}`
+                                        : undefined
+                                "
                             />
                         </UTooltip>
                     </div>
