@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const { website_name } = useAppConfig();
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
 
 const route = useRoute();
 
@@ -11,6 +14,20 @@ watchEffect(() => {
                 ? `${titleChunk} | ${website_name}`
                 : website_name;
         },
+        htmlAttrs: {
+            lang: "ru",
+        },
+        link: [
+            {
+                rel: "icon",
+                type: "image/png",
+                href: "/favicon.png",
+            },
+        ],
+    });
+    useSeoMeta({
+        ogTitle: route.meta.name || "Школа №550",
+        ogUrl: `https://${service_domain}`,
     });
 });
 </script>
