@@ -24,5 +24,5 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 				}
 			});
 		}
-	}
+	} else if (to.path === testerAuthPage) if (from && from.query.justvalidated === "1") return abortNavigation()
 })

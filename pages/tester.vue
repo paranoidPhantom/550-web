@@ -56,6 +56,11 @@ watch(code, async (to) => {
         oldCodeValue[i] = to[i];
         if (comparison) {
             if (to[i].length > 1) {
+                if (to[i].length >= code.length / 2) {
+                    const pasted = to[i].replaceAll("-", "");
+                    for (let i = 0; i <= to.length; i++) code[i] = pasted[i];
+                    return;
+                }
                 code[i] = to[i][to[i].length - 1];
             }
             const input = document.querySelector(
@@ -86,7 +91,10 @@ watch(code, async (to) => {
             });
             randomButton.value.focus();
             testerToken.value = token;
-            router.push((redirect as string) || "/");
+            router.push({
+                path: (redirect as string) || "/",
+                query: { justvalidated: 1 },
+            });
             break;
         }
     }
@@ -139,7 +147,6 @@ defineShortcuts({
                     placeholder="X"
                     :color="correct ? 'green' : 'red'"
                     size="lg"
-                    type="number"
                     :padded="false"
                     :autofocus-delay="0"
                     :class="`input-${index} popout-input${
