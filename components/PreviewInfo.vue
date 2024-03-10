@@ -17,9 +17,11 @@ const inPreview = access === "testers";
 .preview-info {
     font-family: "CascadiaCode", monospace;
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 0.35rem;
+    bottom: 0.35rem;
     pointer-events: none;
     opacity: 0.25;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
 }
 </style>
