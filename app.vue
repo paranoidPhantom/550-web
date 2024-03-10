@@ -25,4 +25,5 @@ watchEffect(() => {
     </NuxtLayout>
     <UNotifications />
     <SearchPallete />
+    <PreviewInfo />
 </template>
