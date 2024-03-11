@@ -11,7 +11,7 @@
     "DEPLOY_PRODUCTION": "docker compose build && docker compose push"
   },
   "devDependencies": {
-    "@nuxt/content": "^2.9.0",
+    "@nuxt/content": "^2.12.1",
     "@nuxt/ui": "^2.14.2",
     "@nuxtjs/mdc": "^0.2.8",
     "@nuxtjs/robots": "^3.0.0",
