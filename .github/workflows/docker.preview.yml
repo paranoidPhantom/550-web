@@ -29,14 +29,6 @@ jobs:
             - name: "Create env file"
               run: |
                   echo "${{ secrets.PREVIEW_ENV_FILE }}" > .env
-            - name: Cache Docker layers
-              id: cache
-              uses: actions/cache@v3
-              with:
-                  path: /tmp/.buildx-cache
-                  key: ${{ runner.os }}-buildx-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-buildx-
             - name: Build and push
               uses: docker/build-push-action@v5
               with:
@@ -45,5 +37,5 @@ jobs:
                   tags: paranoidphantom/550-web:preview
                   build-args: |
                       NITRO_PRESET=node-server
-                  cache-from: type=local,src=/tmp/.buildx-cache
-                  cache-to: type=local,dest=/tmp/.buildx-cache
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
