@@ -63,7 +63,7 @@ onMounted(() => {
         <section id="primary-hero">
             <div class="primary">
                 <h1 class="title">
-                    <span class="simple">Школа № 550</span><br><span
+                    <span class="simple">Школа № 550</span><br /><span
                         class="full"
                         >Школа<br />информационных<br />технологий</span
                     >
@@ -77,7 +77,13 @@ onMounted(() => {
                 <div class="buttons">
                     <UButton>Расписание</UButton>
                     <UButton>Вопросы и ответы</UButton>
-                    <UButton class="vis-impairment-btn" @click="visImpairment = !visImpairment" variant="soft" icon="i-heroicons-eye-20-solid">Для пользователей с нарушением зрения</UButton>
+                    <UButton
+                        class="vis-impairment-btn"
+                        @click="visImpairment = !visImpairment"
+                        variant="soft"
+                        icon="i-heroicons-eye-20-solid"
+                        >Для пользователей с нарушением зрения</UButton
+                    >
                 </div>
             </div>
             <div class="render-container">
@@ -102,7 +108,9 @@ onMounted(() => {
             </div>
         </section>
         <ClientStructureNewsBlock />
-        <UButton @click="feedbackForm = true">Открыть форму госуслуг (вместо кнопки будет банер)</UButton>
+        <UButton @click="feedbackForm = true"
+            >Открыть форму госуслуг (вместо кнопки будет банер)</UButton
+        >
     </div>
 </template>
 
@@ -164,7 +172,7 @@ onMounted(() => {
                 width: 70%;
                 aspect-ratio: 1;
                 position: absolute;
-                z-index: 0
+                z-index: 0;
             }
             .bubble {
                 z-index: 1;
