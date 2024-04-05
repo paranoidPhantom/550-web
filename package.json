@@ -21,7 +21,7 @@
     "@supabase/supabase-js": "^2.38.3",
     "@types/normalize-path": "^3.0.2",
     "normalize-path": "^3.0.0",
-    "nuxt": "^3.10.3",
+    "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.5",
     "sass": "^1.69.3",
     "vue-clipboard3": "^2.0.0"
