@@ -4,12 +4,17 @@ const {
 } = useRuntimeConfig();
 const inDev = process.dev;
 const inPreview = access === "testers";
+const {
+    public: { build_id },
+} = useRuntimeConfig();
 </script>
 
 <template>
     <div class="preview-info" v-if="inDev || inPreview">
         <p v-if="inDev">Режим локальной разработки</p>
-        <p v-else-if="inPreview">Версия для тестировщиков</p>
+        <p v-else-if="inPreview">
+            Версия для тестировщиков - билд {{ build_id }}
+        </p>
     </div>
 </template>
 
