@@ -111,10 +111,6 @@ const editedTable = computed(() => {
     return users.value || null;
 });
 
-watchEffect(() => {
-    console.log(editedTable.value);
-});
-
 const stopInitialClaimFetch = watchEffect(() => {
     editedTable.value?.forEach((user: User) => {
         let object = user;
