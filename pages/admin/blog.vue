@@ -5,9 +5,12 @@ definePageMeta({
     middleware: "auth",
     login_message: "Для доступа к редактору блога необходимо авторизоваться",
 });
-const user = useSupabaseUser()
+const user = useSupabaseUser();
 </script>
 
 <template>
-    <ClientStructureBlogPage :filters="{ match: 'username', value: user?.user_metadata.username as string }" author-mode />
+    <ClientStructureBlogPage
+        :filters="{ match: 'username', value: user?.user_metadata.username as string }"
+        author-mode
+    />
 </template>
