@@ -1,17 +1,8 @@
 {
   "name": "550-school",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev --port 5173 --host",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "DEPLOY_PRODUCTION": "docker compose build && docker compose push"
-  },
   "devDependencies": {
     "@nuxt/content": "^2.9.0",
+    "@nuxt/devtools": "^1.2.0",
     "@nuxt/ui": "^2.10.0",
     "@nuxtjs/mdc": "^0.2.8",
     "@nuxtjs/robots": "^3.0.0",
@@ -22,13 +13,21 @@
     "@types/bun": "latest",
     "@types/normalize-path": "^3.0.2",
     "normalize-path": "^3.0.0",
-    "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.5",
     "sass": "^1.69.3",
+    "typescript": "^5.4.4",
     "vue-clipboard3": "^2.0.0"
   },
-  "module": "index.ts",
   "peerDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port 5173 --host",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "DEPLOY_PRODUCTION": "docker compose build && docker compose push"
+  },
+  "type": "module"
 }

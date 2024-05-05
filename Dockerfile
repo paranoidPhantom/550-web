@@ -1,13 +1,10 @@
-FROM node:20-slim
+FROM oven/bun:debian
 
 WORKDIR /usr/src/nuxt_server/
 
-COPY package*.json ./
+COPY package.json ./
 
-RUN npm ci
-
-RUN npm install typescript -g
-RUN npm install nuxi -g
+RUN bun install
 
 COPY . .
 
@@ -17,10 +14,9 @@ EXPOSE 3000 3002
 ARG NITRO_PRESET
 ENV NITRO_PRESET=$NITRO_PRESET
 
-RUN NITRO_PRESET=$NITRO_PRESET
-RUN nuxt build
+RUN NITRO_PRESET=$NITRO_PRESET bunx --node nuxt build
 
-FROM node:20-alpine
+FROM node:22-alpine
 
 COPY --from=0 /usr/src/nuxt_server/.output /usr/src/nuxt_server/.output
 
