@@ -23,7 +23,7 @@
     "normalize-path": "^3.0.0",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.5",
-    "sass": "^1.69.3",
+    "sass": "^1.76.0",
     "vue-clipboard3": "^2.0.0"
   }
 }
