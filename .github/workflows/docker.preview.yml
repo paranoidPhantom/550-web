@@ -1,6 +1,6 @@
 name: Docker deployment - Preview
 
-run-name: Docker | Deploy to preview by @${{ github.actor }}
+run-name: Docker | Deploy to preview by @${{ github.actor }} [${{ github.run_id }}]
 
 on:
     push:
