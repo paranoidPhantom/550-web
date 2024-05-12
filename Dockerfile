@@ -1,26 +1,31 @@
+### PREPARE ###
 FROM oven/bun:debian
 
-WORKDIR /usr/src/nuxt_server/
+WORKDIR /usr/src/nuxt_prerequisites/
 
-COPY package.json ./
+COPY package.json .
 
 RUN bun install
 
 COPY . .
 
-EXPOSE 3000 3002
+### BUILD ###
+FROM node:18
 
-# Build app
-ARG NITRO_PRESET
-ENV NITRO_PRESET=$NITRO_PRESET
+COPY --from=0 /usr/src/nuxt_prerequisites/ /usr/src/nuxt_build/
 
-RUN NITRO_PRESET=$NITRO_PRESET bunx --node nuxt build
+WORKDIR /usr/src/nuxt_build
 
-FROM node:22-alpine
+RUN npx nuxt build
 
-COPY --from=0 /usr/src/nuxt_server/.output /usr/src/nuxt_server/.output
+### HOST ###
+FROM node:18-slim
+
+COPY --from=1 /usr/src/nuxt_build/.output /usr/src/nuxt_server/.output
 
 WORKDIR /usr/src/nuxt_server
+
+EXPOSE 3000 3002
 
 # Host app
 CMD [ "node", ".output/server/index.mjs" ]

@@ -11,8 +11,6 @@ services:
         - NITRO_PRESET=node_cluster
     ports:
       - "3000:3000"
-    env_file:
-      - ./.prod.env
   fs_server:
     restart: unless-stopped
     image: paranoidphantom/550-server:latest
@@ -35,7 +33,7 @@ services:
     ports:
       - "3002:3002"
     env_file:
-      - ./.preview.env
+      - ./.env.preview
 
   # Watchtower
   watchtower:
