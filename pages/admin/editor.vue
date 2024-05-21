@@ -522,7 +522,10 @@ const blog_url = (route: string) => {
     <div class="__editor" ref="editor">
         <UModal class="loader" v-model="loaderStatus.enabled" prevent-close>
             <div class="flex flex-col items-center gap-4 p-4 select-none">
-                <Icon style="font-size: 2rem" name="svg-spinners:ring-resize" />
+                <UIcon
+                    style="font-size: 2rem"
+                    name="svg-spinners:ring-resize"
+                />
                 <p class="text-current">{{ loaderStatus.message }}</p>
             </div>
         </UModal>
@@ -540,7 +543,7 @@ const blog_url = (route: string) => {
                         <UInput v-model="pageCreateFields.route" />
                         <template #hint>
                             <UPopover mode="hover">
-                                <Icon
+                                <UIcon
                                     style="font-size: 1.2rem"
                                     name="line-md:alert-circle-twotone"
                                 />
@@ -752,7 +755,7 @@ const blog_url = (route: string) => {
                     class="add-page"
                     color="white"
                 >
-                    <Icon name="material-symbols:add-circle-rounded" />
+                    <UIcon name="material-symbols:add-circle-rounded" />
                 </UButton>
                 <USelectMenu
                     selected-icon="i-heroicons-pencil-solid"
@@ -777,7 +780,7 @@ const blog_url = (route: string) => {
                     color="white"
                     :disabled="!firstLoadComplete"
                 >
-                    <Icon name="clarity:cog-solid" />
+                    <UIcon name="clarity:cog-solid" />
                 </UButton>
                 <UButton
                     :to="
@@ -788,13 +791,13 @@ const blog_url = (route: string) => {
                     target="_blank"
                     color="white"
                 >
-                    <Icon name="ic:baseline-remove-red-eye" />
+                    <UIcon name="ic:baseline-remove-red-eye" />
                 </UButton>
                 <AdminUtilityEditorAutocomplete
                     :input="input"
                     :index="selectionIndex"
                 />
-                <Icon
+                <UIcon
                     name="svg-spinners:ring-resize"
                     class="load-spinner"
                     v-if="!firstLoadComplete"
@@ -816,7 +819,7 @@ const blog_url = (route: string) => {
                     v-if="input !== initialInput && firstLoadComplete"
                 >
                     <div class="side">
-                        <Icon name="material-symbols:edit-rounded" />
+                        <UIcon name="material-symbols:edit-rounded" />
                         <p>Изменения не синхронизованы</p>
                     </div>
                     <div class="side">

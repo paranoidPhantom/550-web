@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 					testerToken,
 				},
 			})) as any[];
-			if (testerToken.length === 0) return navigateTo({
+			if (tokens.length === 0) return navigateTo({
 				path: testerAuthPage,
 				query: {
 					redirect: to.fullPath
@@ -24,5 +24,5 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 				}
 			});
 		}
-	}
+	} else if (to.path === testerAuthPage) if (from && from.query.justvalidated === "1") return abortNavigation()
 })

@@ -1,45 +1,41 @@
 name: Docker deployment - Preview
 
-run-name: Docker | Deploy to preview by @${{ github.actor }}
+run-name: Docker | Deploy to preview by @${{ github.actor }} [${{ github.run_id }}]
 
 on:
-  push:
-    branches:
-      - 'dev'
-  pull_request_target:
-    branches:
-      - 'master'
+    push:
+        branches:
+            - "dev"
+    pull_request_target:
+        branches:
+            - "master"
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
-    environment: preview
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: 'Create env file'
-        run: |
-          echo "${{ secrets.PREVIEW_ENV_FILE }}" > .env
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: paranoidphantom/550-web:preview
-          build-args: |
-            NITRO_PRESET=node-server
+    docker:
+        runs-on: ubuntu-latest
+        environment: preview
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v3
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: "Create env file"
+              run: |
+                  echo -e "${{ secrets.PREVIEW_ENV_FILE }}\nBUILD_ID=${{ github.run_id }}" > .env
+            - name: Build and push
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  push: true
+                  tags: paranoidphantom/550-web:preview
+                  build-args: |
+                      NITRO_PRESET=node-server
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max

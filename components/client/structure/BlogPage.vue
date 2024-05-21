@@ -45,11 +45,11 @@ const {
 
 const renderedPosts = ref<any[]>([]);
 
-const searchQuery = ref("")
-const selectedTag = ref()
+const searchQuery = ref("");
+const selectedTag = ref();
 
 const renderPosts = async () => {
-    if (!props.authorMode) loaderStatus.value = true
+    if (!props.authorMode) loaderStatus.value = true;
     const user_meta = await $fetch("/api/public/_user-meta");
     const retval = await Promise.all(
         posts.value.map(async (post: post, index: number) => {
@@ -58,17 +58,22 @@ const renderPosts = async () => {
                 const split = post.route.split("/");
                 const username = split[2];
                 const href = `/blog/${username}?post=${split[3]}`;
-                let visible = true
-                if (selectedTag.value && !post.tags.labels.includes(selectedTag.value)) visible = false
+                let visible = true;
+                if (
+                    selectedTag.value &&
+                    !post.tags.labels.includes(selectedTag.value)
+                )
+                    visible = false;
                 if (searchQuery.value !== "") {
-                    let match = false
-                    const lower = post.content.content.toLowerCase()
-                    const splitQuery = searchQuery.value.trim().split(" ")
+                    let match = false;
+                    const lower = post.content.content.toLowerCase();
+                    const splitQuery = searchQuery.value.trim().split(" ");
                     splitQuery.forEach((querySegment: string) => {
-                        if (lower.includes(querySegment.toLowerCase())) match = true
-                    })
+                        if (lower.includes(querySegment.toLowerCase()))
+                            match = true;
+                    });
                     if (!match) {
-                        visible = false
+                        visible = false;
                     }
                 }
                 if (
@@ -86,7 +91,7 @@ const renderPosts = async () => {
                         restricted: post.restricted,
                         route: post.route,
                         visible: visible,
-                        id: split[3]
+                        id: split[3],
                     };
                 } else {
                     return null;
@@ -95,7 +100,7 @@ const renderPosts = async () => {
         })
     );
     renderedPosts.value = retval;
-    loaderStatus.value = false
+    loaderStatus.value = false;
 };
 
 const handle_postgres_changes = (
@@ -214,12 +219,12 @@ watch(selectedTag, () => {
 });
 
 const availableTags = computed(() => {
-    let tags = new Set()
+    let tags = new Set();
     posts.value.forEach(async (post: post) => {
-        post.tags.labels.map((tag: string) => tags.add(tag))
+        post.tags.labels.map((tag: string) => tags.add(tag));
     });
-    return tags
-})
+    return tags;
+});
 
 onMounted(renderPosts);
 </script>
@@ -228,16 +233,37 @@ onMounted(renderPosts);
     <div class="__blog-posts">
         <div class="options flex justify-between" v-if="!authorMode">
             <div class="tags flex gap-4 items-center">
-                <UBadge class="flex gap-1 items-center cursor-pointer" @click="selectedTag = tag" v-for="tag in availableTags" :variant="selectedTag === tag ? 'outline' : 'subtle'" size="lg">
-                    <Icon v-if="selectedTag === tag" @click="(event: Event) => { selectedTag = undefined; event.stopPropagation() }" class="text-lg" name="i-heroicons-x-mark-solid"/>
-                    {{ (tag as string) }}
+                <UBadge
+                    class="flex gap-1 items-center cursor-pointer"
+                    @click="selectedTag = tag"
+                    v-for="tag in availableTags"
+                    :variant="selectedTag === tag ? 'outline' : 'subtle'"
+                    size="lg"
+                >
+                    <UIcon
+                        v-if="selectedTag === tag"
+                        @click="(event: Event) => { selectedTag = undefined; event.stopPropagation() }"
+                        class="text-lg"
+                        name="i-heroicons-x-mark-solid"
+                    />
+                    {{ tag as string }}
                 </UBadge>
-                <Icon style="font-size: 1rem" v-show="loaderStatus" name="svg-spinners:ring-resize" />
+                <UIcon
+                    style="font-size: 1rem"
+                    v-show="loaderStatus"
+                    name="svg-spinners:ring-resize"
+                />
             </div>
-            <UInput placeholder="Поиск..." v-model="searchQuery"/>
+            <UInput placeholder="Поиск..." v-model="searchQuery" />
         </div>
         <template v-for="post in renderedPosts">
-            <div class="post" v-if="post" v-show="post.visible" :id="post.id" :key="post?.href">
+            <div
+                class="post"
+                v-if="post"
+                v-show="post.visible"
+                :id="post.id"
+                :key="post?.href"
+            >
                 <div class="author flex gap-4 items-center" v-if="post">
                     <UAvatar
                         size="md"
@@ -250,9 +276,10 @@ onMounted(renderPosts);
                                 : undefined
                         "
                         :src="
-                            authorMode &&
-                            post.author.username ===
-                                user?.user_metadata.username || !post?.author.pfp
+                            (authorMode &&
+                                post.author.username ===
+                                    user?.user_metadata.username) ||
+                            !post?.author.pfp
                                 ? ``
                                 : `https://${service_domain}/fs/${normalize(
                                       post?.author.pfp
@@ -344,7 +371,8 @@ onMounted(renderPosts);
     padding: 1rem;
     gap: 1rem;
 
-    .options, .post {
+    .options,
+    .post {
         width: 50rem;
         max-width: 100%;
     }

@@ -40,7 +40,7 @@ const {
                         color="primary"
                     />
                 </USelectMenu>
-                <Icon name="i-heroicons-arrow-down-solid" class="arrow" />
+                <UIcon name="i-heroicons-arrow-down-solid" class="arrow" />
                 <FolderViewer
                     class="fs full"
                     :bucket="folderViewerBucket.id"
@@ -49,16 +49,21 @@ const {
             </div>
         </USlideover>
         <div class="title" @click="navigateTo(home)">
-            <Icon :name="icon" />
+            <UIcon :name="icon" />
             <h1>{{ title }}</h1>
         </div>
 
         <div class="edge">
             <UButton variant="soft" @click="fs_state = true"
-                ><Icon name="heroicons:folder-open-20-solid"
+                ><UIcon name="heroicons:folder-open-20-solid"
             /></UButton>
-            <UButton variant="soft" :to="`/supabase`" target="_blank" class="h-full" color="green"
-                ><Icon name="ri:supabase-fill"
+            <UButton
+                variant="soft"
+                :to="`/supabase`"
+                target="_blank"
+                class="h-full"
+                color="green"
+                ><UIcon name="ri:supabase-fill"
             /></UButton>
             <ColorModeSwitch />
             <AccountInfo />

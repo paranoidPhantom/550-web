@@ -3,29 +3,34 @@ interface props {
     bucket: string;
     root: string;
 }
-const open = ref(false)
+const open = ref(false);
 
-defineProps<props>()
+defineProps<props>();
 
 defineShortcuts({
-  escape: {
-    usingInput: true,
-    whenever: [open],
-    handler: () => { open.value = false }
-  }
-})
+    escape: {
+        usingInput: true,
+        whenever: [open],
+        handler: () => {
+            open.value = false;
+        },
+    },
+});
 </script>
 
 <template>
     <div class="__fs">
         <USlideover v-model="open" class="__fs-slideover">
             <div class="component-container">
-                <FolderViewer :bucket="bucket" :root="root as unknown === true ? '' : root"/>
+                <FolderViewer
+                    :bucket="bucket"
+                    :root="root as unknown === true ? '' : root"
+                />
             </div>
         </USlideover>
         {{ root }}
         <UButton color="white" @click="open = true">
-            <Icon name="line-md:clipboard-list-twotone"/>
+            <UIcon name="line-md:clipboard-list-twotone" />
             Посмотреть документы
         </UButton>
     </div>

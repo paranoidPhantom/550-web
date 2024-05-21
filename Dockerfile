@@ -1,24 +1,31 @@
-FROM node:20-slim
+### PREPARE ###
+FROM oven/bun:slim as prerequisites
 
-WORKDIR /usr/src/nuxt_server/
+WORKDIR /usr/src/nuxt/
 
-COPY package*.json ./
+COPY package.json .
 
-RUN npm ci
-
-RUN npm install typescript -g
-RUN npm install nuxi -g
+RUN bun install
 
 COPY . .
 
+### BUILD ###
+FROM node:18-slim as build
+
+COPY --from=prerequisites /usr/src/nuxt/ /usr/src/nuxt/
+
+WORKDIR /usr/src/nuxt
+
+RUN npx nuxt build
+
+### HOST ###
+FROM node:18-slim
+
+COPY --from=build /usr/src/nuxt/.output /usr/src/nuxt/.output
+
+WORKDIR /usr/src/nuxt
+
 EXPOSE 3000 3002
-
-# Build app
-ARG NITRO_PRESET
-ENV NITRO_PRESET=$NITRO_PRESET
-
-RUN NITRO_PRESET=$NITRO_PRESET
-RUN nuxt build
 
 # Host app
 CMD [ "node", ".output/server/index.mjs" ]

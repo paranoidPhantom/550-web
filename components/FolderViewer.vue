@@ -63,7 +63,11 @@ const subpath = computed(() => {
 const rawFileData = computedAsync(async () => {
     const path = `${props.root}/${subpath.value}`;
     const { data } = await useFetch(
-        encodeURI(`https://${service_domain}/fs/list_files/${props.bucket}/${path || ''}`)
+        encodeURI(
+            `https://${service_domain}/fs/list_files/${props.bucket}/${
+                path || ""
+            }`
+        )
     );
     return data.value;
 }, null);
@@ -115,9 +119,9 @@ const accessFile = (
     download: boolean
 ) => {
     const path = normalize(`${props.root}/${subpath}/${file}`);
-    const publicUrl = `https://${service_domain}/fs/${download ? "download/" : ""}${
-        props.bucket
-    }${path}`;
+    const publicUrl = `https://${service_domain}/fs/${
+        download ? "download/" : ""
+    }${props.bucket}${path}`;
     if (download) {
         window.location = publicUrl as unknown as typeof window.location;
     } else {
@@ -227,7 +231,10 @@ const fileExtIcon = (name: string) => {
 };
 
 const pickerState = picker_mode_enabled
-    ? useState<undefined | null | string[]>(props.picker_mode.key, () => undefined)
+    ? useState<undefined | null | string[]>(
+          props.picker_mode.key,
+          () => undefined
+      )
     : null;
 
 const selectedFiles = reactive<{ [key: string]: boolean | undefined }>({});
@@ -257,8 +264,8 @@ const pickerLabel = computed(() => {
 const finishFilePick = () => {
     if (pickerState) {
         if (selectedCount.value <= 0) {
-            pickerState.value = null
-            return
+            pickerState.value = null;
+            return;
         }
         let selected: string[] = [];
         const keys = Object.keys(selectedFiles);
@@ -286,17 +293,17 @@ const finishFilePick = () => {
         </UModal>
         <div class="path">
             <div class="node" @click="pathComponents = []">
-                <Icon name="codicon:root-folder" />
+                <UIcon name="codicon:root-folder" />
             </div>
             <template v-for="(node, index) in pathComponents">
-                <Icon name="codicon:arrow-right" />
+                <UIcon name="codicon:arrow-right" />
                 <div
                     class="node"
                     @click="
                         pathComponents = pathComponents.splice(0, index + 1)
                     "
                 >
-                    <Icon name="codicon:folder" />
+                    <UIcon name="codicon:folder" />
                     <p>{{ node }}</p>
                 </div>
             </template>
@@ -331,12 +338,12 @@ const finishFilePick = () => {
         >
             <Transition name="dnd-overlay" v-if="uploadOverlay">
                 <div class="drag-n-drop-overlay">
-                    <Icon name="line-md:uploading-loop" />
+                    <UIcon name="line-md:uploading-loop" />
                     <p>Загрузка файлов</p>
                 </div>
             </Transition>
             <div class="loading" v-if="currentFiles === null || loading">
-                <Icon name="svg-spinners:blocks-shuffle-3" />
+                <UIcon name="svg-spinners:blocks-shuffle-3" />
             </div>
             <div
                 class="empty"
@@ -344,7 +351,7 @@ const finishFilePick = () => {
                     Array.isArray(currentFiles) && currentFiles.length === 0
                 "
             >
-                <Icon name="mdi:magnify-close" />
+                <UIcon name="mdi:magnify-close" />
                 <p>Тут пусто...</p>
             </div>
             <div class="files" v-else>
@@ -367,12 +374,17 @@ const finishFilePick = () => {
                             :disabled="
                                 !(picker_mode.multiple === true) &&
                                 selectedCount > 0 &&
-                                selectedFiles[`${bucket}/${root}/${subpath}/${entity.name}`] !==
-                                    true
+                                selectedFiles[
+                                    `${bucket}/${root}/${subpath}/${entity.name}`
+                                ] !== true
                             "
-                            v-model="selectedFiles[`${bucket}/${root}/${subpath}/${entity.name}`]"
+                            v-model="
+                                selectedFiles[
+                                    `${bucket}/${root}/${subpath}/${entity.name}`
+                                ]
+                            "
                         />
-                        <Icon
+                        <UIcon
                             :name="
                                 entity.isFile
                                     ? fileExtIcon(entity.name)
@@ -398,7 +410,7 @@ const finishFilePick = () => {
                                 "
                                 variant="ghost"
                             >
-                                <Icon name="codicon:cloud-download" />
+                                <UIcon name="codicon:cloud-download" />
                             </UButton>
                             <UButton
                                 @click="
@@ -410,7 +422,7 @@ const finishFilePick = () => {
                                 "
                                 variant="ghost"
                             >
-                                <Icon name="codicon:eye" />
+                                <UIcon name="codicon:eye" />
                             </UButton>
                         </template>
                         <UButton
@@ -425,7 +437,7 @@ const finishFilePick = () => {
                             "
                             variant="ghost"
                         >
-                            <Icon name="codicon:trash" />
+                            <UIcon name="codicon:trash" />
                         </UButton>
                     </div>
                 </div>
@@ -438,7 +450,7 @@ const finishFilePick = () => {
                             color="white"
                             @click="newFolderModal.enabled = true"
                         >
-                            <Icon name="codicon:add" />
+                            <UIcon name="codicon:add" />
                             Создать папку
                         </UButton>
                         <div class="upload-btn">
@@ -446,7 +458,7 @@ const finishFilePick = () => {
                                 color="white"
                                 @click="factualInput.click()"
                             >
-                                <Icon name="codicon:cloud-upload" />
+                                <UIcon name="codicon:cloud-upload" />
                                 Загрузить
                             </UButton>
                             <input
@@ -459,11 +471,15 @@ const finishFilePick = () => {
                     </template>
                     <template v-if="picker_mode_enabled">
                         <UButton color="white" @click="finishFilePick">
-                            <Icon name="codicon:close" />
+                            <UIcon name="codicon:close" />
                             Отмена
                         </UButton>
-                        <UButton color="white" @click="finishFilePick" :disabled="selectedCount <= 0">
-                            <Icon name="codicon:check" />
+                        <UButton
+                            color="white"
+                            @click="finishFilePick"
+                            :disabled="selectedCount <= 0"
+                        >
+                            <UIcon name="codicon:check" />
                             Готово
                         </UButton>
                     </template>

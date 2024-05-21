@@ -20,8 +20,12 @@ defineShortcuts({
 const supabase = useSupabaseClient();
 
 const searchResults = async (query: string) => {
-    const pattern = query.trim().split(" ").map(str => `(${str}:*)`).join("|");
-    console.log(pattern)
+    const pattern = query
+        .trim()
+        .split(" ")
+        .map((str) => `(${str}:*)`)
+        .join("|");
+    console.log(pattern);
     modal_state.searching = true;
     let { data: results } = query
         ? await supabase.rpc(`content_and_name`, { query: pattern } as any) //
@@ -79,7 +83,7 @@ watchEffect(() => {
                 <div
                     class="flex flex-col items-center justify-center py-6 gap-3"
                 >
-                    <Icon
+                    <UIcon
                         class="text-4xl"
                         :name="
                             modal_state.results === undefined

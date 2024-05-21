@@ -29,18 +29,17 @@ if (Array.isArray(current_url)) {
     current_url = current_url.join("/");
 }
 
-current_url = `/${current_url}`
+current_url = `/${current_url}`;
 
-
-const routeData = ref()
-const pageLoaded = ref(false)
-const routeContentTree = ref()
+const routeData = ref();
+const pageLoaded = ref(false);
+const routeContentTree = ref();
 
 const updateFromData = async (data: any) => {
-    routeData.value = data
-    pageLoaded.value = true
-    routeContentTree.value = await parseMarkdown(data.content)
-}
+    routeData.value = data;
+    pageLoaded.value = true;
+    routeContentTree.value = await parseMarkdown(data.content);
+};
 
 const supabase = useSupabaseClient();
 const { data, error } = await supabase
@@ -49,21 +48,26 @@ const { data, error } = await supabase
     .eq("route", current_url)
     .single();
 
-updateFromData(data)
+updateFromData(data);
 
 const content = supabase
     .channel("custom-all-channel")
     .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "content", filter: `route=eq.${current_url}` },
+        {
+            event: "*",
+            schema: "public",
+            table: "content",
+            filter: `route=eq.${current_url}`,
+        },
         (payload: RealtimePostgresChangesPayload) => {
             switch (payload.eventType) {
                 case "UPDATE":
-                    updateFromData(payload.new)
+                    updateFromData(payload.new);
                     break;
                 case "DELETE":
-                    if (!window) return
-                    window.location.reload()
+                    if (!window) return;
+                    window.location.reload();
             }
         }
     )
@@ -72,12 +76,22 @@ const content = supabase
 
 <template>
     <div class="__content">
-        <Icon name="svg-spinners:ring-resize" v-if="!pageLoaded" class="page-await"/>
+        <UIcon
+            name="svg-spinners:ring-resize"
+            v-if="!pageLoaded"
+            class="page-await"
+        />
         <Head v-if="routeContentTree">
             <Title>{{ routeContentTree.data.title }}</Title>
-            <Meta name="description" :content="routeContentTree.data.description" />
+            <Meta
+                name="description"
+                :content="routeContentTree.data.description"
+            />
             <Meta property="og:title" :content="routeContentTree.data.title" />
-            <Meta property="og:description" :content="routeContentTree.data.description" />
+            <Meta
+                property="og:description"
+                :content="routeContentTree.data.description"
+            />
         </Head>
         <MarkdownForamatter>
             <MDC
@@ -94,10 +108,10 @@ const content = supabase
     display: flex;
     justify-content: center;
     align-items: center;
-	max-width: 100%;
-	padding: 0 10%;
+    max-width: 100%;
+    padding: 0 10%;
     .page-await {
-		max-width: 1000px;
+        max-width: 1000px;
         font-size: 2rem;
         margin-top: calc(50vh - 5rem);
     }

@@ -234,7 +234,7 @@ const currentRoute = computed(() => {
                 variant="link"
                 @click="mobileHeaderOpen = !mobileHeaderOpen"
             >
-                <Icon
+                <UIcon
                     :name="
                         mobileHeaderOpen
                             ? 'material-symbols:close'

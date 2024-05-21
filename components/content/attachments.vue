@@ -6,7 +6,6 @@ const props = defineProps<{
     file_urls: string[];
 }>();
 
-
 const {
     public: { service_domain },
 } = useRuntimeConfig();
@@ -20,7 +19,9 @@ const completeList = computedAsync(async () => {
         name: string;
     }[] = [];
     const { data: file_data, error } = await useFetch(
-        `https://${service_domain}/fs/file_data?routes=${props.file_urls.concat(",")}`
+        `https://${service_domain}/fs/file_data?routes=${props.file_urls.concat(
+            ","
+        )}`
     );
     if (error.value) return { error: error.value };
     props.file_urls.forEach((route: string, index: number) => {
@@ -44,11 +45,13 @@ const completeList = computedAsync(async () => {
             "vue",
             "xls",
             "zip",
-            "pdf"
+            "pdf",
         ];
         retval.push({
             preview: `https://${service_domain}/fs/` + normalize(`${route}`),
-            href: `https://${service_domain}/fs/` + normalize(`download/${route}`),
+            href:
+                `https://${service_domain}/fs/` +
+                normalize(`download/${route}`),
             icon: good_ext.includes(ext)
                 ? `ph:file-${ext}-light`
                 : `ph:file-light`,
@@ -63,8 +66,8 @@ const completeList = computedAsync(async () => {
 
 const previewAttachment = (event: Event, preview_link: string) => {
     event.preventDefault();
-    window.open(preview_link)
-}
+    window.open(preview_link);
+};
 </script>
 
 <template>
@@ -77,12 +80,17 @@ const previewAttachment = (event: Event, preview_link: string) => {
             :to="link.href"
             variant="ghost"
         >
-            <Icon :name="link.icon" />
+            <UIcon :name="link.icon" />
             <div class="info">
                 <p class="name">{{ link.name }}</p>
                 <p class="size">{{ link.size }}</p>
             </div>
-            <UButton @click="event => previewAttachment(event, link.preview)" class="_preview" variant="ghost" icon="i-heroicons-eye"></UButton>
+            <UButton
+                @click="(event) => previewAttachment(event, link.preview)"
+                class="_preview"
+                variant="ghost"
+                icon="i-heroicons-eye"
+            ></UButton>
         </UButton>
         <p
             v-else-if="completeList && completeList.hasOwnProperty('error')"
@@ -103,7 +111,7 @@ const previewAttachment = (event: Event, preview_link: string) => {
         text-decoration: none !important;
         max-width: fit-content;
         padding: 0.7rem;
-        >svg {
+        > svg {
             font-size: 1.5rem;
         }
         .size {
