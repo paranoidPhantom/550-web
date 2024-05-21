@@ -4,7 +4,6 @@ services:
   web:
     restart: unless-stopped
     image: paranoidphantom/550-web:latest
-    network_mode: host
     build:
       context: .
       args:
@@ -24,7 +23,6 @@ services:
   preview_web:
     restart: unless-stopped
     image: paranoidphantom/550-web:preview
-    network_mode: host
     build:
       context: .
       args:
