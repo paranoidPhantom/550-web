@@ -14,17 +14,17 @@ const columns = [
     {
         key: "name",
         label: "Название",
-        sortable: true
+        sortable: true,
     },
     {
         key: "route",
         label: "Путь",
-        sortable: true
+        sortable: true,
     },
     {
         key: "created_at",
         label: "Создана",
-        sortable: true
+        sortable: true,
     },
     {
         key: "actions",
@@ -57,26 +57,28 @@ const formattedPages = computed(() => {
     return result;
 });
 
-const q = ref('')
+const q = ref("");
 const filteredRows = computed(() => {
-  if (!q.value) {
-    return formattedPages.value
-  }
-  return formattedPages.value.filter((page) => {
-    return Object.values(page).some((value) => {
-      return String(value).toLowerCase().includes(q.value.toLowerCase())
-    })
-  })
-})
+    if (!q.value) {
+        return formattedPages.value;
+    }
+    return formattedPages.value.filter((page) => {
+        return Object.values(page).some((value) => {
+            return String(value).toLowerCase().includes(q.value.toLowerCase());
+        });
+    });
+});
 </script>
 
 <template>
     <div class="__admin-pages">
         <div class="page-list">
-            <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
+            <div
+                class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700"
+            >
                 <UInput v-model="q" placeholder="Поиск..." />
             </div>
-            <UTable style="width: 100%;" :rows="filteredRows" :columns="columns">
+            <UTable style="width: 100%" :rows="filteredRows" :columns="columns">
                 <template #article_thumbnail-data="{ row }">
                     <img
                         class="article-thumbnail"
@@ -85,8 +87,13 @@ const filteredRows = computed(() => {
                         v-if="row.article_thumbnail"
                     />
                     <UPopover v-else mode="hover">
-                        <Icon
-                            style="width: 30%; margin: 0 35%; height: 100%; min-width: 1rem;"
+                        <UIcon
+                            style="
+                                width: 30%;
+                                margin: 0 35%;
+                                height: 100%;
+                                min-width: 1rem;
+                            "
                             :name="
                                 row.article_thumbnail === null
                                     ? `i-heroicons-x-mark-solid`
@@ -139,7 +146,7 @@ const filteredRows = computed(() => {
     }
     .page-list {
         width: 100%;
-        max-height: calc(100vh - 5rem);;
+        max-height: calc(100vh - 5rem);
         overflow-y: auto;
     }
 }

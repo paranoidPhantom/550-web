@@ -18,5 +18,6 @@ logs
 .fleet
 .idea
 
-.prod.env
-.preview.env
+.env.*
+
+package-lock.json

@@ -1,70 +1,87 @@
 <script setup lang="ts">
 interface Category {
-    name: string,
+    name: string;
     pages: {
-        name: string,
-        route: string
-    }[]
+        name: string;
+        route: string;
+    }[];
 }
 
 interface Categories {
-    [key: string]: Category
+    [key: string]: Category;
 }
 
 interface CategorStates {
-    [key: string]: boolean
+    [key: string]: boolean;
 }
 
 const Categories: Categories = {
-    "base": {
+    base: {
         name: "Основы",
         pages: [
             {
                 name: "Введение",
-                route: "intro"
+                route: "intro",
             },
             {
                 name: "Makrdown",
-                route: "md"
+                route: "md",
             },
             {
                 name: "Файловая система",
-                route: "fs"
+                route: "fs",
             },
             {
                 name: "Статус компонентов",
-                route: "status"
-            }
-        ]
+                route: "status",
+            },
+        ],
     },
-}
+};
 
-const { params: RouteParams } = useRoute()
-const CategoryKeys = Object.keys(Categories)
-const CategoryStates = reactive<CategorStates>({})
+const { params: RouteParams } = useRoute();
+const CategoryKeys = Object.keys(Categories);
+const CategoryStates = reactive<CategorStates>({});
 
 const updateCategoryStates = () => {
-    let States = {}
+    let States = {};
     for (const index in CategoryKeys) {
         if (Object.prototype.hasOwnProperty.call(CategoryKeys, index)) {
             const key = CategoryKeys[index];
-            CategoryStates[key] = RouteParams.category === key
+            CategoryStates[key] = RouteParams.category === key;
         }
     }
-}
+};
 
-onMounted(updateCategoryStates)
+onMounted(updateCategoryStates);
 </script>
 
 <template>
     <section class="sidebar">
         <div class="category" v-for="(Category, CategoryIndex) in Categories">
-            <p class="name" @click="CategoryStates[CategoryIndex] = !CategoryStates[CategoryIndex]">{{ Category.name }}
-                <Icon name="material-symbols:arrow-back-ios-new" class="indicator"
-                    :style="{ rotate: `${CategoryStates[CategoryIndex] ? -90 : 90}deg` }" />
+            <p
+                class="name"
+                @click="
+                    CategoryStates[CategoryIndex] =
+                        !CategoryStates[CategoryIndex]
+                "
+            >
+                {{ Category.name }}
+                <UIcon
+                    name="material-symbols:arrow-back-ios-new"
+                    class="indicator"
+                    :style="{
+                        rotate: `${
+                            CategoryStates[CategoryIndex] ? -90 : 90
+                        }deg`,
+                    }"
+                />
             </p>
             <div class="pages" v-if="CategoryStates[CategoryIndex]">
-                <NuxtLink v-for="Page in Category.pages" :to="`/docs/${CategoryIndex}/${Page.route}`">
+                <NuxtLink
+                    v-for="Page in Category.pages"
+                    :to="`/docs/${CategoryIndex}/${Page.route}`"
+                >
                     <div class="indicator"></div>
                     <p class="page-name">{{ Page.name }}</p>
                 </NuxtLink>
@@ -92,7 +109,7 @@ onMounted(updateCategoryStates)
         pointer-events: none;
     }
     .category {
-        >.name {
+        > .name {
             display: flex;
             justify-content: space-between;
             width: 100%;
@@ -130,4 +147,5 @@ onMounted(updateCategoryStates)
             }
         }
     }
-}</style>
+}
+</style>

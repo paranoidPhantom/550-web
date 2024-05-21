@@ -507,12 +507,12 @@ const picking = computed(() => {
                                     row.email === 'root@ort'
                                 "
                             />
-                            <Icon v-else name="svg-spinners:ring-resize" />
+                            <UIcon v-else name="svg-spinners:ring-resize" />
                         </UTooltip>
                     </div>
                 </template>
             </UTable>
-            <Icon v-else class="loader" name="svg-spinners:ring-resize" />
+            <UIcon v-else class="loader" name="svg-spinners:ring-resize" />
         </div>
     </div>
 </template>

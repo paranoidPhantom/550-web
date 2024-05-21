@@ -68,55 +68,66 @@ const fireModalInput = () => {
 
 const file_pickers = reactive({
     image: false,
-    attachment: false
-})
+    attachment: false,
+});
 
 const set_file_picker = (event: Event, key: keyof typeof file_pickers) => {
-    event.stopPropagation()
-    file_pickers[key] = false
+    event.stopPropagation();
+    file_pickers[key] = false;
     setTimeout(() => {
-        file_pickers[key] = true
+        file_pickers[key] = true;
     }, 0);
-}
+};
 
-const image_picked = useState("image_picked", undefined)
-const attachment_picked = useState("attachment_picked", undefined)
+const image_picked = useState("image_picked", undefined);
+const attachment_picked = useState("attachment_picked", undefined);
 
 watchEffect(() => {
     if (image_picked.value !== undefined) {
-        file_pickers.image = false
-        const picked_list = image_picked.value as any
-        image_picked.value = undefined
+        file_pickers.image = false;
+        const picked_list = image_picked.value as any;
+        image_picked.value = undefined;
         if (picked_list) {
             applyCompletion(`:image{src='${normalize(picked_list[0])}'}
-`)
+`);
         }
     }
-})
+});
 
 watchEffect(() => {
     if (attachment_picked.value !== undefined) {
-        file_pickers.attachment = false
-        const picked_list = attachment_picked.value as any
-        attachment_picked.value = undefined
+        file_pickers.attachment = false;
+        const picked_list = attachment_picked.value as any;
+        attachment_picked.value = undefined;
         if (picked_list) {
             applyCompletion(
-`::attachments
+                `::attachments
 ---
-file_urls: ['${picked_list.map((url: string) => normalize(url).slice(1)).join("', '")}']
+file_urls: ['${picked_list
+                    .map((url: string) => normalize(url).slice(1))
+                    .join("', '")}']
 ---
 ::
-`)
+`
+            );
         }
     }
-})
+});
 </script>
 
 <template>
     <div class="__autocomplete">
-        <ClientOnly >
-            <FilePicker state_key="image_picked" bucket="images" :enabled="file_pickers.image"/>
-            <FilePicker state_key="attachment_picked" :multiple="true" :enabled="file_pickers.attachment"/>
+        <ClientOnly>
+            <FilePicker
+                state_key="image_picked"
+                bucket="images"
+                :enabled="file_pickers.image"
+            />
+            <FilePicker
+                state_key="attachment_picked"
+                :multiple="true"
+                :enabled="file_pickers.attachment"
+            />
         </ClientOnly>
         <UPopover :popper="{ placement: 'bottom-end' }">
             <UButton
@@ -134,27 +145,25 @@ file_urls: ['${picked_list.map((url: string) => normalize(url).slice(1)).join("'
                             class="suggestion"
                             color="white"
                             @click="suggestionExecute(suggestion)"
-                            ><Icon :name="suggestion.icon"
+                            ><UIcon :name="suggestion.icon"
                         /></UButton>
                     </UTooltip>
-                    <UTooltip
-                        text="Создать картинку"
-                    >
+                    <UTooltip text="Создать картинку">
                         <UButton
                             class="suggestion"
                             color="white"
                             @click="(event) => set_file_picker(event, 'image')"
-                            ><Icon name="lucide:image"
+                            ><UIcon name="lucide:image"
                         /></UButton>
                     </UTooltip>
-                    <UTooltip
-                        text="Прикрепить файлы"
-                    >
+                    <UTooltip text="Прикрепить файлы">
                         <UButton
                             class="suggestion"
                             color="white"
-                            @click="(event) => set_file_picker(event, 'attachment')"
-                            ><Icon name="lucide:file-stack"
+                            @click="
+                                (event) => set_file_picker(event, 'attachment')
+                            "
+                            ><UIcon name="lucide:file-stack"
                         /></UButton>
                     </UTooltip>
                 </div>

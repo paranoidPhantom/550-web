@@ -14,7 +14,7 @@ services:
   fs_server:
     restart: unless-stopped
     image: paranoidphantom/550-server:latest
-    build: ../550-portal-server
+    build: ../550-fs
     ports:
       - "3001:3001"
     volumes:

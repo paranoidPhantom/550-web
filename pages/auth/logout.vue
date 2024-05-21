@@ -1,38 +1,41 @@
 <script setup lang="ts">
 definePageMeta({
     name: "Выход",
-    layout: "admin"
-})
+    layout: "admin",
+});
 
-const toast = useToast()
+const toast = useToast();
 
-
-const { auth } = useSupabaseClient()
+const { auth } = useSupabaseClient();
 
 const logOut = async () => {
-    await auth.signOut()
-    navigateTo("/auth/login")
+    await auth.signOut();
+    navigateTo("/auth/login");
     toast.add({
-        id: 'auth_event',
-        title: 'Вы вышли',
-        icon: 'i-heroicons-check-circle',
-        timeout: 3000
-    })
-}
+        id: "auth_event",
+        title: "Вы вышли",
+        icon: "i-heroicons-check-circle",
+        timeout: 3000,
+    });
+};
 </script>
 
 <template>
     <section class="__logout">
         <div id="logout">
             <h1>Вы авторизованы!</h1>
-            <hr style="border-color: rgba(var(--inverted-rgb), 0.1); width: 90%;">
+            <hr
+                style="border-color: rgba(var(--inverted-rgb), 0.1); width: 90%"
+            />
             <div class="illustration">
-                <Icon name="ic:round-log-out" />
+                <UIcon name="ic:round-log-out" />
             </div>
             <UButton color="red" @click="logOut">Выйти</UButton>
-            <hr style="border-color: rgba(var(--inverted-rgb), 0.1); width: 70%;">
+            <hr
+                style="border-color: rgba(var(--inverted-rgb), 0.1); width: 70%"
+            />
             <div class="illustration">
-                <Icon name="line-md:arrow-left" />
+                <UIcon name="line-md:arrow-left" />
             </div>
             <UButton @click="$router.go(-1)" variant="soft">Назад</UButton>
         </div>
@@ -77,4 +80,5 @@ const logOut = async () => {
         font-weight: 400;
         font-size: 1.5rem;
     }
-}</style>
+}
+</style>

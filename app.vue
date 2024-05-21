@@ -20,8 +20,8 @@ watchEffect(() => {
         link: [
             {
                 rel: "icon",
-                type: "image/png",
-                href: "/favicon.png",
+                type: "image/vnd.microsoft.icon",
+                href: "/favicon.ico",
             },
         ],
     });

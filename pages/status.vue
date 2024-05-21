@@ -6,7 +6,9 @@ definePageMeta({
     layout: "empty",
 });
 
-const { public: { service_domain } } = useRuntimeConfig();
+const {
+    public: { service_domain },
+} = useRuntimeConfig();
 
 const fetching = ref(true);
 const counterClass = computed(() => {
@@ -25,7 +27,7 @@ const checkResults: Ref<_AsyncData<unknown, FetchError<any> | null>[]> = ref(
     []
 );
 
-const authRefrehInterval = 20
+const authRefrehInterval = 20;
 
 const checksPassed = ref(0);
 
@@ -122,7 +124,7 @@ onMounted(() => {
 <template>
     <main>
         <h1>
-            <Icon name="line-md:cloud-braces-loop" /> Server component status
+            <UIcon name="line-md:cloud-braces-loop" /> Server component status
         </h1>
         <code
             >Services responded &nbsp;
@@ -138,7 +140,7 @@ onMounted(() => {
             </p>
             <p class="inactive" v-else>Waiting to fetch...</p>
         </code>
-        <Icon name="svg-spinners:ring-resize" v-if="fetching" />
+        <UIcon name="svg-spinners:ring-resize" v-if="fetching" />
     </main>
 </template>
 

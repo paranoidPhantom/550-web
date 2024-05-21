@@ -1,9 +1,12 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <div class="__admin">
-        <MinimalHeader title="Панель управления" icon="line-md:cog-loop"  home="/admin"/>
+        <MinimalHeader
+            title="Панель управления"
+            icon="line-md:cog-loop"
+            home="/admin"
+        />
         <main>
             <slot />
         </main>

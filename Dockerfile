@@ -1,5 +1,5 @@
 ### PREPARE ###
-FROM oven/bun:distroless as prerequisites
+FROM oven/bun:slim as prerequisites
 
 WORKDIR /usr/src/nuxt/
 
@@ -10,7 +10,7 @@ RUN bun install
 COPY . .
 
 ### BUILD ###
-FROM node:18 as build
+FROM node:18-slim as build
 
 COPY --from=prerequisites /usr/src/nuxt/ /usr/src/nuxt/
 

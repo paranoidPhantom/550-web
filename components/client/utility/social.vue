@@ -9,7 +9,7 @@ const { socialLinks } = useAppConfig();
             :to="link.link"
             variant="link"
             target="_blank"
-            ><Icon :name="link.icon" style="font-size: 1.5rem"
+            ><UIcon :name="link.icon" style="font-size: 1.5rem"
         /></UButton>
     </div>
 </template>

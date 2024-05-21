@@ -14,13 +14,12 @@
 		"nuxt": "3.11.0",
 		"nuxt-icon": "^0.6.5",
 		"sass": "^1.69.3",
-		"typescript": "^5.4.4",
 		"vue-clipboard3": "^2.0.0"
 	},
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
-		"dev": "nuxt dev --port 5173 --host",
+		"dev": "nuxt dev --port 5173",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"DEPLOY_PRODUCTION": "docker compose build && docker compose push"

@@ -131,7 +131,7 @@ defineShortcuts({
             >
                 <template #title="{ title }"
                     ><div class="flex gap-4 text-2xl mb-4">
-                        <Icon
+                        <UIcon
                             style="translate: 0 0.2rem"
                             name="mdi:badge-account"
                         />
