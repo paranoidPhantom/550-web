@@ -26,7 +26,7 @@ watchEffect(() => {
         ],
     });
     useSeoMeta({
-        ogTitle: route.meta.name || "Школа №550",
+        ogTitle: route.meta.name || website_name,
         ogUrl: `https://${service_domain}`,
     });
 });

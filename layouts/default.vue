@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const { push } = useRouter()
+const { push } = useRouter();
 defineShortcuts({
     shift_a: {
-        handler: () => push("/admin")
-    }
-})
+        handler: () => push("/admin"),
+    },
+});
 </script>
 
 <template>
