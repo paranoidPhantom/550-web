@@ -6,7 +6,7 @@ export default defineEventHandler(
 		if (token) {
 			const supabase = await serverSupabaseServiceRole(event)
 			const { data, error } = await supabase.from("tester-tokens").select().eq("token", token)
-			return data
-		}
+			return data ?? []
+		} else return []
 	}
 );
