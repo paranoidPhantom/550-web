@@ -24,4 +24,11 @@
 		"preview": "nuxt preview",
 		"DEPLOY_PRODUCTION": "docker compose build && docker compose push"
 	}
+	},
+	"trustedDependencies": [
+		"@fortawesome/fontawesome-common-types",
+		"@fortawesome/free-regular-svg-icons",
+		"@fortawesome/free-solid-svg-icons",
+		"json-editor-vue"
+	]
 }
