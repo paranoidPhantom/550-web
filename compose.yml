@@ -53,7 +53,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx
-      - /etc/letsencrypt/live:/etc/letsencrypt/live
+      - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - web
       - fs_server
