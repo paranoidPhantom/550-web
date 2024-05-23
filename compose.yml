@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   # Production containers
   web:
@@ -41,10 +41,23 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /root/.docker/config.json:/config.json
     command: --interval 30
-    environment: 
+    environment:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_NOTIFICATIONS: slack
       WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: "https://discord.com/api/webhooks/1215667608234360924/U8U94ILOFdYH8QTzkQsUhDpTaLTga9qDmaXkiBY6eBW-xEBMqofXcDDTBNKztz4WnVTj/slack"
+  nginx:
+    restart: always
+    image: nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx
+      - /etc/letsencrypt/live:/etc/letsencrypt/live
+    depends_on:
+      - web
+      - fs_server
+      - preview_web
 
 volumes:
   fs_server_vol:
