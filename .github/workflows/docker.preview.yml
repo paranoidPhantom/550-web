@@ -1,6 +1,5 @@
 name: Docker deployment - Preview
 
-runs-on: self-hosted
 run-name: Docker | Deploy to preview by @${{ github.actor }} [${{ github.run_id }}]
 
 on:
@@ -13,7 +12,7 @@ on:
 
 jobs:
     docker:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         environment: preview
         steps:
             - name: Checkout
