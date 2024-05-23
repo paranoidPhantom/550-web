@@ -28,7 +28,7 @@ jobs:
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
             - name: "Create env file"
               run: |
-                  echo -e "${{ secrets.PREVIEW_ENV_FILE }}\nBUILD_ID=${{ github.run_id }}" > .env
+                  echo -e "${{ secrets.PREVIEW_ENV_FILE }}\nBUILD_ID=${{ github.run_id }}\nNITRO_PRESET='node-server'" > .env
             - name: Build and push
               uses: docker/build-push-action@v5
               with:
