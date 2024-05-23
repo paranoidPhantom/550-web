@@ -1,6 +1,5 @@
 name: Docker deployment - Production
 
-runs-on: self-hosted
 run-name: ❗ Docker | Deploy to production by @${{ github.actor }}
 
 on:
@@ -10,7 +9,7 @@ on:
 
 jobs:
     docker:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         environment: production
         concurrency: production
         steps:
