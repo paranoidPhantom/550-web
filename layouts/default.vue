@@ -13,8 +13,8 @@ defineShortcuts({
         <main>
             <slot />
         </main>
-        <ClientUtilityFeedback />
-        <ClientUtilityVisImpairment />
+        <LazyClientUtilityFeedback />
+        <LazyClientUtilityVisImpairment />
         <ClientStructureFooter />
     </div>
 </template>
