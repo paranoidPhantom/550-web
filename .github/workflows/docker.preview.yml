@@ -44,6 +44,8 @@ jobs:
         environment: preview
         needs: Image-build
         steps:
+            - name: Checkout
+              uses: actions/checkout@v4
             - name: Deploy preview
               run: |
                   docker compose up -d --pull 'always'

@@ -18,6 +18,4 @@ logs
 .fleet
 .idea
 
-.env.*
-
 package-lock.json
