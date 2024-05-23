@@ -41,6 +41,6 @@ watchEffect(() => {
         <NuxtPage />
     </NuxtLayout>
     <UNotifications />
-    <SearchPallete />
-    <PreviewInfo />
+    <LazySearchPallete />
+    <LazyPreviewInfo />
 </template>
