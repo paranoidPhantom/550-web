@@ -11,8 +11,8 @@ on:
             - "master"
 
 jobs:
-    docker:
-        runs-on: self-hosted
+    Image-build:
+        runs-on: ubuntu-latest
         environment: preview
         steps:
             - name: Checkout
@@ -39,3 +39,11 @@ jobs:
                       NITRO_PRESET=node-server
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+    Deploy:
+        runs-on: self-hosted
+        environment: preview
+        needs: Image-build
+        steps:
+            - name: Deploy preview
+              run: |
+                  docker compose up -d --pull 'always'
