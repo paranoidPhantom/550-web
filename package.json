@@ -20,9 +20,7 @@
 		"build": "nuxt build",
 		"dev": "nuxt dev --port 5173",
 		"generate": "nuxt generate",
-		"preview": "nuxt preview",
-		"DEPLOY_PRODUCTION": "docker compose build && docker compose push"
-	}
+		"preview": "nuxt preview"
 	},
 	"trustedDependencies": [
 		"@fortawesome/fontawesome-common-types",
