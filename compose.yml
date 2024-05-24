@@ -18,6 +18,8 @@ services:
       - "3001:3001"
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
+    networks:
+      - nginx
 
   # Preview container
   preview_web:
@@ -32,6 +34,8 @@ services:
       - "3002:3002"
     env_file:
       - ./.env.preview
+    networks:
+      - nginx
   
   # Nginx container
   nginx:
@@ -47,6 +51,11 @@ services:
       - web
       - fs_server
       - preview_web
+    networks:
+      - nginx
 
 volumes:
   fs_server_vol:
+
+networks:
+  nginx:
