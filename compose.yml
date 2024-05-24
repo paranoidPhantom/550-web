@@ -1,6 +1,6 @@
 version: "3"
 services:
-  # Production containers
+  # Production container
   web:
     restart: unless-stopped
     image: paranoidphantom/550-web:latest
@@ -19,7 +19,7 @@ services:
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
 
-  # Preview containers
+  # Preview container
   preview_web:
     restart: unless-stopped
     image: paranoidphantom/550-web:preview
@@ -32,19 +32,8 @@ services:
       - "3002:3002"
     env_file:
       - ./.env.preview
-
-  # Watchtower
-  # watchtower:
-  #   restart: always
-  #   image: containrrr/watchtower
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - /root/.docker/config.json:/config.json
-  #   command: --interval 30
-  #   environment:
-  #     WATCHTOWER_CLEANUP: "true"
-  #     WATCHTOWER_NOTIFICATIONS: slack
-  #     WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: "https://discord.com/api/webhooks/1215667608234360924/U8U94ILOFdYH8QTzkQsUhDpTaLTga9qDmaXkiBY6eBW-xEBMqofXcDDTBNKztz4WnVTj/slack"
+  
+  # Nginx container
   nginx:
     restart: always
     image: nginx
