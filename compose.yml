@@ -40,7 +40,9 @@ services:
   # Nginx container
   nginx:
     restart: always
-    image: nginx
+    image: paranoidphantom/550-nginx:latest
+    build:
+      context: ./nginx
     ports:
       - "443:443"
       - "80:80"

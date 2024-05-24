@@ -29,7 +29,7 @@ jobs:
             - name: "Create env file"
               run: |
                   echo -e "${{ secrets.PREVIEW_ENV_FILE }}\nBUILD_ID=${{ github.run_id }}\nNITRO_PRESET='node-server'" > .env
-            - name: Build and push
+            - name: Build and push - Main image
               uses: docker/build-push-action@v5
               with:
                   context: .
@@ -39,6 +39,12 @@ jobs:
                       NITRO_PRESET=node-server
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+            - name: Build and push - Nginx
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./nginx
+                  push: true
+                  tags: paranoidphantom/550-nginx:latest
     Deploy:
         runs-on: self-hosted
         environment: preview
