@@ -1,6 +1,6 @@
 name: Docker deployment - Production
 
-run-name: ❗ Docker | Deploy to production by @${{ github.actor }}
+run-name: ❗ Docker | Deploy to production by @${{ github.actor }} [${{ github.run_id }}]
 
 on:
     push:
@@ -8,8 +8,8 @@ on:
             - "master"
 
 jobs:
-    docker:
-        runs-on: self-hosted
+    Image-build:
+        runs-on: ubuntu-latest
         environment: production
         concurrency: production
         steps:
@@ -26,7 +26,7 @@ jobs:
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
             - name: "Create env file"
               run: |
-                  echo "${{ secrets.ENV_FILE }}\nNITRO_PRESET='node_cluster'" > .env
+                  echo -e "${{ secrets.ENV_FILE }}\nBUILD_ID=${{ github.run_id }}\nNITRO_PRESET='node_cluster'" > .env
             - name: Build and push
               uses: docker/build-push-action@v5
               with:
@@ -37,3 +37,13 @@ jobs:
                       NITRO_PRESET=node_cluster
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+    Deploy:
+        runs-on: self-hosted
+        environment: preview
+        needs: Image-build
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Deploy preview
+              run: |
+                  docker compose up -d --pull 'always'
