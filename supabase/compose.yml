@@ -3,7 +3,7 @@ version: "3.8"
 
 services:
   studio:
-    container_name: supabase-studio
+    container_name: 550_supabase-studio
     image: supabase/studio:20240422-5cf8f30
     restart: unless-stopped
     healthcheck:
@@ -41,7 +41,7 @@ services:
       # NEXT_ANALYTICS_BACKEND_PROVIDER: bigquery
 
   kong:
-    container_name: supabase-kong
+    container_name: 550_supabase-kong
     image: kong:2.8.1
     restart: unless-stopped
     # https://unix.stackexchange.com/a/294837
@@ -69,7 +69,7 @@ services:
       - /etc/supabase/volumes/api/kong.yml:/home/kong/temp.yml:ro
 
   auth:
-    container_name: supabase-auth
+    container_name: 550_supabase-auth
     image: supabase/gotrue:v2.151.0
     depends_on:
       db:
@@ -143,7 +143,7 @@ services:
 
 
   rest:
-    container_name: supabase-rest
+    container_name: 550_supabase-rest
     image: postgrest/postgrest:v12.0.1
     depends_on:
       db:
@@ -164,7 +164,7 @@ services:
 
   realtime:
     # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
-    container_name: realtime-dev.supabase-realtime
+    container_name: 550_realtime-dev.supabase-realtime
     image: supabase/realtime:v2.28.32
     depends_on:
       db:
@@ -209,7 +209,7 @@ services:
       sh -c "/app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server"
 
   meta:
-    container_name: supabase-meta
+    container_name: 550_supabase-meta
     image: supabase/postgres-meta:v0.80.0
     depends_on:
       db:
@@ -227,7 +227,7 @@ services:
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
 
   analytics:
-    container_name: supabase-analytics
+    container_name: 550_supabase-analytics
     image: supabase/logflare:1.4.0
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:4000/health" ]
@@ -270,7 +270,7 @@ services:
 
   # Comment out everything below this point if you are using an external Postgres database
   db:
-    container_name: supabase-db
+    container_name: 550_supabase-db
     image: supabase/postgres:15.1.1.41
     healthcheck:
       test: pg_isready -U postgres -h localhost
