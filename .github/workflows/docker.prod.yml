@@ -24,7 +24,7 @@ jobs:
               with:
                   username: ${{ secrets.DOCKERHUB_USERNAME }}
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
-            - name: "Create env file"
+            - name: "Create .env file"
               run: |
                   echo -e "${{ secrets.ENV_FILE }}\nBUILD_ID=${{ github.run_id }}\nNITRO_PRESET='node_cluster'" > .env
             - name: Build and push - Main image
@@ -50,6 +50,9 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+            - name: "Creates supabase .env file"
+              run: |
+                  echo -e "${{ secrets.SUPABASE_ENV }}" > supabase/.env
             - name: Deploy preview
               run: |
                   docker compose up -d --pull 'always'
