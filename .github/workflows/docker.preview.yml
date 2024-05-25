@@ -17,7 +17,7 @@ jobs:
             files_changed: ${{ steps.check.outputs.files_changed }}
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v3
 
             - name: Check if specific files have changed
               id: check
@@ -25,17 +25,26 @@ jobs:
                   # Initialize the files_changed variable
                   files_changed=false
 
-                  # Get the list of changed files, excluding specified directories
-                  changed_files=$(git diff --name-only HEAD~1 HEAD | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
+                  # Check if there is more than one commit
+                  if [ $(git rev-list --count HEAD) -gt 1 ]; then
+                    # Get the list of changed files, excluding specified directories
+                    changed_files=$(git diff --name-only HEAD~1 HEAD | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
 
-                  # Check if any files were changed outside the specified directories
-                  if [ -n "$changed_files" ]; then
-                    files_changed=true
+                    # Check if any files were changed outside the specified directories
+                    if [ -n "$changed_files" ]; then
+                      files_changed=true
+                    fi
+                  else
+                    echo "Only one commit in the repository, skipping diff check."
                   fi
 
                   # Output the result
                   echo "files_changed=$files_changed" >> $GITHUB_ENV
                   echo "::set-output name=files_changed::$files_changed"
+
+            - name: Output result
+              run: |
+                  echo "Files changed: ${{ steps.check.outputs.files_changed }}"
     Image-build:
         runs-on: ubuntu-latest
         environment: preview
