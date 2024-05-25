@@ -1,4 +1,8 @@
 version: "3"
+include:
+  - path:
+      - supabase/compose.yml
+
 services:
   # Production container
   web:
@@ -8,16 +12,13 @@ services:
       context: .
       args:
         - NITRO_PRESET=node_cluster
-    networks:
-      - nginx
+        
   fs_server:
     restart: unless-stopped
     image: paranoidphantom/550-server:latest
     build: ../550-fs
     volumes:
       - fs_server_vol:/usr/src/fs_server/db
-    networks:
-      - nginx
 
   # Preview container
   preview_web:
@@ -30,8 +31,6 @@ services:
         - ACCESS=testers
     env_file:
       - ./.env.preview
-    networks:
-      - nginx
   
   # Nginx container
   nginx:
@@ -48,11 +47,6 @@ services:
       - web
       - fs_server
       - preview_web
-    networks:
-      - nginx
 
 volumes:
   fs_server_vol:
-
-networks:
-  nginx:
