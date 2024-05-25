@@ -47,7 +47,6 @@ services:
       - "443:443"
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
       - web
