@@ -58,3 +58,6 @@ jobs:
             - name: Deploy preview
               run: |
                   docker compose up -d --pull 'always'
+            - name: "Clean docker system"
+              run: |
+                  docker system prune -fa
