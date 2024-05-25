@@ -48,6 +48,8 @@ jobs:
     Image-build:
         runs-on: ubuntu-latest
         environment: preview
+        needs:
+            - Check-changes
         if: ${{ needs.Check-changes.outputs.files_changed == 'true' }}
         steps:
             - name: Checkout
@@ -83,7 +85,8 @@ jobs:
     Deploy:
         runs-on: self-hosted
         environment: preview
-        needs: Image-build
+        needs:
+            - Check-changes
         steps:
             - name: Checkout
               uses: actions/checkout@v4
