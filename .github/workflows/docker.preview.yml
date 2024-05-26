@@ -25,17 +25,12 @@ jobs:
                   # Initialize the files_changed variable
                   files_changed=false
 
-                  # Check if there is more than one commit
-                  if [ $(git rev-list --count HEAD) -gt 1 ]; then
-                    # Get the list of changed files, excluding specified directories
-                    changed_files=$(git diff --name-only HEAD~1 HEAD | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
+                  # Get the list of changed files, excluding specified directories
+                  changed_files=$(git diff --name-only HEAD~1 HEAD | grep -Ev '^(supabase/|\.github/|nginx/)')
 
-                    # Check if any files were changed outside the specified directories
-                    if [ -n "$changed_files" ]; then
-                      files_changed=true
-                    fi
-                  else
-                    echo "Only one commit in the repository, skipping diff check."
+                  # Check if any files were changed outside the specified directories
+                  if [ -n "$changed_files" ]; then
+                    files_changed=true
                   fi
 
                   # Output the result
