@@ -40,7 +40,7 @@ jobs:
                   BASE_BRANCH=${{ steps.determine_base.outputs.branch_name }}
 
                   # Get the list of all changed files from the base branch to HEAD
-                  changed_files=$(git diff --name-only $(git diff --name-only HEAD^ HEAD)
+                  changed_files=$(git diff --name-only $(git diff --name-only HEAD^ HEAD))
 
                   echo "Changed files: $changed_files"
 
