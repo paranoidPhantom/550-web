@@ -8,10 +8,69 @@ on:
             - "master"
 
 jobs:
-    Image-build:
+    Check_changes:
+        runs-on: ubuntu-latest
+        outputs:
+            files_changed: ${{ steps.check.outputs.files_changed }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Determine base branch
+              id: determine_base
+              run: |
+                  # Extract the branch name from github.ref
+                  BRANCH_NAME=${GITHUB_REF#refs/heads/}
+                  echo "Base branch: $BRANCH_NAME"
+                  echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+            - name: Check if specific files have changed
+              id: check
+              run: |
+                  # Initialize the files_changed variable
+                  files_changed=false
+
+                  # Fetch all commits to ensure we can check the entire history
+                  git fetch --unshallow
+
+                  # Get the base branch name
+                  BASE_BRANCH=${{ steps.determine_base.outputs.branch_name }}
+
+                  # Get the list of all changed files from the base branch to HEAD
+                  changed_files=$(git diff --name-only HEAD^ HEAD)
+
+                  # Filter the list of changed files, excluding the specified directories
+                  set +e
+                  filtered_files=$(echo "$changed_files" | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
+                  grep_exit_code=$?
+                  set -e
+
+                  # Check if grep had any matches (exit code 0) or not (exit code 1)
+                  if [ $grep_exit_code -eq 0 ]; then
+                    echo "Filtered files:"
+                    echo "$filtered_files"
+                    files_changed=true
+                  elif [ $grep_exit_code -eq 1 ]; then
+                    echo "No files matched the pattern."
+                  else
+                    echo "An error occurred while filtering files."
+                    exit 1
+                  fi
+
+                  # Output the result using the new method
+                  echo "files_changed=$files_changed" >> $GITHUB_ENV
+                  echo "files_changed=$files_changed" >> $GITHUB_OUTPUT
+
+            - name: Output result
+              run: |
+                  echo "Files changed: ${{ steps.check.outputs.files_changed }}"
+    Image_build:
         runs-on: ubuntu-latest
         environment: production
         concurrency: production
+        needs:
+            - Check_changes
+        if: ${{ needs.Check_changes.outputs.files_changed == 'true' }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -46,7 +105,13 @@ jobs:
     Deploy:
         runs-on: self-hosted
         environment: preview
-        needs: Image-build
+        needs:
+            - Check_changes
+            - Image_build
+        if: |
+            always() &&
+            needs.Check_changes.result == 'success' &&
+            (needs.Image_build.result == 'success' || needs.Image_build.result == 'skipped')
         steps:
             - name: Checkout
               uses: actions/checkout@v4
