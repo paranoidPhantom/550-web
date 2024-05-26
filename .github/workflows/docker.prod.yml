@@ -96,12 +96,6 @@ jobs:
                       NITRO_PRESET=node_cluster
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-            - name: Build and push - Nginx
-              uses: docker/build-push-action@v5
-              with:
-                  context: ./nginx
-                  push: true
-                  tags: paranoidphantom/550-nginx:latest
     Deploy:
         runs-on: self-hosted
         environment: preview
@@ -115,6 +109,12 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+            - name: Build and push - Nginx
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./nginx
+                  push: true
+                  tags: paranoidphantom/550-nginx:latest
             - name: "Creates supabase .env file"
               run: |
                   echo -e "${{ secrets.SUPABASE_ENV }}" > supabase/.env
