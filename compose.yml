@@ -47,6 +47,7 @@ services:
       - web
       - fs_server
       - preview_web
+      - supabase-kong
 
 volumes:
   fs_server_vol:
