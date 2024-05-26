@@ -19,6 +19,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
+            - name: Determine base branch
+              id: determine_base
+              run: |
+                  # Extract the branch name from github.ref
+                  BRANCH_NAME=${GITHUB_REF#refs/heads/}
+                  echo "Base branch: $BRANCH_NAME"
+                  echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
             - name: Check if specific files have changed
               id: check
               run: |
@@ -28,8 +36,11 @@ jobs:
                   # Fetch all commits to ensure we can check the entire history
                   git fetch --unshallow
 
-                  # Get the list of all changed files from the base branch (dev) to HEAD
-                  changed_files=$(git diff --name-only $(git merge-base origin/dev HEAD) HEAD)
+                  # Get the base branch name
+                  BASE_BRANCH=${{ steps.determine_base.outputs.branch_name }}
+
+                  # Get the list of all changed files from the base branch to HEAD
+                  changed_files=$(git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD) HEAD)
 
                   # Filter the list of changed files, excluding the specified directories
                   filtered_files=$(echo "$changed_files" | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
@@ -39,9 +50,9 @@ jobs:
                     files_changed=true
                   fi
 
-                  # Output the result
+                  # Output the result using the new method
                   echo "files_changed=$files_changed" >> $GITHUB_ENV
-                  echo "::set-output name=files_changed::$files_changed"
+                  echo "files_changed=$files_changed" >> $GITHUB_OUTPUT
 
             - name: Output result
               run: |
