@@ -5,7 +5,7 @@ const {
 } = useRuntimeConfig();
 
 const route = useRoute();
-
+// Update route meta dynamically
 watchEffect(() => {
     useHeadSafe({
         title: route.meta.name,
