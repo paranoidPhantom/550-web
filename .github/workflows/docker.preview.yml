@@ -28,8 +28,8 @@ jobs:
                   # Fetch all commits to ensure we can check the entire history
                   git fetch --unshallow
 
-                  # Get the list of all changed files from the base branch (main) to HEAD
-                  changed_files=$(git diff --name-only $(git merge-base origin/main HEAD) HEAD)
+                  # Get the list of all changed files from the base branch (dev) to HEAD
+                  changed_files=$(git diff --name-only $(git merge-base origin/dev HEAD) HEAD)
 
                   # Filter the list of changed files, excluding the specified directories
                   filtered_files=$(echo "$changed_files" | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
