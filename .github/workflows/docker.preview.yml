@@ -43,13 +43,21 @@ jobs:
                   changed_files=$(git diff --name-only HEAD^ HEAD)
 
                   # Filter the list of changed files, excluding the specified directories
+                  set +e
                   filtered_files=$(echo "$changed_files" | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
+                  grep_exit_code=$?
+                  set -e
 
-                  echo "Changed files: $filtered_files"
-
-                  # Check if there are any files left after filtering
-                  if [ -n "$filtered_files" ]; then
+                  # Check if grep had any matches (exit code 0) or not (exit code 1)
+                  if [ $grep_exit_code -eq 0 ]; then
+                    echo "Filtered files:"
+                    echo "$filtered_files"
                     files_changed=true
+                  elif [ $grep_exit_code -eq 1 ]; then
+                    echo "No files matched the pattern."
+                  else
+                    echo "An error occurred while filtering files."
+                    exit 1
                   fi
 
                   # Output the result using the new method
