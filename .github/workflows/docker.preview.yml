@@ -93,6 +93,12 @@ jobs:
             - name: "Creates supabase .env file"
               run: |
                   echo -e "${{ secrets.SUPABASE_ENV }}" > supabase/.env
+            - name: Build and push - Custom nginx
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./nginx
+                  push: true
+                  tags: paranoidphantom/550-nginx:latest
             - name: Deploy preview
               run: |
                   docker compose up -d --pull 'always'
