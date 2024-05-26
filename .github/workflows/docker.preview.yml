@@ -25,7 +25,10 @@ jobs:
                   # Initialize the files_changed variable
                   files_changed=false
 
-                  # Get the list of all changed files across all commits
+                  # Fetch all commits to ensure we can check the entire history
+                  git fetch --unshallow
+
+                  # Get the list of all changed files from the base branch (main) to HEAD
                   changed_files=$(git diff --name-only $(git merge-base origin/main HEAD) HEAD)
 
                   # Filter the list of changed files, excluding the specified directories
