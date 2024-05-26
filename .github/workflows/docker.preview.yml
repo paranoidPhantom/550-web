@@ -121,9 +121,15 @@ jobs:
             - name: "Creates supabase .env file"
               run: |
                   echo -e "${{ secrets.SUPABASE_ENV }}" > supabase/.env
+            - name: Pull latest images
+              run: |
+                  docker compose pull
+            - name: Shutdown services
+              run: |
+                  docker compose down
             - name: Deploy preview
               run: |
-                  docker compose up -d --pull 'always'
+                  docker compose up -d'
             - name: "Clean docker system"
               run: |
                   docker system prune -fa
