@@ -100,7 +100,6 @@ watch(code, async (to) => {
     }
 });
 
-//
 defineShortcuts({
     backspace: {
         handler: () => {
