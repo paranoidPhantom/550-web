@@ -11,7 +11,7 @@ on:
             - "master"
 
 jobs:
-    Check-changes:
+    Check_changes:
         runs-on: ubuntu-latest
         outputs:
             files_changed: ${{ steps.check.outputs.files_changed }}
@@ -68,12 +68,12 @@ jobs:
               run: |
                   echo "Files changed: ${{ steps.check.outputs.files_changed }}"
 
-    Image-build:
+    Image_build:
         runs-on: ubuntu-latest
         environment: preview
         needs:
-            - Check-changes
-        if: ${{ needs.Check-changes.outputs.files_changed == 'true' }}
+            - Check_changes
+        if: ${{ needs.Check_changes.outputs.files_changed == 'true' }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -109,8 +109,12 @@ jobs:
         runs-on: self-hosted
         environment: preview
         needs:
-            - Check-changes
-            - Image-build
+            - Check_changes
+            - Image_build
+        if: |
+            always() &&
+            needs.Check_changes.result == 'success' &&
+            (needs.Image_build.result == 'success' || needs.Image_build.result == 'skipped')
         steps:
             - name: Checkout
               uses: actions/checkout@v4
