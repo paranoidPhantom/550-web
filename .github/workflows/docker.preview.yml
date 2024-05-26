@@ -42,10 +42,10 @@ jobs:
                   # Get the list of all changed files from the base branch to HEAD
                   changed_files=$(git diff --name-only HEAD^ HEAD)
 
-                  echo "Changed files: $changed_files"
-
                   # Filter the list of changed files, excluding the specified directories
                   filtered_files=$(echo "$changed_files" | grep -Ev '^(supabase/|\.github/|nginx/|\.vscode/)')
+
+                  echo "Changed files: $filtered_files"
 
                   # Check if there are any files left after filtering
                   if [ -n "$filtered_files" ]; then
