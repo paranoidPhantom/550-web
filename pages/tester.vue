@@ -152,6 +152,7 @@ defineShortcuts({
                     :class="`input-${index} popout-input${
                         correct ? ' success' : ''
                     }`"
+                    type="password"
                     :style="{ 'transition-delay': `${30 * (index - 1)}ms` }"
                     @focus="focusedIndex = index"
                 />
