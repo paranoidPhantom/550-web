@@ -182,7 +182,7 @@ defineShortcuts({
         input {
             rotate: 360deg;
             scale: 1.1;
-            width: 3rem;
+            width: 2.5rem;
             aspect-ratio: 1;
         }
     }
