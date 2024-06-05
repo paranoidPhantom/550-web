@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
             .from("tester-tokens")
             .select()
             .eq("token", token);
-        if (error) return createError(error);
+        if (error) throw createError(error);
         return data ?? [];
     } else return [];
 });
