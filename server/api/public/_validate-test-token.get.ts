@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
             .eq("token", token);
         if (error)
             throw createError({
-                message: String(token),
+                message: JSON.stringify(error),
             });
         return data ?? [];
     } else return [];
