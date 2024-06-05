@@ -1,9 +1,7 @@
-import { serverSupabaseServiceRole } from "#supabase/server";
-
 export default defineEventHandler(async (event) => {
     const { token } = getQuery(event);
     if (token) {
-        const supabase = serverSupabaseServiceRole(event);
+        const { _supabaseServiceRole: supabase } = event.context;
         const { data, error } = await supabase
             .from("tester-tokens")
             .select()
