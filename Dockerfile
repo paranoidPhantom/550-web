@@ -21,7 +21,7 @@ ENV NITRO_PRESET=$NITRO_PRESET
 RUN NITRO_PRESET=$NITRO_PRESET npx nuxt build
 
 ### DEPLOY ###
-FROM node:18-slim as deploy
+FROM node:18 as deploy
 COPY --from=build /usr/src/nuxt/.output /usr/src/nuxt/.output
 WORKDIR /usr/src/nuxt
 
